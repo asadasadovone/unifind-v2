@@ -1,0 +1,27 @@
+:root {
+  --bg: #f5f3ee;
+  --card: #ffffff;
+  --text: #1a1a18;
+  --muted: #7a7870;
+  --border: rgba(0,0,0,0.1);
+  --accent: #1f4e3d;
+  --accent-light: #e8f2ee;
+  --accent-muted: #4a8c70;
+  --amber: #c47d2a;
+  --amber-light: #fdf3e3;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+input, button { font-family: 'DM Sans', sans-serif; }
