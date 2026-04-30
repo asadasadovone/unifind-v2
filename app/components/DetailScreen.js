@@ -89,6 +89,25 @@ export default function DetailScreen({ uni, onBack, initialPrompt }) {
       </header>
 
       <div className="detail-body">
+        {/* Mobile compact info strip — visible only on small screens */}
+        <div className="mobile-uni-strip">
+          <div className="mobile-uni-head">
+            <h1 className="serif">{uni.name}</h1>
+            <div className="muted" style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Icon name="pin" size={12} /> {uni.city}, {uni.country}
+            </div>
+          </div>
+          <div className="mobile-info-scroll">
+            <MobileInfoChip icon="money" label="Tuition" value={tuitionLabel} />
+            <MobileInfoChip icon="clock" label="Duration" value={uni.duration} />
+            <MobileInfoChip icon="calendar" label="Starts" value={uni.startDate} />
+            <MobileInfoChip icon="language" label="Language" value={uni.language} />
+            <MobileInfoChip icon="cap" label="Degree" value={uni.degree} />
+            <MobileInfoChip icon="globe" label="Format" value={uni.attendance} />
+            <MobileInfoChip icon="sparkle" label="Scholarship" value={uni.scholarship ? 'Available' : 'None'} accent={uni.scholarship} />
+          </div>
+        </div>
+
         <aside className="detail-sidebar">
           <div>
             <h1 className="serif" style={{ fontSize: 28, color: 'var(--green-900)', lineHeight: 1.15 }}>
@@ -145,8 +164,8 @@ export default function DetailScreen({ uni, onBack, initialPrompt }) {
             <div className="chat-quick-label">
               <Icon name="sparkle" size={13} /> Quick questions
             </div>
-            <div className="quick-buttons">
-              {['Apply dates', 'City info', 'Requirements', 'Scholarships'].map(q => (
+            <div className="quick-buttons quick-buttons-scroll">
+              {['Apply dates', 'City info', 'Requirements', 'Scholarships', 'Living costs', 'Visa info'].map(q => (
                 <button key={q} className="quick-btn" onClick={() => runQuick(q)}>
                   {q}
                 </button>
@@ -214,6 +233,18 @@ function ChatBubble({ msg }) {
         />
       </div>
       {isUser && <div className="chat-avatar chat-user-avatar">A</div>}
+    </div>
+  )
+}
+
+function MobileInfoChip({ icon, label, value, accent }) {
+  return (
+    <div className={`mobile-info-chip ${accent ? 'accent' : ''}`}>
+      <div className="mobile-info-chip-icon"><Icon name={icon} size={14} /></div>
+      <div>
+        <div className="mobile-info-chip-label">{label}</div>
+        <div className="mobile-info-chip-value">{value}</div>
+      </div>
     </div>
   )
 }
