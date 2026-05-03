@@ -49,24 +49,24 @@ export default function DetailScreen({ uni, onBack, initialPrompt }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `Answer this question about ${uni.name} in ${uni.city}, ${uni.country}: "${text}"\n\nContext: This is a ${uni.degree} program in ${uni.field || 'various fields'}, taught in ${uni.language}, ${uni.duration} duration, tuition ${uni.tuition === 0 ? 'free' : uni.tuition + ' AZN/year'}, starts ${uni.startDate}. Be concise and practical.`
+          prompt: `Answer this question about ${uni.name} in ${uni.city}, ${uni.country}: "${text}"\n\nContext: This is a ${uni.degree} program in ${uni.field || 'various fields'}, taught in ${uni.language}, ${uni.duration} duration, tuition ${uni.tuition === 0 ? 'free' : uni.tuition + ' USD/year'}, starts ${uni.startDate}. Be concise and practical.`
         })
       })
       const data = await res.json()
       const aiText = data.content?.map(b => b.text || '').join('') ||
-        `Based on ${uni.name}'s latest published info: this program runs **${uni.duration}**, taught in ${uni.language}, with tuition of **${uni.tuition === 0 ? 'free for eligible students' : uni.tuition.toLocaleString() + ' AZN/year'}**. Want me to dig into a specific aspect?`
+        `Based on ${uni.name}'s latest published info: this program runs **${uni.duration}**, taught in ${uni.language}, with tuition of **${uni.tuition === 0 ? 'free for eligible students' : uni.tuition.toLocaleString() + ' USD/year'}**. Want me to dig into a specific aspect?`
       setMessages(m => [...m, { role: 'ai', text: aiText }])
     } catch {
       setMessages(m => [...m, {
         role: 'ai',
-        text: `Based on ${uni.name}'s latest published info: this program runs **${uni.duration}**, taught in ${uni.language}, with tuition of **${uni.tuition === 0 ? 'free for eligible students' : uni.tuition.toLocaleString() + ' AZN/year'}**. Want me to dig into a specific aspect?`
+        text: `Based on ${uni.name}'s latest published info: this program runs **${uni.duration}**, taught in ${uni.language}, with tuition of **${uni.tuition === 0 ? 'free for eligible students' : uni.tuition.toLocaleString() + ' USD/year'}**. Want me to dig into a specific aspect?`
       }])
     } finally {
       setThinking(false)
     }
   }
 
-  const tuitionLabel = uni.tuition === 0 ? 'Free' : `${uni.tuition.toLocaleString()} AZN/yr`
+  const tuitionLabel = uni.tuition === 0 ? 'Free' : `${uni.tuition.toLocaleString()} USD/yr`
 
   return (
     <div className="detail-screen">

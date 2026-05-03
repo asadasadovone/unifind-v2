@@ -43,14 +43,21 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth }) {
+export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade }) {
   const update = (k, v) => setFilters(f => ({ ...f, [k]: v }))
   const [fieldOpen, setFieldOpen] = useState(false)
+  const [tuitionOpen, setTuitionOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [userDropOpen, setUserDropOpen] = useState(false)
   const fieldRef = useRef(null)
+  const tuitionRef = useRef(null)
+  const userDropRef = useRef(null)
 
   useEffect(() => {
     const onClick = (e) => {
       if (fieldRef.current && !fieldRef.current.contains(e.target)) setFieldOpen(false)
+      if (tuitionRef.current && !tuitionRef.current.contains(e.target)) setTuitionOpen(false)
+      if (userDropRef.current && !userDropRef.current.contains(e.target)) setUserDropOpen(false)
     }
     document.addEventListener('mousedown', onClick)
     return () => document.removeEventListener('mousedown', onClick)
@@ -64,20 +71,54 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
     <div className="zap-screen">
       <header className="zap-nav">
         <div className="zap-nav-left">
+          <button
+            className="mobile-burger-btn"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <Icon name="menu" size={22} />
+          </button>
           <Logo />
           <nav className="zap-nav-links">
-            <a href="#" className="zap-nav-link">Programs <Icon name="chevron" size={12} /></a>
-            <a href="#" className="zap-nav-link">Countries <Icon name="chevron" size={12} /></a>
-            <a href="#" className="zap-nav-link">Resources <Icon name="chevron" size={12} /></a>
-            <a href="#" className="zap-nav-link">For universities</a>
-            <a href="#" className="zap-nav-link">Pricing</a>
+            {user && <a href="#" className="zap-nav-link">My Universities</a>}
           </nav>
         </div>
         <div className="zap-nav-right">
-          <a href="#" className="zap-nav-link"><Icon name="globe" size={14} /> Browse all</a>
-          <a href="#" className="zap-nav-link">Contact</a>
-          <button className="zap-link" onClick={() => onOpenAuth('login')}>Log in</button>
-          <button className="zap-btn zap-btn-primary" onClick={() => onOpenAuth('register')}>Sign up</button>
+          {user ? (
+            <div className="nav-user-dropdown" ref={userDropRef}>
+              <button
+                className="nav-user-btn"
+                onClick={() => setUserDropOpen(o => !o)}
+              >
+                <div className="nav-user-avatar">
+                  {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
+                </div>
+                <span className="nav-user-name">
+                  {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}
+                </span>
+                <Icon name={userDropOpen ? 'chevronUp' : 'chevron'} size={14} />
+              </button>
+              {userDropOpen && (
+                <div className="nav-user-menu">
+                  <button className="nav-user-menu-item">
+                    <Icon name="settings" size={15} /> Settings
+                  </button>
+                  <button className="nav-user-menu-item">
+                    <Icon name="help" size={15} /> Help
+                  </button>
+                  <div className="nav-user-menu-divider" />
+                  <button className="nav-user-menu-item nav-user-menu-item--danger" onClick={() => { setUserDropOpen(false); onSignOut() }}>
+                    <Icon name="signout" size={15} /> Log out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <button className="zap-link" onClick={() => onOpenAuth('login')}>Log in</button>
+              <button className="zap-btn zap-btn-primary" onClick={() => onOpenAuth('register')}>Sign up</button>
+            </>
+          )}
         </div>
       </header>
 
@@ -87,8 +128,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           Your goals. Your budget. <span className="zap-italic">Any university.</span>
         </h1>
         <p className="zap-sub">
-          UniFind gives students one place to compare 12,400 programs, weigh tuition and start dates,
-          and get an AI-driven fit score — so you can apply with confidence, anywhere in the world.
+          Describe what you want. Our AI searches the web, finds matching programs, scores them by fit — and answers every question before you apply.
         </p>
       </section>
 
@@ -125,8 +165,6 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
                         >
                           <span className="field-option-icon"><FieldIcon name={f.icon} size={16} /></span>
                           <span className="field-option-name">{f.name}</span>
-                          <span className="field-option-count">{f.count}</span>
-                          <span className={`field-option-radio ${selected ? 'checked' : ''}`} />
                         </button>
                       )
                     })}
@@ -142,20 +180,34 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
               </select>
             </div>
 
-            <div className="zap-cell">
+            <div className="zap-cell" style={{ position: 'relative' }}>
               <label>Start date</label>
-              <input
-                type="month"
-                value={filters.startDate}
-                onChange={(e) => update('startDate', e.target.value)}
-              />
+              <select value={filters.startDate} onChange={(e) => update('startDate', e.target.value)}>
+                <option value="">Any intake</option>
+                <option value="Fall 2026">Fall 2026</option>
+                <option value="Spring 2027">Spring 2027</option>
+                <option value="Fall 2027">Fall 2027</option>
+              </select>
             </div>
 
-            <div className="zap-cell">
-              <label>Tuition (AZN/yr)</label>
-              <div className="zap-cell-static">
-                {filters.tuition[0].toLocaleString()} – {filters.tuition[1].toLocaleString()}
-              </div>
+            <div className="zap-cell zap-cell-tuition" ref={tuitionRef}>
+              <label>Tuition (USD/yr)</label>
+              <button className="zap-tuition-trigger" onClick={() => setTuitionOpen(o => !o)}>
+                <span>
+                  {filters.tuition[0] === 0 ? 'Free' : `$${filters.tuition[0].toLocaleString()}`}
+                  {' – '}
+                  ${filters.tuition[1].toLocaleString()}
+                </span>
+                <Icon name={tuitionOpen ? 'chevronUp' : 'chevron'} size={13} />
+              </button>
+              {tuitionOpen && (
+                <div className="tuition-dropdown" onMouseDown={(e) => e.stopPropagation()}>
+                  <TuitionCard
+                    value={filters.tuition}
+                    onChange={(v) => { update('tuition', v); setTuitionOpen(false) }}
+                  />
+                </div>
+              )}
             </div>
 
             <button className="zap-btn zap-btn-primary zap-search-btn" onClick={onSearch}>
@@ -176,10 +228,6 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
               <span className="zap-filter-label">Attendance</span>
               <ChipGroup options={['On-campus', 'Online', 'Blended']} value={filters.attendance} onChange={(v) => update('attendance', v)} />
             </div>
-            <div className="zap-filter">
-              <span className="zap-filter-label">Tuition range</span>
-              <RangeSlider min={0} max={20000} step={100} value={filters.tuition} onChange={(v) => update('tuition', v)} />
-            </div>
           </div>
         </div>
       </section>
@@ -192,6 +240,169 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           ))}
         </div>
       </section>
+
+      {menuOpen && (
+        <MobileMenuDrawer
+          user={user}
+          isPremium={isPremium}
+          onClose={() => setMenuOpen(false)}
+          onOpenAuth={(mode) => { setMenuOpen(false); onOpenAuth(mode) }}
+          onSignOut={() => { setMenuOpen(false); onSignOut() }}
+        />
+      )}
     </div>
+  )
+}
+
+function TuitionCard({ value, onChange }) {
+  const [draft, setDraft] = useState(value)
+
+  // Sync if parent resets (e.g. "Clear all")
+  useEffect(() => { setDraft(value) }, [value])
+
+  const [lo, hi] = draft
+
+  const applyLo = (raw) => {
+    const n = Math.max(0, Math.min(Number(raw) || 0, hi - 100))
+    setDraft([n, hi])
+  }
+  const applyHi = (raw) => {
+    const n = Math.min(100000, Math.max(Number(raw) || 0, lo + 100))
+    setDraft([lo, n])
+  }
+
+  return (
+    <div className="tuition-card">
+      <RangeSlider min={0} max={100000} step={100} value={draft} onChange={setDraft} hideInputs />
+      <div className="tuition-card-inputs">
+        <div className="tuition-input-wrap">
+          <span className="tuition-dollar">$</span>
+          <input
+            type="number"
+            value={lo}
+            min={0}
+            max={hi - 100}
+            onChange={(e) => setDraft([Math.max(0, Math.min(Number(e.target.value) || 0, hi - 100)), hi])}
+            onBlur={(e) => applyLo(e.target.value)}
+          />
+        </div>
+        <span className="tuition-dash">—</span>
+        <div className="tuition-input-wrap">
+          <span className="tuition-dollar">$</span>
+          <input
+            type="number"
+            value={hi}
+            min={lo + 100}
+            max={100000}
+            onChange={(e) => setDraft([lo, Math.min(100000, Math.max(Number(e.target.value) || 0, lo + 100))])}
+            onBlur={(e) => applyHi(e.target.value)}
+          />
+        </div>
+      </div>
+      <button className="tuition-apply-btn" onClick={() => onChange(draft)}>
+        Apply
+      </button>
+    </div>
+  )
+}
+
+function MobileMenuDrawer({ user, isPremium, onClose, onOpenAuth, onSignOut }) {
+  const [helpOpen, setHelpOpen] = useState(false)
+
+  // Plan label: free & pro → "See plans and pricing", plus → "Upgrade"
+  // Current app only has isPremium boolean — both map to "See plans and pricing"
+  const planLabel = 'See plans and pricing'
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
+  const initials = displayName ? displayName[0].toUpperCase() : 'U'
+
+  return (
+    <>
+      <div className="mobile-menu-overlay" onClick={onClose} />
+      <div className="mobile-menu-drawer">
+
+        {/* Header row */}
+        <div className="mobile-menu-header">
+          <Logo size="sm" />
+          <button className="mobile-menu-close" onClick={onClose} aria-label="Close menu">
+            <Icon name="close" size={20} />
+          </button>
+        </div>
+
+        {/* User info block (logged-in only) */}
+        {user && (
+          <div className="mobile-menu-user">
+            <div className="mobile-menu-avatar">{initials}</div>
+            <div className="mobile-menu-user-info">
+              <div className="mobile-menu-user-name">{displayName}</div>
+              <div className="mobile-menu-user-email">{user.email}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Nav links */}
+        <nav className="mobile-menu-nav">
+          {user && (
+            <>
+              <button className="mobile-menu-item">
+                <span className="mobile-menu-item-icon"><Icon name="person" size={17} /></span>
+                Profile
+              </button>
+              <button className="mobile-menu-item">
+                <span className="mobile-menu-item-icon"><Icon name="settings" size={17} /></span>
+                Settings
+              </button>
+            </>
+          )}
+
+          {/* Help accordion */}
+          <div>
+            <button
+              className="mobile-menu-item"
+              onClick={() => setHelpOpen(h => !h)}
+            >
+              <span className="mobile-menu-item-icon"><Icon name="help" size={17} /></span>
+              Help
+              <span className="mobile-menu-item-arrow">
+                <Icon name={helpOpen ? 'chevronUp' : 'chevron'} size={15} />
+              </span>
+            </button>
+            {helpOpen && (
+              <div className="mobile-menu-sub">
+                <button className="mobile-menu-subitem">FAQs</button>
+                <button className="mobile-menu-subitem">Terms of Service</button>
+                <button className="mobile-menu-subitem">Privacy Policy</button>
+                <button className="mobile-menu-subitem">Report a bug</button>
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* Footer — auth CTA (logged out) or log out (logged in) */}
+        <div className="mobile-menu-footer">
+          {user ? (
+            <button className="mobile-menu-logout" onClick={onSignOut}>
+              <Icon name="signout" size={16} />
+              Log out
+            </button>
+          ) : (
+            <div className="mobile-menu-auth-cta">
+              <div className="mobile-menu-auth-text">
+                <div className="mobile-menu-auth-title">Get personalized results</div>
+                <div className="mobile-menu-auth-sub">Save searches and unlock your fit score.</div>
+              </div>
+              <button
+                className="zap-btn zap-btn-primary"
+                style={{ width: '100%', padding: '14px', fontSize: 15 }}
+                onClick={() => onOpenAuth('login')}
+              >
+                Log in
+              </button>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </>
   )
 }
