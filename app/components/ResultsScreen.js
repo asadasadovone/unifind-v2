@@ -169,17 +169,9 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
               <div className="show-more-wrap">
                 <button
                   className="btn btn-cta"
-                  onClick={() => setShownCount(c => Math.min(c + 10, totalCount))}
-                  disabled={shownCount >= totalCount}
-                  style={shownCount >= totalCount ? {
-                    background: 'var(--cream-300)', color: 'var(--ink-400)',
-                    cursor: 'not-allowed', boxShadow: 'none'
-                  } : {}}
+                  onClick={onSearch}
                 >
-                  {shownCount >= totalCount
-                    ? 'All programs shown'
-                    : <><Icon name="sparkle" size={15} /> Find more programs</>
-                  }
+                  <Icon name="sparkle" size={15} /> Find more programs
                 </button>
               </div>
             </>
