@@ -94,7 +94,7 @@ export const SAMPLE_CHAT = {
   ],
   "City info": [
     { role: "user", text: "Tell me about life in this city." },
-    { role: "ai", text: "A vibrant, student-friendly city with strong public transport and a sizable international community.\n\n**Cost of living** (monthly, student): ~1,400 AZN incl. shared housing.\n**Climate**: Mild summers (18–24°C), cold winters with occasional snow.\n**Getting around**: Excellent metro and tram network — most students bike year-round.\n**Student life**: Dozens of student associations, weekly events, and a thriving café/co-working scene." }
+    { role: "ai", text: "A vibrant, student-friendly city with strong public transport and a sizable international community.\n\n**Cost of living** (monthly, student): ~1,400 USD incl. shared housing.\n**Climate**: Mild summers (18–24°C), cold winters with occasional snow.\n**Getting around**: Excellent metro and tram network — most students bike year-round.\n**Student life**: Dozens of student associations, weekly events, and a thriving café/co-working scene." }
   ],
   "Requirements": [
     { role: "user", text: "What are the admission requirements?" },
@@ -102,6 +102,14 @@ export const SAMPLE_CHAT = {
   ],
   "Scholarships": [
     { role: "user", text: "What scholarships are available?" },
-    { role: "ai", text: "Several funding options are available for international students:\n\n**Merit-based**\n• Excellence Scholarship — full tuition + 800 AZN/month stipend (top 5% of applicants)\n• Dean's Award — 50% tuition discount\n\n**Need-based**\n• Diversity Grant — up to 6,000 AZN/year\n• Emerging Markets Fellowship — full tuition for selected countries\n\n**External**\n• Erasmus+ Mundus Joint Master programs\n• DAAD scholarships (for Germany)\n• Government scholarships from your home country\n\nApply for scholarships **at the same time** as your admission application — most close on January 15." }
+    { role: "ai", text: "Several funding options are available for international students:\n\n**Merit-based**\n• Excellence Scholarship — full tuition + 800 USD/month stipend (top 5% of applicants)\n• Dean's Award — 50% tuition discount\n\n**Need-based**\n• Diversity Grant — up to 6,000 USD/year\n• Emerging Markets Fellowship — full tuition for selected countries\n\n**External**\n• Erasmus+ Mundus Joint Master programs\n• DAAD scholarships (for Germany)\n• Government scholarships from your home country\n\nApply for scholarships **at the same time** as your admission application — most close on January 15." }
+  ],
+  "Living costs": [
+    { role: "user", text: "How much does it cost to live there as a student?" },
+    { role: "ai", text: "Here's a realistic monthly budget for a student:\n\n**Housing**: 500–900 USD (student dorm) / 900–1,400 USD (shared apartment)\n**Food & groceries**: 350–500 USD\n**Transport**: 60–100 USD (student pass)\n**Health insurance**: 60–120 USD/month\n**Phone & internet**: 30–50 USD\n**Entertainment & misc**: 150–250 USD\n\n**Total estimate**: ~1,200–2,300 USD/month depending on lifestyle.\n\nStudent discounts are widely available on transport, museums, and many restaurants. Living in a university dormitory can significantly reduce costs." }
+  ],
+  "Visa info": [
+    { role: "user", text: "What visa do I need to study there?" },
+    { role: "ai", text: "Visa requirements depend on your nationality:\n\n**EU/EEA citizens**: No visa required — register with local authorities within 90 days of arrival.\n\n**Non-EU students** (including Azerbaijan):\n• Apply for a **National (Type D) student visa** at the embassy in your home country\n• You'll need: admission letter, proof of accommodation, financial means (~6,000 USD for the year), health insurance, valid passport\n• Processing time: 4–8 weeks — apply early\n\n**After arrival**: Apply for a **residence permit** within 90 days. Your university's international office will guide you through this process.\n\nMost universities assign an international student coordinator to help with visa paperwork." }
   ]
 };

@@ -4,15 +4,16 @@ import SearchScreen from './components/SearchScreen'
 import ResultsScreen from './components/ResultsScreen'
 import DetailScreen from './components/DetailScreen'
 import AuthModal from './components/AuthModal'
+import { supabase, signOut } from './lib/supabase'
 
 const DEFAULT_FILTERS = {
-  field: 'Computer Science',
+  field: '',
   country: 'European Union',
-  startDate: '2026-09',
-  tuition: [0, 8000],
+  startDate: '',
+  tuition: [0, 100000],
   format: ['Full-time'],
   attendance: ['On-campus'],
-  degree: ['Master'],
+  degree: ['Bachelor', 'Master'],
   scholarship: false,
   english: true
 }
@@ -27,6 +28,22 @@ export default function App() {
   const [toast, setToast] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [apiResults, setApiResults] = useState(null)
+  const [user, setUser] = useState(null)
+
+  // ── Supabase auth listener ──────────────────────────────────
+  useEffect(() => {
+    // Check existing session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Listen for sign-in / sign-out events
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const showToast = (msg) => {
     setToast(msg)
@@ -38,7 +55,7 @@ export default function App() {
     setIsLoading(true)
     setApiResults(null)
 
-    const prompt = `Find 6 real universities matching: field="${filters.field || 'any field'}", country="${filters.country || 'any country'}", tuition ${filters.tuition[0]}-${filters.tuition[1]} AZN/year, format="${filters.format.join(' or ') || 'any'}", attendance="${filters.attendance.join(' or ') || 'any'}", degree="${filters.degree.join(' or ') || 'any'}".
+    const prompt = `Find 6 real universities matching: field="${filters.field || 'any field'}", country="${filters.country || 'any country'}", tuition ${filters.tuition[0]}-${filters.tuition[1]} USD/year, format="${filters.format.join(' or ') || 'any'}", attendance="${filters.attendance.join(' or ') || 'any'}", degree="${filters.degree.join(' or ') || 'any'}".
 Reply ONLY with a valid JSON array, no markdown, no explanation:
 [{"name":"...","country":"...","city":"...","tuition":NUMBER,"degree":"...","attendance":"...","language":"...","duration":"...","startDate":"Sep/Oct 2026","scholarship":true/false,"field":"...","blurb":"one sentence about this university"}]`
 
@@ -66,9 +83,16 @@ Reply ONLY with a valid JSON array, no markdown, no explanation:
     setScreen('detail')
   }
 
-  const submitAuth = () => {
+  const handleAuthSuccess = (authUser) => {
     setAuthMode(null)
-    showToast('✓ Welcome to UniFind')
+    const displayName = authUser?.user_metadata?.full_name?.split(' ')[0] || authUser?.email?.split('@')[0] || 'back'
+    showToast(`✓ Welcome, ${displayName}!`)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    setScreen('search')
+    showToast('Signed out')
   }
 
   return (
@@ -79,6 +103,13 @@ Reply ONLY with a valid JSON array, no markdown, no explanation:
           setFilters={setFilters}
           onSearch={handleSearch}
           onOpenAuth={setAuthMode}
+          user={user}
+          onSignOut={handleSignOut}
+          isPremium={isPremium}
+          onUpgrade={() => {
+            setIsPremium(true)
+            showToast('✓ Pro unlocked — all universities visible')
+          }}
         />
       )}
 
@@ -91,6 +122,9 @@ Reply ONLY with a valid JSON array, no markdown, no explanation:
           isPremium={isPremium}
           isLoading={isLoading}
           apiResults={apiResults}
+          user={user}
+          onOpenAuth={setAuthMode}
+          onSearch={handleSearch}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
@@ -103,6 +137,7 @@ Reply ONLY with a valid JSON array, no markdown, no explanation:
           uni={activeUni}
           initialPrompt={initialChatPrompt}
           onBack={() => setScreen('results')}
+          user={user}
         />
       )}
 
@@ -111,7 +146,7 @@ Reply ONLY with a valid JSON array, no markdown, no explanation:
           mode={authMode}
           onClose={() => setAuthMode(null)}
           onMode={setAuthMode}
-          onSubmit={submitAuth}
+          onSubmit={handleAuthSuccess}
         />
       )}
 

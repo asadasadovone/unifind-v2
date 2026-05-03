@@ -1,16 +1,83 @@
 'use client'
 import { useState } from 'react'
 import { Icon, Logo } from './Icons'
+import { signIn, signUp, signInWithGoogle } from '../lib/supabase'
 
 export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [confirmation, setConfirmation] = useState(false)
+
   const isLogin = mode === 'login'
 
-  const submit = (e) => {
+  const handleGoogle = async () => {
+    setError(null)
+    setGoogleLoading(true)
+    try {
+      const { error } = await signInWithGoogle()
+      if (error) throw error
+      // Redirect happens automatically — Supabase takes over
+    } catch (err) {
+      setError(err.message)
+      setGoogleLoading(false)
+    }
+  }
+
+  const submit = async (e) => {
     e?.preventDefault()
-    onSubmit()
+    setError(null)
+    setLoading(true)
+
+    try {
+      if (isLogin) {
+        const { data, error } = await signIn(email, password)
+        if (error) throw error
+        onSubmit(data.user)
+      } else {
+        const { data, error } = await signUp(email, password, name)
+        if (error) throw error
+        // Supabase sends a confirmation email; session is null until confirmed
+        if (data.session) {
+          onSubmit(data.user)
+        } else {
+          setConfirmation(true)
+        }
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (confirmation) {
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal" onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
+          <h2 className="serif" style={{ fontSize: 28, color: 'var(--green-900)', lineHeight: 1.1 }}>
+            Check your <span className="serif-italic">inbox</span>
+          </h2>
+          <p className="muted" style={{ marginTop: 10, fontSize: 14, lineHeight: 1.6 }}>
+            We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account, then come back and log in.
+          </p>
+          <button
+            className="btn btn-primary"
+            style={{ marginTop: 24, width: '100%' }}
+            onClick={() => { onMode('login'); setConfirmation(false) }}
+          >
+            Go to log in
+          </button>
+          <button className="btn btn-ghost" style={{ marginTop: 8, width: '100%' }} onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -30,6 +97,20 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
           {isLogin ? 'Pick up where you left off.' : 'Save searches and unlock your fit score.'}
         </p>
 
+        {error && (
+          <div style={{
+            marginTop: 16,
+            padding: '10px 14px',
+            background: '#fff0f0',
+            border: '1px solid #fca5a5',
+            borderRadius: 'var(--r-md)',
+            fontSize: 13,
+            color: '#b91c1c',
+          }}>
+            {error}
+          </div>
+        )}
+
         <form onSubmit={submit} className="col gap-3" style={{ marginTop: 24 }}>
           {!isLogin && (
             <div>
@@ -39,6 +120,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
                 placeholder="Aysel Hüseynova"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
               />
             </div>
           )}
@@ -50,6 +132,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -60,6 +143,8 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
             />
             {isLogin && (
               <div style={{ textAlign: 'right', marginTop: 8 }}>
@@ -67,27 +152,61 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
               </div>
             )}
           </div>
-          <button type="submit" className="btn btn-cta" style={{ width: '100%', marginTop: 6 }}>
-            {isLogin ? 'Log in' : 'Create account'} <Icon name="arrow" size={14} />
+          <button
+            type="submit"
+            className="btn btn-cta"
+            style={{ width: '100%', marginTop: 6 }}
+            disabled={loading}
+          >
+            {loading ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                <span style={{
+                  width: 16, height: 16,
+                  border: '2px solid rgba(255,255,255,0.3)',
+                  borderTopColor: '#fff',
+                  borderRadius: '50%',
+                  animation: 'spin 0.7s linear infinite',
+                  display: 'inline-block',
+                }} />
+                {isLogin ? 'Logging in…' : 'Creating account…'}
+              </span>
+            ) : (
+              <>{isLogin ? 'Log in' : 'Create account'} <Icon name="arrow" size={14} /></>
+            )}
           </button>
         </form>
 
         <div className="auth-divider"><span>or continue with</span></div>
 
         <div className="col gap-2">
-          <button className="auth-social" onClick={onSubmit}>
-            <GoogleLogo /> <span>Continue with Google</span>
-          </button>
-          <button className="auth-social" onClick={onSubmit}>
-            <FacebookLogo /> <span>Continue with Facebook</span>
+          <button
+            className="auth-social"
+            onClick={handleGoogle}
+            disabled={googleLoading || loading}
+            style={googleLoading ? { opacity: 0.7 } : {}}
+          >
+            {googleLoading ? (
+              <span style={{
+                width: 18, height: 18,
+                border: '2px solid rgba(0,0,0,0.15)',
+                borderTopColor: '#333',
+                borderRadius: '50%',
+                animation: 'spin 0.7s linear infinite',
+                display: 'inline-block',
+                flexShrink: 0,
+              }} />
+            ) : (
+              <GoogleLogo />
+            )}
+            <span>Continue with Google</span>
           </button>
         </div>
 
         <div className="auth-switch">
           {isLogin ? (
-            <>Don&apos;t have an account? <a href="#" onClick={(e) => { e.preventDefault(); onMode('register') }}>Sign up free</a></>
+            <>Don&apos;t have an account? <a href="#" onClick={(e) => { e.preventDefault(); setError(null); onMode('register') }}>Sign up free</a></>
           ) : (
-            <>Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); onMode('login') }}>Log in</a></>
+            <>Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); setError(null); onMode('login') }}>Log in</a></>
           )}
         </div>
       </div>

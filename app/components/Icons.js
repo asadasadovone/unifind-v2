@@ -29,6 +29,12 @@ export function Icon({ name, size = 18, stroke = 1.6 }) {
     sort: <><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></>,
     bot: <><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 8V4"/><path d="M8 4h8"/><circle cx="9" cy="14" r="1" fill="currentColor"/><circle cx="15" cy="14" r="1" fill="currentColor"/></>,
     paper: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></>,
+    menu: <><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></>,
+    person: <><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></>,
+    settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></>,
+    signout: <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>,
+    help: <><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></>,
+    tag: <><path d="M12 2H2v10l9.3 9.3a1 1 0 0 0 1.4 0l8.3-8.3a1 1 0 0 0 0-1.4L12 2Z"/><circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none"/></>,
   };
   return <svg {...props}>{paths[name]}</svg>;
 }
@@ -61,7 +67,7 @@ export function ChipGroup({ options, value, onChange }) {
   );
 }
 
-export function RangeSlider({ min, max, step, value, onChange }) {
+export function RangeSlider({ min, max, step, value, onChange, hideInputs = false }) {
   const [lo, hi] = value;
   const pctLo = ((lo - min) / (max - min)) * 100;
   const pctHi = ((hi - min) / (max - min)) * 100;
@@ -93,13 +99,15 @@ export function RangeSlider({ min, max, step, value, onChange }) {
         <div className="range-thumb" style={{ left: `${pctLo}%` }} onMouseDown={handleDrag('lo')} />
         <div className="range-thumb" style={{ left: `${pctHi}%` }} onMouseDown={handleDrag('hi')} />
       </div>
-      <div className="range-inputs">
-        <input className="input" type="number" value={lo}
-          onChange={(e) => onChange([Math.max(min, Math.min(+e.target.value, hi - step)), hi])} />
-        <span className="muted">to</span>
-        <input className="input" type="number" value={hi}
-          onChange={(e) => onChange([lo, Math.min(max, Math.max(+e.target.value, lo + step))])} />
-      </div>
+      {!hideInputs && (
+        <div className="range-inputs">
+          <input className="input" type="number" value={lo}
+            onChange={(e) => onChange([Math.max(min, Math.min(+e.target.value, hi - step)), hi])} />
+          <span className="muted">to</span>
+          <input className="input" type="number" value={hi}
+            onChange={(e) => onChange([lo, Math.min(max, Math.max(+e.target.value, lo + step))])} />
+        </div>
+      )}
     </div>
   );
 }
