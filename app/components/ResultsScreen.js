@@ -221,8 +221,8 @@ function UniCard({ uni, onOpen }) {
 function FilterSidebar({ filters, setFilters, onSearch }) {
   const update = (k, v) => setFilters(f => ({ ...f, [k]: v }))
   const [open, setOpen] = useState({
-    field: true, country: true, tuition: true, format: true,
-    attendance: true, degree: true, date: true
+    field: false, country: false, tuition: false, format: false,
+    attendance: false, degree: false, date: false
   })
   const [fieldOpen, setFieldOpen] = useState(false)
   const fieldRef = useRef(null)
