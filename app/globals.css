@@ -882,6 +882,23 @@ h1, h2, h3 { margin: 0; }
 .uni-card-meta .dot { color: var(--ink-300); }
 .uni-card-badges { display: flex; flex-wrap: wrap; gap: 8px; }
 
+.card-save-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--ink-400);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.card-save-btn:hover { border-color: #e57373; color: #e57373; background: #fff5f5; }
+.card-save-btn.saved { border-color: #e53935; color: #e53935; background: #fff5f5; }
+
 .action-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -44,7 +44,7 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats }) {
+export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, savedIds = new Set(), onSaveToggle }) {
   const [sort, setSort] = useState('Best match')
   const [shownCount, setShownCount] = useState(10)
 
@@ -105,7 +105,7 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
             style={{ padding: '8px 14px' }}
             onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}
           >
-            <Icon name="star" size={14} /> My Programs
+            <Icon name="heart" size={14} /> My Programs
           </button>
           <button
             className="btn btn-outline"
@@ -175,6 +175,8 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
                     key={uni.id}
                     uni={uni}
                     onOpen={() => onOpenUni(uni)}
+                    saved={savedIds.has(uni.name)}
+                    onSave={(e) => { e.stopPropagation(); onSaveToggle?.(uni) }}
                   />
                 ))}
               </div>
@@ -211,7 +213,7 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
   )
 }
 
-function UniCard({ uni, onOpen }) {
+function UniCard({ uni, onOpen, saved, onSave }) {
   const tuitionLabel = uni.tuition === 0 ? 'Free tuition' : `${uni.tuition.toLocaleString()} USD/yr`
 
   return (
@@ -232,6 +234,13 @@ function UniCard({ uni, onOpen }) {
               </span>
             </div>
           </div>
+          <button
+            className={`card-save-btn${saved ? ' saved' : ''}`}
+            onClick={onSave}
+            title={saved ? 'Remove from My Programs' : 'Save to My Programs'}
+          >
+            <Icon name={saved ? 'heartFilled' : 'heart'} size={20} />
+          </button>
         </div>
 
         <div className="uni-card-badges">

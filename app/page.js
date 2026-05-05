@@ -120,6 +120,23 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('Signed out')
   }
 
+  const handleSaveToggle = (uni) => {
+    if (!user) {
+      setAuthMode('save-programs')
+      return
+    }
+    setSavedPrograms(prev => {
+      const exists = prev.some(p => p.name === uni.name)
+      if (exists) {
+        showToast('Removed from My Programs')
+        return prev.filter(p => p.name !== uni.name)
+      } else {
+        showToast('✓ Saved to My Programs')
+        return [...prev, uni]
+      }
+    })
+  }
+
   return (
     <>
       {screen === 'search' && (
@@ -154,6 +171,8 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onFindMore={handleFindMore}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => showToast('My Chats coming soon!')}
+          savedIds={new Set(savedPrograms.map(p => p.name))}
+          onSaveToggle={handleSaveToggle}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
