@@ -19,7 +19,15 @@ export async function POST(request) {
     },
     body: JSON.stringify({
       model: 'claude-opus-4-5',
-      max_tokens: 1500,
+      max_tokens: 4000,
+      system: `You are a university search assistant. Return ONLY results that strictly match ALL of the user's filters:
+- If degree type is selected (Bachelor/Master/PhD), return ONLY that degree type
+- ONLY return English-taught programs. Never return programs taught in any other language, regardless of filters.
+- If country/region is selected, return ONLY universities from that region
+- Sort by best fit: prioritize free/low tuition, English instruction, and scholarship availability
+- Never return programs taught in a language the user did not select
+- Never exceed the user's maximum tuition budget
+- Return exactly 10 results per request, no more, no less`,
       messages: [{ role: 'user', content: prompt }],
     }),
   })

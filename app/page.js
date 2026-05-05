@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import SearchScreen from './components/SearchScreen'
 import ResultsScreen from './components/ResultsScreen'
 import DetailScreen from './components/DetailScreen'
+import MyProgramsScreen from './components/MyProgramsScreen'
 import AuthModal from './components/AuthModal'
 import { supabase, signOut } from './lib/supabase'
 
@@ -25,8 +26,10 @@ export default function App() {
   const [activeUni, setActiveUni] = useState(null)
   const [initialChatPrompt, setInitialChatPrompt] = useState(null)
   const [isPremium, setIsPremium] = useState(false)
+  const [savedPrograms, setSavedPrograms] = useState([])
   const [toast, setToast] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isFindingMore, setIsFindingMore] = useState(false)
   const [apiResults, setApiResults] = useState(null)
   const [user, setUser] = useState(null)
 
@@ -50,30 +53,52 @@ export default function App() {
     setTimeout(() => setToast(null), 2400)
   }
 
+  const buildPrompt = (filters, exclude = []) => {
+    const exclusion = exclude.length > 0
+      ? `\nDo NOT include any of these universities already shown: ${exclude.join(', ')}.`
+      : ''
+    return `Find 10 real universities matching: field="${filters.field || 'any field'}", country="${filters.country || 'any country'}", tuition ${filters.tuition[0]}-${filters.tuition[1]} USD/year, format="${filters.format.join(' or ') || 'any'}", attendance="${filters.attendance.join(' or ') || 'any'}", degree="${filters.degree.join(' or ') || 'any'}".${exclusion}
+Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanation:
+[{"name":"...","country":"...","city":"...","tuition":NUMBER,"degree":"...","attendance":"...","language":"English","duration":"...","startDate":"Sep/Oct 2026","scholarship":true/false,"field":"...","blurb":"one sentence about this university"}]`
+  }
+
+  const fetchUniversities = async (prompt) => {
+    const res = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error('API error')
+    const text = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim()
+    const parsed = JSON.parse(text)
+    return Array.isArray(parsed) ? parsed : []
+  }
+
   const handleSearch = async () => {
     setScreen('results')
     setIsLoading(true)
     setApiResults(null)
-
-    const prompt = `Find 6 real universities matching: field="${filters.field || 'any field'}", country="${filters.country || 'any country'}", tuition ${filters.tuition[0]}-${filters.tuition[1]} USD/year, format="${filters.format.join(' or ') || 'any'}", attendance="${filters.attendance.join(' or ') || 'any'}", degree="${filters.degree.join(' or ') || 'any'}".
-Reply ONLY with a valid JSON array, no markdown, no explanation:
-[{"name":"...","country":"...","city":"...","tuition":NUMBER,"degree":"...","attendance":"...","language":"...","duration":"...","startDate":"Sep/Oct 2026","scholarship":true/false,"field":"...","blurb":"one sentence about this university"}]`
-
     try {
-      const res = await fetch('/api/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error('API error')
-      const text = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim()
-      const parsed = JSON.parse(text)
-      setApiResults(Array.isArray(parsed) ? parsed : null)
+      const results = await fetchUniversities(buildPrompt(filters))
+      setApiResults(results)
     } catch {
       setApiResults(null)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleFindMore = async () => {
+    setIsFindingMore(true)
+    try {
+      const alreadyShown = (apiResults || []).map(u => u.name)
+      const more = await fetchUniversities(buildPrompt(filters, alreadyShown))
+      setApiResults(prev => [...(prev || []), ...more])
+    } catch {
+      // silently fail — keep existing results
+    } finally {
+      setIsFindingMore(false)
     }
   }
 
@@ -121,10 +146,14 @@ Reply ONLY with a valid JSON array, no markdown, no explanation:
           onBack={() => setScreen('search')}
           isPremium={isPremium}
           isLoading={isLoading}
+          isFindingMore={isFindingMore}
           apiResults={apiResults}
           user={user}
           onOpenAuth={setAuthMode}
           onSearch={handleSearch}
+          onFindMore={handleFindMore}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => showToast('My Chats coming soon!')}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
@@ -138,6 +167,15 @@ Reply ONLY with a valid JSON array, no markdown, no explanation:
           initialPrompt={initialChatPrompt}
           onBack={() => setScreen('results')}
           user={user}
+        />
+      )}
+
+      {screen === 'my-programs' && user && (
+        <MyProgramsScreen
+          user={user}
+          savedPrograms={savedPrograms}
+          onBack={() => setScreen('results')}
+          onOpenUni={openUni}
         />
       )}
 

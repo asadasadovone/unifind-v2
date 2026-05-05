@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
 import { UNI_DATA, POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
@@ -44,9 +44,14 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, apiResults, user, onOpenAuth, onSearch }) {
+export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats }) {
   const [sort, setSort] = useState('Best match')
   const [shownCount, setShownCount] = useState(10)
+
+  // Show all results as they accumulate (no pagination cap needed — AI returns exactly 10 per batch)
+  useEffect(() => {
+    if (apiResults) setShownCount(apiResults.length)
+  }, [apiResults])
 
   // Use API results if available, otherwise use static data padded to 75
   const allUnis = useMemo(() => {
@@ -95,8 +100,19 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
           <Logo onClick={onBack} size="sm" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="btn btn-outline" style={{ padding: '8px 14px' }}>
-            <Icon name="star" size={14} /> Saved (4)
+          <button
+            className="btn btn-outline"
+            style={{ padding: '8px 14px' }}
+            onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}
+          >
+            <Icon name="star" size={14} /> My Programs
+          </button>
+          <button
+            className="btn btn-outline"
+            style={{ padding: '8px 14px' }}
+            onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}
+          >
+            <Icon name="sparkle" size={14} /> My Chats
           </button>
           {user ? (
             <div className="user-pill">
@@ -106,9 +122,6 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
               <span style={{ fontSize: 13 }}>
                 {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}
               </span>
-              {isPremium && (
-                <span className="premium-tag"><Icon name="crown" size={11} /> Pro</span>
-              )}
             </div>
           ) : (
             <button className="btn btn-primary" style={{ padding: '8px 14px' }} onClick={() => onOpenAuth?.('login')}>
@@ -169,9 +182,25 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
               <div className="show-more-wrap">
                 <button
                   className="btn btn-cta"
-                  onClick={onSearch}
+                  onClick={onFindMore}
+                  disabled={isFindingMore}
+                  style={isFindingMore ? { opacity: 0.75, cursor: 'not-allowed' } : {}}
                 >
-                  <Icon name="sparkle" size={15} /> Find more programs
+                  {isFindingMore ? (
+                    <>
+                      <span style={{
+                        width: 15, height: 15,
+                        border: '2px solid rgba(255,255,255,0.35)',
+                        borderTopColor: '#fff',
+                        borderRadius: '50%',
+                        animation: 'spin 0.7s linear infinite',
+                        display: 'inline-block', flexShrink: 0
+                      }} />
+                      Finding more…
+                    </>
+                  ) : (
+                    <><Icon name="sparkle" size={15} /> Find more programs</>
+                  )}
                 </button>
               </div>
             </>

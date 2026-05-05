@@ -13,6 +13,10 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   const [confirmation, setConfirmation] = useState(false)
 
   const isLogin = mode === 'login'
+  const ctaSubtitle =
+    mode === 'save-programs' ? 'Create your account to save your programs.' :
+    mode === 'save-chats'    ? 'Create your account to save your chats.' :
+    null
 
   const handleGoogle = async () => {
     setError(null)
@@ -37,7 +41,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
         const { data, error } = await signIn(email, password)
         if (error) throw error
         onSubmit(data.user)
-      } else {
+      } else { // register (including save-programs / save-chats)
         const { data, error } = await signUp(email, password, name)
         if (error) throw error
         // Supabase sends a confirmation email; session is null until confirmed
@@ -94,7 +98,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
           {isLogin ? <>Welcome <span className="serif-italic">back</span></> : <>Create your <span className="serif-italic">account</span></>}
         </h2>
         <p className="muted" style={{ marginTop: 6, fontSize: 14 }}>
-          {isLogin ? 'Pick up where you left off.' : 'Save searches and unlock your fit score.'}
+          {isLogin ? 'Pick up where you left off.' : ctaSubtitle ?? 'Save searches and unlock your fit score.'}
         </p>
 
         {error && (
