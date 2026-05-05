@@ -202,11 +202,21 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 
 /* Tuition dropdown cell */
 .zap-cell-tuition { position: relative; }
+.zap-cell-tuition::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-right: 1.8px solid var(--ink-700);
+  border-bottom: 1.8px solid var(--ink-700);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
 .zap-tuition-trigger {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
   width: 100%;
   background: none;
   border: none;
@@ -667,11 +677,11 @@ h1, h2, h3 { margin: 0; }
   position: absolute;
   right: 16px;
   top: 50%;
-  width: 6px;
-  height: 6px;
-  border-right: 1.5px solid var(--ink-500);
-  border-bottom: 1.5px solid var(--ink-500);
-  transform: translateY(-75%) rotate(45deg);
+  width: 9px;
+  height: 9px;
+  border-right: 1.8px solid var(--ink-700);
+  border-bottom: 1.8px solid var(--ink-700);
+  transform: translateY(-70%) rotate(45deg);
   pointer-events: none;
 }
 .zap-search-btn {

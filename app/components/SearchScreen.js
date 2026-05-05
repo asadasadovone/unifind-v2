@@ -203,7 +203,6 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
                   {' – '}
                   ${filters.tuition[1].toLocaleString()}
                 </span>
-                <Icon name={tuitionOpen ? 'chevronUp' : 'chevron'} size={13} />
               </button>
               {tuitionOpen && (
                 <div className="tuition-dropdown" onMouseDown={(e) => e.stopPropagation()}>
