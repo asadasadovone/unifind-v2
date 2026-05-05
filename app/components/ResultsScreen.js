@@ -1,7 +1,7 @@
 'use client'
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
-import { UNI_DATA, COUNTRIES } from '../data'
+import { UNI_DATA, POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
 // ── Field suggestions (shared with SearchScreen) ─────────────────────────────
 const FIELDS = [
@@ -312,7 +312,12 @@ function FilterSidebar({ filters, setFilters, onSearch }) {
             onChange={(e) => update('country', e.target.value)}
             style={{ appearance: 'none', paddingRight: 36 }}
           >
-            {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <optgroup label="— Popular —">
+                  {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </optgroup>
+                <optgroup label="— All countries —">
+                  {ALL_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </optgroup>
           </select>
           <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--ink-500)' }}>
             <Icon name="chevron" size={14} />

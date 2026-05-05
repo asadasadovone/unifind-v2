@@ -81,11 +81,7 @@ export const UNI_DATA = [
   }
 ];
 
-export const COUNTRIES = [
-  "Any country", "European Union", "Germany", "Netherlands", "Switzerland",
-  "Sweden", "Finland", "Italy", "Austria", "Ireland", "France", "Spain",
-  "Denmark", "Norway", "United Kingdom", "United States", "Canada", "Australia"
-];
+export { POPULAR_COUNTRIES, ALL_COUNTRIES } from './data/countries.js'
 
 export const SAMPLE_CHAT = {
   "Apply dates": [

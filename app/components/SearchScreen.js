@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
-import { COUNTRIES } from '../data'
+import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
 const FIELDS = [
   { name: 'Agriculture & Forestry', count: '1.6k', icon: 'leaf' },
@@ -176,7 +176,12 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
             <div className="zap-cell" style={{ position: 'relative' }}>
               <label>Country</label>
               <select value={filters.country} onChange={(e) => update('country', e.target.value)}>
-                {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <optgroup label="— Popular —">
+                  {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </optgroup>
+                <optgroup label="— All countries —">
+                  {ALL_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </optgroup>
               </select>
             </div>
 
