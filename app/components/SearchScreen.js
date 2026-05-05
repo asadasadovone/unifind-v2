@@ -173,7 +173,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
               )}
             </div>
 
-            <div className="zap-cell" style={{ position: 'relative' }}>
+            <div className="zap-cell">
               <label>Country</label>
               <select value={filters.country} onChange={(e) => update('country', e.target.value)}>
                 <optgroup label="— Popular —">
@@ -185,7 +185,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
               </select>
             </div>
 
-            <div className="zap-cell" style={{ position: 'relative' }}>
+            <div className="zap-cell">
               <label>Start date</label>
               <select value={filters.startDate} onChange={(e) => update('startDate', e.target.value)}>
                 <option value="">Any intake</option>
