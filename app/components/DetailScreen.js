@@ -103,9 +103,15 @@ PERSONALIZATION:
           <button className="btn btn-outline" style={{ padding: '8px 14px' }}>
             <Icon name="star" size={14} /> Save
           </button>
-          <button className="btn btn-primary" style={{ padding: '8px 14px' }}>
-            Apply now <Icon name="arrow" size={14} />
-          </button>
+          <a
+            className="btn btn-primary"
+            style={{ padding: '8px 14px', textDecoration: 'none' }}
+            href={`https://www.google.com/search?q=${encodeURIComponent(uni.name + ' official website')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit program <Icon name="arrow" size={14} />
+          </a>
         </div>
       </header>
 
