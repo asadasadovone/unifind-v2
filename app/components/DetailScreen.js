@@ -93,10 +93,6 @@ PERSONALIZATION:
     <div className="detail-screen">
       <header className="detail-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <button className="btn btn-ghost" onClick={onBack} style={{ padding: '8px 10px' }}>
-            <Icon name="chevronLeft" size={18} /> Back to results
-          </button>
-          <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
           <Logo onClick={onBack} size="sm" />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>

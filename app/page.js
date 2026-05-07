@@ -103,9 +103,10 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
   }
 
   const openUni = (uni, prompt = null) => {
-    setActiveUni(uni)
-    setInitialChatPrompt(prompt)
-    setScreen('detail')
+    try {
+      localStorage.setItem('unifind_active_uni', JSON.stringify(uni))
+    } catch { /* ignore */ }
+    window.open('/program', '_blank')
   }
 
   const handleAuthSuccess = (authUser) => {
