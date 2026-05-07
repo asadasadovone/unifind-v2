@@ -889,17 +889,17 @@ h1, h2, h3 { margin: 0; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1.5px solid var(--border);
-  background: var(--white);
-  color: var(--ink-400);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: transparent;
+  color: var(--ink-300);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: color 0.15s ease;
 }
-.card-save-btn:hover { border-color: #e57373; color: #e57373; background: #fff5f5; }
-.card-save-btn.saved { border-color: #e53935; color: #e53935; background: #fff5f5; }
+.card-save-btn:hover { color: #e57373; }
+.card-save-btn.saved { color: #e53935; }
 
 .action-buttons {
   display: grid;
