@@ -47,6 +47,12 @@ function FieldIcon({ name, size = 16 }) {
 export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, savedIds = new Set(), onSaveToggle }) {
   const [sort, setSort] = useState('Best match')
   const [shownCount, setShownCount] = useState(10)
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+
+  const handleMobileSearch = () => {
+    setFilterDrawerOpen(false)
+    onSearch()
+  }
 
   // Show all results as they accumulate (no pagination cap needed — AI returns exactly 10 per batch)
   useEffect(() => {
@@ -131,6 +137,28 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
         </div>
       </header>
 
+      {/* Mobile filter drawer */}
+      {filterDrawerOpen && (
+        <div className="mobile-filter-overlay" onClick={() => setFilterDrawerOpen(false)}>
+          <div className="mobile-filter-drawer" onClick={e => e.stopPropagation()}>
+            <div className="mobile-filter-header">
+              <span style={{ fontWeight: 600, fontSize: 15 }}>Filters</span>
+              <button className="mobile-filter-close" onClick={() => setFilterDrawerOpen(false)}>
+                <Icon name="close" size={18} />
+              </button>
+            </div>
+            <div className="mobile-filter-body">
+              <FilterSidebar
+                filters={filters}
+                setFilters={setFilters}
+                onSearch={handleMobileSearch}
+                searchLabel="Apply & search"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="results-body">
         <aside className="results-sidebar">
           <FilterSidebar filters={filters} setFilters={setFilters} onSearch={onSearch} />
@@ -154,6 +182,13 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {/* Mobile-only Filters button */}
+                  <button
+                    className="btn btn-outline mobile-filter-btn"
+                    onClick={() => setFilterDrawerOpen(true)}
+                  >
+                    <Icon name="sliders" size={14} /> Filters
+                  </button>
                   <Icon name="sort" size={14} />
                   <select
                     className="select"
