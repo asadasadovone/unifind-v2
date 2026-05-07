@@ -3,6 +3,24 @@ import { useState, useEffect, useRef } from 'react'
 import { Icon, Logo } from './Icons'
 import { SAMPLE_CHAT } from '../data'
 
+const ACCEPTED_TYPES = {
+  'image/jpeg': 'image',
+  'image/png': 'image',
+  'image/webp': 'image',
+  'application/pdf': 'document',
+  'application/msword': 'unsupported',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'unsupported',
+}
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_FILES = 3
+
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(reader.result.split(',')[1])
+  reader.onerror = reject
+  reader.readAsDataURL(file)
+})
+
 export default function DetailScreen({ uni, onBack, initialPrompt }) {
   const [messages, setMessages] = useState([
     {
@@ -12,7 +30,10 @@ export default function DetailScreen({ uni, onBack, initialPrompt }) {
   ])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
+  const [attachments, setAttachments] = useState([]) // [{file, name, mediaType, previewUrl, kind}]
+  const [fileError, setFileError] = useState(null)
   const scrollRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -26,6 +47,46 @@ export default function DetailScreen({ uni, onBack, initialPrompt }) {
     }
   }, [])
 
+  // Clean up object URLs on unmount
+  useEffect(() => {
+    return () => attachments.forEach(a => { if (a.previewUrl) URL.revokeObjectURL(a.previewUrl) })
+  }, [])
+
+  const handleFileChange = (e) => {
+    setFileError(null)
+    const files = Array.from(e.target.files || [])
+    const errors = []
+    const valid = []
+
+    for (const file of files) {
+      const kind = ACCEPTED_TYPES[file.type]
+      if (!kind) { errors.push(`${file.name}: unsupported type`); continue }
+      if (kind === 'unsupported') { errors.push(`${file.name}: please convert DOC/DOCX to PDF`); continue }
+      if (file.size > MAX_FILE_SIZE) { errors.push(`${file.name}: exceeds 5MB`); continue }
+      if (attachments.length + valid.length >= MAX_FILES) { errors.push(`Max ${MAX_FILES} files per message`); break }
+      valid.push({
+        file,
+        name: file.name,
+        mediaType: file.type,
+        kind,
+        previewUrl: kind === 'image' ? URL.createObjectURL(file) : null,
+      })
+    }
+
+    if (errors.length) setFileError(errors.join(' · '))
+    if (valid.length) setAttachments(prev => [...prev, ...valid].slice(0, MAX_FILES))
+    e.target.value = ''
+  }
+
+  const removeAttachment = (idx) => {
+    setAttachments(prev => {
+      const next = [...prev]
+      if (next[idx].previewUrl) URL.revokeObjectURL(next[idx].previewUrl)
+      next.splice(idx, 1)
+      return next
+    })
+  }
+
   const runQuick = async (label) => {
     const sample = SAMPLE_CHAT[label]
     if (!sample) return
@@ -37,19 +98,7 @@ export default function DetailScreen({ uni, onBack, initialPrompt }) {
     }, 900)
   }
 
-  const send = async () => {
-    const text = input.trim()
-    if (!text) return
-    setMessages(m => [...m, { role: 'user', text }])
-    setInput('')
-    setThinking(true)
-
-    try {
-      const res = await fetch('/api/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system: `You are a helpful university advisor on UniFind, specializing in ${uni.name}.
+  const SYSTEM_PROMPT = `You are a helpful university advisor on UniFind, specializing in ${uni.name}.
 You have deep knowledge about this specific university and program.
 
 University context: ${uni.degree} program in ${uni.field || 'various fields'}, located in ${uni.city}, ${uni.country}, taught in ${uni.language}, ${uni.duration} duration, tuition ${uni.tuition === 0 ? 'free' : uni.tuition + ' USD/year'}, starts ${uni.startDate}.
@@ -66,12 +115,45 @@ STRICT RULES:
 - Keep responses concise. If the user asks a simple question, give a simple answer first, then offer to elaborate.
 - For application dates, requirements, costs — give real specific data, never generic placeholders.
 - End responses with one natural follow-up question to keep the conversation going.
+- If the user uploads a document or image, analyze it and help them understand how it relates to ${uni.name}'s requirements or process.
 
 PERSONALIZATION:
 - Reference their search filters when relevant: 'Since you're looking for free tuition...' or 'Given your interest in ${uni.field || 'this field'}...'
-- Make them feel this advice is specifically for them, not copy-pasted.`,
-          prompt: text
-        })
+- Make them feel this advice is specifically for them, not copy-pasted.`
+
+  const send = async () => {
+    const text = input.trim()
+    if (!text && attachments.length === 0) return
+
+    // Snapshot attachments for this message before clearing
+    const msgAttachments = attachments.map(a => ({
+      name: a.name, previewUrl: a.previewUrl, mediaType: a.mediaType, kind: a.kind
+    }))
+
+    setMessages(m => [...m, {
+      role: 'user',
+      text: text || ' ',
+      attachments: msgAttachments.length ? msgAttachments : undefined
+    }])
+    setInput('')
+    setAttachments([])
+    setFileError(null)
+    setThinking(true)
+
+    try {
+      // Convert files to base64
+      const files = await Promise.all(
+        attachments.map(async (a) => ({
+          mediaType: a.mediaType,
+          kind: a.kind,
+          base64: await toBase64(a.file),
+        }))
+      )
+
+      const res = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: SYSTEM_PROMPT, prompt: text, files })
       })
       const data = await res.json()
       const aiText = data.content?.map(b => b.text || '').join('') ||
@@ -211,14 +293,53 @@ PERSONALIZATION:
           </div>
 
           <div className="chat-input-wrap">
+            {/* Attachment previews */}
+            {attachments.length > 0 && (
+              <div className="chat-attachments">
+                {attachments.map((a, i) => (
+                  <div key={i} className="attach-chip">
+                    {a.previewUrl ? (
+                      <img src={a.previewUrl} alt={a.name} className="attach-thumb" />
+                    ) : (
+                      <span className="attach-icon"><Icon name="file" size={14} /></span>
+                    )}
+                    <span className="attach-name">{a.name}</span>
+                    <button className="attach-remove" onClick={() => removeAttachment(i)} title="Remove">×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {fileError && (
+              <div className="attach-error">{fileError}</div>
+            )}
+
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx"
+              multiple
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+
             <div className="chat-input">
+              <button
+                className="chat-attach-btn"
+                onClick={() => fileInputRef.current?.click()}
+                title="Attach file"
+                disabled={attachments.length >= MAX_FILES}
+              >
+                <Icon name="paperclip" size={17} />
+              </button>
               <input
                 placeholder={`Ask anything about ${uni.short || uni.name}…`}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && send()}
               />
-              <button className="chat-send" onClick={send} disabled={!input.trim()}>
+              <button className="chat-send" onClick={send} disabled={!input.trim() && attachments.length === 0}>
                 <Icon name="send" size={16} />
               </button>
             </div>
@@ -250,10 +371,28 @@ function ChatBubble({ msg }) {
     <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
       {!isUser && <div className="chat-avatar ai-avatar"><Icon name="bot" size={16} /></div>}
       <div className="chat-content">
-        <div
-          className="chat-text"
-          dangerouslySetInnerHTML={{ __html: formatChat(msg.text) }}
-        />
+        {msg.attachments && (
+          <div className="bubble-attachments">
+            {msg.attachments.map((a, i) => (
+              <div key={i} className="bubble-attach-chip">
+                {a.previewUrl ? (
+                  <img src={a.previewUrl} alt={a.name} className="bubble-attach-thumb" />
+                ) : (
+                  <>
+                    <Icon name="file" size={13} />
+                    <span>{a.name}</span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        {msg.text && msg.text.trim() && (
+          <div
+            className="chat-text"
+            dangerouslySetInnerHTML={{ __html: formatChat(msg.text) }}
+          />
+        )}
       </div>
       {isUser && <div className="chat-avatar chat-user-avatar">A</div>}
     </div>

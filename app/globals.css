@@ -1156,6 +1156,109 @@ h1, h2, h3 { margin: 0; }
   background: var(--cream-200);
   border-top: 1px solid var(--border);
 }
+/* Attachment previews above input */
+.chat-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 760px;
+  margin: 0 auto 10px;
+}
+.attach-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 4px 8px 4px 4px;
+  font-size: 12px;
+  max-width: 200px;
+}
+.attach-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.attach-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: var(--green-50);
+  border-radius: 6px;
+  color: var(--green-700);
+  flex-shrink: 0;
+}
+.attach-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-700);
+}
+.attach-remove {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cream-300);
+  color: var(--ink-500);
+  font-size: 13px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition: background 0.12s;
+}
+.attach-remove:hover { background: #fca5a5; color: #b91c1c; }
+.attach-error {
+  max-width: 760px;
+  margin: 0 auto 8px;
+  font-size: 12px;
+  color: #b91c1c;
+  background: #fff0f0;
+  border: 1px solid #fca5a5;
+  border-radius: var(--r-sm);
+  padding: 6px 10px;
+}
+/* Attach button inside input */
+.chat-attach-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: var(--ink-400);
+  display: grid;
+  place-items: center;
+  transition: all 0.13s ease;
+}
+.chat-attach-btn:hover:not(:disabled) { background: var(--cream-200); color: var(--green-700); }
+.chat-attach-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* Bubble attachment chips */
+.bubble-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.bubble-attach-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--r-sm);
+  padding: 3px 7px 3px 3px;
+  overflow: hidden;
+}
+.bubble-attach-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+}
 .chat-input {
   display: flex;
   align-items: center;
@@ -1165,7 +1268,7 @@ h1, h2, h3 { margin: 0; }
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  padding: 6px 6px 6px 18px;
+  padding: 6px 6px 6px 8px;
   box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
 }

@@ -8,15 +8,31 @@ const SEARCH_SYSTEM = `You are a university search assistant. Return ONLY result
 - Return exactly 10 results per request, no more, no less`
 
 export async function POST(request) {
-  const { prompt, system } = await request.json()
+  const { prompt, system, files } = await request.json()
 
-  if (!prompt) {
+  if (!prompt && (!files || files.length === 0)) {
     return Response.json({ error: 'No prompt' }, { status: 400 })
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     return Response.json({ error: 'API key not configured' }, { status: 500 })
+  }
+
+  // Build content array — files first, then text
+  let content
+  if (files && files.length > 0) {
+    content = []
+    for (const f of files) {
+      if (f.kind === 'image') {
+        content.push({ type: 'image', source: { type: 'base64', media_type: f.mediaType, data: f.base64 } })
+      } else if (f.kind === 'document') {
+        content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.base64 } })
+      }
+    }
+    if (prompt) content.push({ type: 'text', text: prompt })
+  } else {
+    content = prompt
   }
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -30,7 +46,7 @@ export async function POST(request) {
       model: 'claude-opus-4-5',
       max_tokens: 4000,
       system: system || SEARCH_SYSTEM,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content }],
     }),
   })
 
