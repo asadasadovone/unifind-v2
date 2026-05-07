@@ -773,6 +773,17 @@ h1, h2, h3 { margin: 0; }
   flex-wrap: wrap;
   gap: 12px;
 }
+.results-sort-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 768px) {
+  .results-sort-row {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
 
 .sidebar-header {
   display: flex;

@@ -181,7 +181,7 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
                     Click any program to ask our AI anything about it
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="results-sort-row">
                   {/* Mobile-only Filters button */}
                   <button
                     className="btn btn-outline mobile-filter-btn"
@@ -189,18 +189,20 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
                   >
                     <Icon name="sliders" size={14} /> Filters
                   </button>
-                  <Icon name="sort" size={14} />
-                  <select
-                    className="select"
-                    value={sort}
-                    onChange={(e) => setSort(e.target.value)}
-                    style={{ width: 'auto', padding: '8px 32px 8px 12px', fontSize: 13 }}
-                  >
-                    <option>Best match</option>
-                    <option>Tuition: low to high</option>
-                    <option>Tuition: high to low</option>
-                    <option>Start date</option>
-                  </select>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Icon name="sort" size={14} />
+                    <select
+                      className="select"
+                      value={sort}
+                      onChange={(e) => setSort(e.target.value)}
+                      style={{ width: 'auto', padding: '8px 32px 8px 12px', fontSize: 13 }}
+                    >
+                      <option>Best match</option>
+                      <option>Tuition: low to high</option>
+                      <option>Tuition: high to low</option>
+                      <option>Start date</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
