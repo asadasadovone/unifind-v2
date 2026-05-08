@@ -205,6 +205,11 @@ PERSONALIZATION:
         <div className="mobile-uni-strip">
           <div className="mobile-uni-head">
             <h1 className="serif">{uni.name}</h1>
+            {uni.field && uni.field !== 'Various' && (
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--green-700)', marginTop: 2 }}>
+                {uni.field}
+              </div>
+            )}
             <div className="muted" style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
               <Icon name="pin" size={12} /> {uni.city}, {uni.country}
             </div>
@@ -225,7 +230,12 @@ PERSONALIZATION:
             <h1 className="serif" style={{ fontSize: 28, color: 'var(--green-900)', lineHeight: 1.15 }}>
               {uni.name}
             </h1>
-            <div className="muted" style={{ fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+            {uni.field && uni.field !== 'Various' && (
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--green-700)', marginTop: 4 }}>
+                {uni.field}
+              </div>
+            )}
+            <div className="muted" style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
               <Icon name="pin" size={12} /> {uni.city}, {uni.country}
             </div>
           </div>
@@ -246,6 +256,9 @@ PERSONALIZATION:
           </div>
 
           <div className="info-list">
+            {uni.field && uni.field !== 'Various' && (
+              <InfoRow icon="tag" label="Program" value={uni.field} />
+            )}
             <InfoRow icon="money" label="Tuition fee" value={tuitionLabel} />
             <InfoRow icon="clock" label="Duration" value={uni.duration} />
             <InfoRow icon="calendar" label="Start date" value={uni.startDate} />

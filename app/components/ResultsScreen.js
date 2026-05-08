@@ -261,6 +261,11 @@ function UniCard({ uni, onOpen, saved, onSave }) {
             <h3 className="serif" style={{ fontSize: 22, color: 'var(--green-900)', lineHeight: 1.2 }}>
               {uni.name}
             </h3>
+            {uni.field && uni.field !== 'Various' && (
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--green-700)', marginTop: 3 }}>
+                {uni.field}
+              </div>
+            )}
             <div className="uni-card-meta">
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                 <Icon name="pin" size={13} /> {uni.city}, {uni.country}
