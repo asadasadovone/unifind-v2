@@ -1,17 +1,29 @@
 'use client'
 import { useState, useEffect } from 'react'
 import DetailScreen from '../components/DetailScreen'
+import { supabase } from '../lib/supabase'
 
 export default function ProgramPage() {
   const [uni, setUni] = useState(null)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
+    // Load uni data from localStorage
     try {
       const stored = localStorage.getItem('unifind_active_uni')
       if (stored) setUni(JSON.parse(stored))
     } catch {
       // ignore parse errors
     }
+
+    // Load current user session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
   }, [])
 
   if (!uni) {
@@ -26,5 +38,5 @@ export default function ProgramPage() {
     )
   }
 
-  return <DetailScreen uni={uni} onBack={() => window.close()} />
+  return <DetailScreen uni={uni} onBack={() => window.close()} user={user} />
 }

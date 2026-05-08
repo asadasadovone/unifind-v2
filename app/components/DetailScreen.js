@@ -21,7 +21,7 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file)
 })
 
-export default function DetailScreen({ uni, onBack, initialPrompt }) {
+export default function DetailScreen({ uni, onBack, initialPrompt, user }) {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
@@ -240,20 +240,22 @@ PERSONALIZATION:
             </div>
           </div>
 
-          <div className="match-banner">
-            <div className="match-banner-row">
-              <div>
-                <div className="match-banner-label">Your fit score</div>
-                <div className="match-banner-sub">Based on your profile</div>
+          {user && (
+            <div className="match-banner">
+              <div className="match-banner-row">
+                <div>
+                  <div className="match-banner-label">Your fit score</div>
+                  <div className="match-banner-sub">Based on your profile</div>
+                </div>
+                <div className="match-banner-value">
+                  {uni.match}<span className="match-banner-pct">%</span>
+                </div>
               </div>
-              <div className="match-banner-value">
-                {uni.match}<span className="match-banner-pct">%</span>
+              <div className="match-bar">
+                <div className="match-bar-fill" style={{ width: `${uni.match}%` }} />
               </div>
             </div>
-            <div className="match-bar">
-              <div className="match-bar-fill" style={{ width: `${uni.match}%` }} />
-            </div>
-          </div>
+          )}
 
           <div className="info-list">
             {uni.field && uni.field !== 'Various' && (
