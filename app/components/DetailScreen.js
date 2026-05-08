@@ -22,7 +22,7 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file)
 })
 
-export default function DetailScreen({ uni, onBack, initialPrompt, user, onSignOut }) {
+export default function DetailScreen({ uni, onBack, initialPrompt, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats }) {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
@@ -186,9 +186,14 @@ PERSONALIZATION:
           <Logo onClick={onBack} size="sm" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {user ? (
-            <UserDropdown user={user} onSignOut={onSignOut} />
-          ) : null}
+          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+            onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}>
+            <Icon name="heart" size={14} /> My Programs
+          </button>
+          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+            onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}>
+            <Icon name="sparkle" size={14} /> My Chats
+          </button>
           <button className="btn btn-outline" style={{ padding: '8px 14px' }}>
             <Icon name="star" size={14} /> Save
           </button>
@@ -201,6 +206,9 @@ PERSONALIZATION:
           >
             Visit program <Icon name="arrow" size={14} />
           </a>
+          {user ? (
+            <UserDropdown user={user} onSignOut={onSignOut} />
+          ) : null}
         </div>
       </header>
 

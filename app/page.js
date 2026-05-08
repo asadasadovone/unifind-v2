@@ -149,6 +149,8 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           user={user}
           onSignOut={handleSignOut}
           isPremium={isPremium}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => showToast('My Chats coming soon!')}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
@@ -189,6 +191,9 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onBack={() => setScreen('results')}
           user={user}
           onSignOut={handleSignOut}
+          onOpenAuth={setAuthMode}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => showToast('My Chats coming soon!')}
         />
       )}
 

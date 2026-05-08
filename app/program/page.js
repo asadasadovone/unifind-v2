@@ -43,5 +43,15 @@ export default function ProgramPage() {
     window.close()
   }
 
-  return <DetailScreen uni={uni} onBack={() => window.close()} user={user} onSignOut={handleSignOut} />
+  return (
+    <DetailScreen
+      uni={uni}
+      onBack={() => window.close()}
+      user={user}
+      onSignOut={handleSignOut}
+      onOpenAuth={() => {}}
+      onMyPrograms={() => window.open('/?screen=my-programs', '_self')}
+      onMyChats={() => {}}
+    />
+  )
 }

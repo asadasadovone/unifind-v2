@@ -44,7 +44,7 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade }) {
+export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats }) {
   const update = (k, v) => setFilters(f => ({ ...f, [k]: v }))
   const [fieldOpen, setFieldOpen] = useState(false)
   const [tuitionOpen, setTuitionOpen] = useState(false)
@@ -82,6 +82,14 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           </nav>
         </div>
         <div className="zap-nav-right">
+          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+            onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}>
+            <Icon name="heart" size={14} /> My Programs
+          </button>
+          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+            onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}>
+            <Icon name="sparkle" size={14} /> My Chats
+          </button>
           {user ? (
             <UserDropdown user={user} onSignOut={onSignOut} />
           ) : (
