@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
+import UserDropdown from './UserDropdown'
 import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
 const FIELDS = [
@@ -48,16 +49,13 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
   const [fieldOpen, setFieldOpen] = useState(false)
   const [tuitionOpen, setTuitionOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [userDropOpen, setUserDropOpen] = useState(false)
   const fieldRef = useRef(null)
   const tuitionRef = useRef(null)
-  const userDropRef = useRef(null)
 
   useEffect(() => {
     const onClick = (e) => {
       if (fieldRef.current && !fieldRef.current.contains(e.target)) setFieldOpen(false)
       if (tuitionRef.current && !tuitionRef.current.contains(e.target)) setTuitionOpen(false)
-      if (userDropRef.current && !userDropRef.current.contains(e.target)) setUserDropOpen(false)
     }
     document.addEventListener('mousedown', onClick)
     return () => document.removeEventListener('mousedown', onClick)
@@ -85,34 +83,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         </div>
         <div className="zap-nav-right">
           {user ? (
-            <div className="nav-user-dropdown" ref={userDropRef}>
-              <button
-                className="nav-user-btn"
-                onClick={() => setUserDropOpen(o => !o)}
-              >
-                <div className="nav-user-avatar">
-                  {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
-                </div>
-                <span className="nav-user-name">
-                  {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}
-                </span>
-                <Icon name={userDropOpen ? 'chevronUp' : 'chevron'} size={14} />
-              </button>
-              {userDropOpen && (
-                <div className="nav-user-menu">
-                  <button className="nav-user-menu-item">
-                    <Icon name="settings" size={15} /> Settings
-                  </button>
-                  <button className="nav-user-menu-item">
-                    <Icon name="help" size={15} /> Help
-                  </button>
-                  <div className="nav-user-menu-divider" />
-                  <button className="nav-user-menu-item nav-user-menu-item--danger" onClick={() => { setUserDropOpen(false); onSignOut() }}>
-                    <Icon name="signout" size={15} /> Log out
-                  </button>
-                </div>
-              )}
-            </div>
+            <UserDropdown user={user} onSignOut={onSignOut} />
           ) : (
             <>
               <button className="zap-link" onClick={() => onOpenAuth('login')}>Log in</button>

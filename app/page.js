@@ -174,6 +174,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onMyChats={() => showToast('My Chats coming soon!')}
           savedIds={new Set(savedPrograms.map(p => p.name))}
           onSaveToggle={handleSaveToggle}
+          onSignOut={handleSignOut}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
@@ -187,6 +188,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           initialPrompt={initialChatPrompt}
           onBack={() => setScreen('results')}
           user={user}
+          onSignOut={handleSignOut}
         />
       )}
 

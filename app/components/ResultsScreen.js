@@ -1,6 +1,7 @@
 'use client'
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
+import UserDropdown from './UserDropdown'
 import { UNI_DATA, POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
 // ── Field suggestions (shared with SearchScreen) ─────────────────────────────
@@ -44,7 +45,7 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, savedIds = new Set(), onSaveToggle }) {
+export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, savedIds = new Set(), onSaveToggle, onSignOut }) {
   const [sort, setSort] = useState('Best match')
   const [shownCount, setShownCount] = useState(10)
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
@@ -121,14 +122,7 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
             <Icon name="sparkle" size={14} /> My Chats
           </button>
           {user ? (
-            <div className="user-pill">
-              <div className="user-avatar">
-                {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
-              </div>
-              <span style={{ fontSize: 13 }}>
-                {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}
-              </span>
-            </div>
+            <UserDropdown user={user} onSignOut={onSignOut} />
           ) : (
             <button className="btn btn-primary" style={{ padding: '8px 14px' }} onClick={() => onOpenAuth?.('login')}>
               Log in

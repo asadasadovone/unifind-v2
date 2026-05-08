@@ -38,5 +38,10 @@ export default function ProgramPage() {
     )
   }
 
-  return <DetailScreen uni={uni} onBack={() => window.close()} user={user} />
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    window.close()
+  }
+
+  return <DetailScreen uni={uni} onBack={() => window.close()} user={user} onSignOut={handleSignOut} />
 }

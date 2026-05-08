@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Icon, Logo } from './Icons'
 import { SAMPLE_CHAT } from '../data'
+import UserDropdown from './UserDropdown'
 
 const ACCEPTED_TYPES = {
   'image/jpeg': 'image',
@@ -21,7 +22,7 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file)
 })
 
-export default function DetailScreen({ uni, onBack, initialPrompt, user }) {
+export default function DetailScreen({ uni, onBack, initialPrompt, user, onSignOut }) {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
@@ -184,7 +185,10 @@ PERSONALIZATION:
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Logo onClick={onBack} size="sm" />
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {user ? (
+            <UserDropdown user={user} onSignOut={onSignOut} />
+          ) : null}
           <button className="btn btn-outline" style={{ padding: '8px 14px' }}>
             <Icon name="star" size={14} /> Save
           </button>
