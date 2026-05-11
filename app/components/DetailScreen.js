@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Icon, Logo } from './Icons'
 import { SAMPLE_CHAT } from '../data'
 import UserDropdown from './UserDropdown'
+import MobileMenuDrawer from './MobileMenuDrawer'
 
 const ACCEPTED_TYPES = {
   'image/jpeg': 'image',
@@ -22,7 +23,7 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file)
 })
 
-export default function DetailScreen({ uni, onBack, initialPrompt, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats }) {
+export default function DetailScreen({ uni, onBack, initialPrompt, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats, onSaveChat, isChatSaved }) {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
@@ -33,6 +34,7 @@ export default function DetailScreen({ uni, onBack, initialPrompt, user, onSignO
   const [thinking, setThinking] = useState(false)
   const [attachments, setAttachments] = useState([]) // [{file, name, mediaType, previewUrl, kind}]
   const [fileError, setFileError] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
   const scrollRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -183,19 +185,27 @@ PERSONALIZATION:
     <div className="detail-screen">
       <header className="detail-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+            <Icon name="menu" size={22} />
+          </button>
           <Logo onClick={onBack} size="sm" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
             onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}>
             <Icon name="heart" size={14} /> My Programs
           </button>
-          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
             onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}>
             <Icon name="sparkle" size={14} /> My Chats
           </button>
-          <button className="btn btn-outline" style={{ padding: '8px 14px' }}>
-            <Icon name="star" size={14} /> Save
+          <button
+            className={`btn ${isChatSaved ? 'btn-primary' : 'btn-outline'}`}
+            style={{ padding: '8px 14px' }}
+            onClick={() => user ? onSaveChat?.({ uni, messages }) : onOpenAuth?.('save-chats')}
+          >
+            <Icon name={isChatSaved ? 'heartFilled' : 'star'} size={14} />
+            {isChatSaved ? 'Saved' : 'Save chat'}
           </button>
           <a
             className="btn btn-primary"
@@ -217,13 +227,18 @@ PERSONALIZATION:
         <div className="mobile-uni-strip">
           <div className="mobile-uni-head">
             <h1 className="serif">{uni.name}</h1>
-            {uni.field && uni.field !== 'Various' && (
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--green-700)', marginTop: 2 }}>
-                {uni.field}
-              </div>
-            )}
-            <div className="muted" style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Icon name="pin" size={12} /> {uni.city}, {uni.country}
+            <div style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+              {uni.field && uni.field !== 'Various' && (
+                <>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontWeight: 600, color: 'var(--green-700)' }}>
+                    <Icon name="tag" size={12} /> {uni.field}
+                  </span>
+                  <span style={{ color: 'var(--ink-300)' }}>•</span>
+                </>
+              )}
+              <span style={{ display: 'flex', alignItems: 'center', gap: 3, color: 'var(--ink-500)' }}>
+                <Icon name="pin" size={12} /> {uni.city}, {uni.country}
+              </span>
             </div>
           </div>
           <div className="mobile-info-scroll">
@@ -242,13 +257,18 @@ PERSONALIZATION:
             <h1 className="serif" style={{ fontSize: 28, color: 'var(--green-900)', lineHeight: 1.15 }}>
               {uni.name}
             </h1>
-            {uni.field && uni.field !== 'Various' && (
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--green-700)', marginTop: 4 }}>
-                {uni.field}
-              </div>
-            )}
-            <div className="muted" style={{ fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Icon name="pin" size={12} /> {uni.city}, {uni.country}
+            <div style={{ fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+              {uni.field && uni.field !== 'Various' && (
+                <>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontWeight: 600, color: 'var(--green-700)' }}>
+                    <Icon name="tag" size={12} /> {uni.field}
+                  </span>
+                  <span style={{ color: 'var(--ink-300)' }}>•</span>
+                </>
+              )}
+              <span style={{ display: 'flex', alignItems: 'center', gap: 3, color: 'var(--ink-500)' }}>
+                <Icon name="pin" size={12} /> {uni.city}, {uni.country}
+              </span>
             </div>
           </div>
 
@@ -287,37 +307,14 @@ PERSONALIZATION:
             />
           </div>
 
-          <div>
-            <div className="eyebrow">Top reasons it matches</div>
-            <ul className="reasons">
-              <li><Icon name="check" size={13} /> Matches your &ldquo;{uni.field}&rdquo; field</li>
-              <li><Icon name="check" size={13} /> Within your tuition range</li>
-              <li><Icon name="check" size={13} /> Start date aligns with your timeline</li>
-              <li><Icon name="check" size={13} /> Strong placement in your target industry</li>
-            </ul>
-          </div>
         </aside>
 
         <main className="detail-chat">
-          <div className="chat-quick-actions">
-            <div className="chat-quick-label">
-              <Icon name="sparkle" size={13} /> Quick questions
-            </div>
-            <div className="quick-buttons quick-buttons-scroll">
-              {['Apply dates', 'City info', 'Requirements', 'Scholarships', 'Living costs', 'Visa info'].map(q => (
-                <button key={q} className="quick-btn" onClick={() => runQuick(q)}>
-                  {q}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="chat-scroll" ref={scrollRef}>
             <div className="chat-stream">
               {messages.map((m, i) => <ChatBubble key={i} msg={m} />)}
               {thinking && (
                 <div className="chat-bubble ai">
-                  <div className="chat-avatar ai-avatar"><Icon name="bot" size={16} /></div>
                   <div className="chat-content">
                     <div className="thinking"><span /><span /><span /></div>
                   </div>
@@ -327,6 +324,15 @@ PERSONALIZATION:
           </div>
 
           <div className="chat-input-wrap">
+            {/* Quick question chips */}
+            <div className="quick-buttons quick-buttons-scroll" style={{ maxWidth: 760, margin: '0 auto', padding: '0 0 8px' }}>
+              {['Apply dates', 'City info', 'Requirements', 'Scholarships', 'Living costs', 'Visa info'].map(q => (
+                <button key={q} className="quick-btn" onClick={() => runQuick(q)}>
+                  {q}
+                </button>
+              ))}
+            </div>
+
             {/* Attachment previews */}
             {attachments.length > 0 && (
               <div className="chat-attachments">
@@ -383,6 +389,17 @@ PERSONALIZATION:
           </div>
         </main>
       </div>
+
+      {menuOpen && (
+        <MobileMenuDrawer
+          user={user}
+          onClose={() => setMenuOpen(false)}
+          onOpenAuth={(mode) => { setMenuOpen(false); onOpenAuth?.(mode) }}
+          onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
+          onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
+          onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
+        />
+      )}
     </div>
   )
 }
@@ -403,7 +420,6 @@ function ChatBubble({ msg }) {
   const isUser = msg.role === 'user'
   return (
     <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
-      {!isUser && <div className="chat-avatar ai-avatar"><Icon name="bot" size={16} /></div>}
       <div className="chat-content">
         {msg.attachments && (
           <div className="bubble-attachments">

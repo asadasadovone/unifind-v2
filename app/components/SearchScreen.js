@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
 import UserDropdown from './UserDropdown'
+import MobileMenuDrawer from './MobileMenuDrawer'
 import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
 const FIELDS = [
@@ -82,11 +83,11 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           </nav>
         </div>
         <div className="zap-nav-right">
-          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
             onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}>
             <Icon name="heart" size={14} /> My Programs
           </button>
-          <button className="btn btn-outline" style={{ padding: '8px 14px' }}
+          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
             onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}>
             <Icon name="sparkle" size={14} /> My Chats
           </button>
@@ -94,8 +95,8 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
             <UserDropdown user={user} onSignOut={onSignOut} />
           ) : (
             <>
-              <button className="zap-link" onClick={() => onOpenAuth('login')}>Log in</button>
-              <button className="zap-btn zap-btn-primary" onClick={() => onOpenAuth('register')}>Sign up</button>
+              <button className="zap-link nav-desktop-only" onClick={() => onOpenAuth('login')}>Log in</button>
+              <button className="zap-btn zap-btn-primary nav-desktop-only" onClick={() => onOpenAuth('register')}>Sign up</button>
             </>
           )}
         </div>
@@ -227,10 +228,11 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
       {menuOpen && (
         <MobileMenuDrawer
           user={user}
-          isPremium={isPremium}
           onClose={() => setMenuOpen(false)}
           onOpenAuth={(mode) => { setMenuOpen(false); onOpenAuth(mode) }}
           onSignOut={() => { setMenuOpen(false); onSignOut() }}
+          onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
+          onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
         />
       )}
     </div>
@@ -289,103 +291,3 @@ function TuitionCard({ value, onChange }) {
   )
 }
 
-function MobileMenuDrawer({ user, isPremium, onClose, onOpenAuth, onSignOut }) {
-  const [helpOpen, setHelpOpen] = useState(false)
-
-  // Plan label: free & pro → "See plans and pricing", plus → "Upgrade"
-  // Current app only has isPremium boolean — both map to "See plans and pricing"
-  const planLabel = 'See plans and pricing'
-
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
-  const initials = displayName ? displayName[0].toUpperCase() : 'U'
-
-  return (
-    <>
-      <div className="mobile-menu-overlay" onClick={onClose} />
-      <div className="mobile-menu-drawer">
-
-        {/* Header row */}
-        <div className="mobile-menu-header">
-          <Logo size="sm" />
-          <button className="mobile-menu-close" onClick={onClose} aria-label="Close menu">
-            <Icon name="close" size={20} />
-          </button>
-        </div>
-
-        {/* User info block (logged-in only) */}
-        {user && (
-          <div className="mobile-menu-user">
-            <div className="mobile-menu-avatar">{initials}</div>
-            <div className="mobile-menu-user-info">
-              <div className="mobile-menu-user-name">{displayName}</div>
-              <div className="mobile-menu-user-email">{user.email}</div>
-            </div>
-          </div>
-        )}
-
-        {/* Nav links */}
-        <nav className="mobile-menu-nav">
-          {user && (
-            <>
-              <button className="mobile-menu-item">
-                <span className="mobile-menu-item-icon"><Icon name="person" size={17} /></span>
-                Profile
-              </button>
-              <button className="mobile-menu-item">
-                <span className="mobile-menu-item-icon"><Icon name="settings" size={17} /></span>
-                Settings
-              </button>
-            </>
-          )}
-
-          {/* Help accordion */}
-          <div>
-            <button
-              className="mobile-menu-item"
-              onClick={() => setHelpOpen(h => !h)}
-            >
-              <span className="mobile-menu-item-icon"><Icon name="help" size={17} /></span>
-              Help
-              <span className="mobile-menu-item-arrow">
-                <Icon name={helpOpen ? 'chevronUp' : 'chevron'} size={15} />
-              </span>
-            </button>
-            {helpOpen && (
-              <div className="mobile-menu-sub">
-                <button className="mobile-menu-subitem">FAQs</button>
-                <button className="mobile-menu-subitem">Terms of Service</button>
-                <button className="mobile-menu-subitem">Privacy Policy</button>
-                <button className="mobile-menu-subitem">Report a bug</button>
-              </div>
-            )}
-          </div>
-        </nav>
-
-        {/* Footer — auth CTA (logged out) or log out (logged in) */}
-        <div className="mobile-menu-footer">
-          {user ? (
-            <button className="mobile-menu-logout" onClick={onSignOut}>
-              <Icon name="signout" size={16} />
-              Log out
-            </button>
-          ) : (
-            <div className="mobile-menu-auth-cta">
-              <div className="mobile-menu-auth-text">
-                <div className="mobile-menu-auth-title">Get personalized results</div>
-                <div className="mobile-menu-auth-sub">Save searches and unlock your fit score.</div>
-              </div>
-              <button
-                className="zap-btn zap-btn-primary"
-                style={{ width: '100%', padding: '14px', fontSize: 15 }}
-                onClick={() => onOpenAuth('login')}
-              >
-                Log in
-              </button>
-            </div>
-          )}
-        </div>
-
-      </div>
-    </>
-  )
-}

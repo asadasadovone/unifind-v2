@@ -1009,17 +1009,17 @@ h1, h2, h3 { margin: 0; }
 .detail-body {
   flex: 1;
   display: grid;
-  grid-template-columns: 30% 1fr;
+  grid-template-columns: 320px 1fr;
   min-height: 0;
 }
 .detail-sidebar {
   background: var(--cream-100);
   border-right: 1px solid var(--border);
-  padding: 32px 28px;
+  padding: 24px 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 .match-banner {
   background: linear-gradient(135deg, var(--green-900), var(--green-700));
@@ -1081,26 +1081,8 @@ h1, h2, h3 { margin: 0; }
 .info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-500); }
 .info-value { font-size: 14px; color: var(--ink-900); margin-top: 2px; }
 
-.reasons { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 8px; }
-.reasons li { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-700); }
 
 .detail-chat { display: flex; flex-direction: column; min-height: 0; }
-.chat-quick-actions {
-  padding: 20px 32px;
-  border-bottom: 1px solid var(--border);
-  background: var(--cream-100);
-}
-.chat-quick-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--green-700);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 10px;
-  font-weight: 500;
-}
 .quick-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .quick-btn {
   padding: 9px 16px;
@@ -1173,7 +1155,7 @@ h1, h2, h3 { margin: 0; }
 }
 
 .chat-input-wrap {
-  padding: 16px 32px 24px;
+  padding: 10px 32px 20px;
   background: var(--cream-200);
   border-top: 1px solid var(--border);
 }
@@ -1318,11 +1300,14 @@ h1, h2, h3 { margin: 0; }
 .chat-disclaimer {
   text-align: center;
   font-size: 11px;
-  margin-top: 10px;
-  max-width: 560px;
+  margin-top: 8px;
+  max-width: 760px;
   margin-left: auto;
   margin-right: auto;
   color: var(--ink-400);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===== Auth modal ===== */
@@ -1487,12 +1472,10 @@ h1, h2, h3 { margin: 0; }
   .mobile-info-chip-value { font-size: 13px; font-weight: 600; color: var(--ink-900); margin-top: 3px; white-space: nowrap; }
 
   /* Compact chat layout on mobile */
-  .chat-quick-actions { padding: 10px 16px 8px; }
-  .chat-quick-label { font-size: 11px; margin-bottom: 8px; }
   .chat-scroll { padding: 14px 0; }
   .chat-stream { padding: 0 16px; gap: 16px; }
   .chat-content { font-size: 14px; padding: 12px 14px; max-width: 84%; }
-  .chat-input-wrap { padding: 10px 12px 14px; }
+  .chat-input-wrap { padding: 8px 12px 14px; }
   .chat-disclaimer { display: none; }
   .detail-header { padding: 10px 14px !important; }
   .detail-header .btn { padding: 6px 10px !important; font-size: 13px; }
@@ -1762,4 +1745,48 @@ h1, h2, h3 { margin: 0; }
   font-size: 13px;
   color: var(--ink-500);
   line-height: 1.45;
+}
+.mobile-menu-divider {
+  height: 1px;
+  background: var(--cream-300);
+  margin: 6px 18px;
+}
+
+/* Hide nav buttons on mobile — shown in burger menu instead */
+.nav-desktop-only {
+  display: flex;
+}
+@media (max-width: 768px) {
+  .nav-desktop-only {
+    display: none !important;
+  }
+}
+
+/* ── My Chats cards ──────────────────────────────────────── */
+.my-chat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.my-chat-card:hover {
+  border-color: var(--green-700);
+  box-shadow: 0 2px 12px rgba(10,42,24,0.08);
+}
+.my-chat-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.my-chat-card-preview {
+  font-size: 13px;
+  color: var(--ink-500);
+  margin-top: 12px;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

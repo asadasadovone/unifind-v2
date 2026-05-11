@@ -17,7 +17,7 @@ export default function UserDropdown({ user, onSignOut }) {
   if (!user) return null
 
   return (
-    <div className="nav-user-dropdown" ref={ref}>
+    <div className="nav-user-dropdown nav-desktop-only" ref={ref}>
       <button className="nav-user-btn" onClick={() => setOpen(o => !o)}>
         <div className="nav-user-avatar">
           {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}

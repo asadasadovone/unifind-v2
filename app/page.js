@@ -4,6 +4,7 @@ import SearchScreen from './components/SearchScreen'
 import ResultsScreen from './components/ResultsScreen'
 import DetailScreen from './components/DetailScreen'
 import MyProgramsScreen from './components/MyProgramsScreen'
+import MyChatsScreen from './components/MyChatsScreen'
 import AuthModal from './components/AuthModal'
 import { supabase, signOut } from './lib/supabase'
 
@@ -27,6 +28,7 @@ export default function App() {
   const [initialChatPrompt, setInitialChatPrompt] = useState(null)
   const [isPremium, setIsPremium] = useState(false)
   const [savedPrograms, setSavedPrograms] = useState([])
+  const [savedChats, setSavedChats] = useState([])
   const [toast, setToast] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isFindingMore, setIsFindingMore] = useState(false)
@@ -121,6 +123,18 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('Signed out')
   }
 
+  const handleSaveChat = ({ uni, messages }) => {
+    setSavedChats(prev => {
+      const exists = prev.find(c => c.uni.name === uni.name)
+      if (exists) {
+        showToast('Chat already saved')
+        return prev
+      }
+      showToast('✓ Chat saved to My Chats')
+      return [...prev, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
+    })
+  }
+
   const handleSaveToggle = (uni) => {
     if (!user) {
       setAuthMode('save-programs')
@@ -150,7 +164,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onSignOut={handleSignOut}
           isPremium={isPremium}
           onMyPrograms={() => setScreen('my-programs')}
-          onMyChats={() => showToast('My Chats coming soon!')}
+          onMyChats={() => setScreen('my-chats')}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
@@ -173,7 +187,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onSearch={handleSearch}
           onFindMore={handleFindMore}
           onMyPrograms={() => setScreen('my-programs')}
-          onMyChats={() => showToast('My Chats coming soon!')}
+          onMyChats={() => setScreen('my-chats')}
           savedIds={new Set(savedPrograms.map(p => p.name))}
           onSaveToggle={handleSaveToggle}
           onSignOut={handleSignOut}
@@ -193,7 +207,9 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onSignOut={handleSignOut}
           onOpenAuth={setAuthMode}
           onMyPrograms={() => setScreen('my-programs')}
-          onMyChats={() => showToast('My Chats coming soon!')}
+          onMyChats={() => setScreen('my-chats')}
+          onSaveChat={handleSaveChat}
+          isChatSaved={savedChats.some(c => c.uni.name === activeUni?.name)}
         />
       )}
 
@@ -203,6 +219,18 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           savedPrograms={savedPrograms}
           onBack={() => setScreen('results')}
           onOpenUni={openUni}
+        />
+      )}
+
+      {screen === 'my-chats' && user && (
+        <MyChatsScreen
+          user={user}
+          savedChats={savedChats}
+          onBack={() => setScreen('results')}
+          onOpenChat={(chat) => {
+            try { localStorage.setItem('unifind_active_uni', JSON.stringify(chat.uni)) } catch {}
+            window.open('/program', '_blank')
+          }}
         />
       )}
 

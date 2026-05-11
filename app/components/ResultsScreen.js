@@ -2,6 +2,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
 import UserDropdown from './UserDropdown'
+import MobileMenuDrawer from './MobileMenuDrawer'
 import { UNI_DATA, POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
 // ── Field suggestions (shared with SearchScreen) ─────────────────────────────
@@ -49,6 +50,7 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
   const [sort, setSort] = useState('Best match')
   const [shownCount, setShownCount] = useState(10)
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleMobileSearch = () => {
     setFilterDrawerOpen(false)
@@ -104,18 +106,21 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
     <div className="results-screen">
       <header className="results-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+            <Icon name="menu" size={22} />
+          </button>
           <Logo onClick={onBack} size="sm" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
-            className="btn btn-outline"
+            className="btn btn-outline nav-desktop-only"
             style={{ padding: '8px 14px' }}
             onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}
           >
             <Icon name="heart" size={14} /> My Programs
           </button>
           <button
-            className="btn btn-outline"
+            className="btn btn-outline nav-desktop-only"
             style={{ padding: '8px 14px' }}
             onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}
           >
@@ -124,7 +129,7 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
           {user ? (
             <UserDropdown user={user} onSignOut={onSignOut} />
           ) : (
-            <button className="btn btn-primary" style={{ padding: '8px 14px' }} onClick={() => onOpenAuth?.('login')}>
+            <button className="btn btn-primary nav-desktop-only" style={{ padding: '8px 14px' }} onClick={() => onOpenAuth?.('login')}>
               Log in
             </button>
           )}
@@ -240,6 +245,17 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
           )}
         </main>
       </div>
+
+      {menuOpen && (
+        <MobileMenuDrawer
+          user={user}
+          onClose={() => setMenuOpen(false)}
+          onOpenAuth={(mode) => { setMenuOpen(false); onOpenAuth?.(mode) }}
+          onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
+          onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
+          onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
+        />
+      )}
     </div>
   )
 }

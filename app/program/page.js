@@ -50,8 +50,10 @@ export default function ProgramPage() {
       user={user}
       onSignOut={handleSignOut}
       onOpenAuth={() => {}}
-      onMyPrograms={() => window.open('/?screen=my-programs', '_self')}
-      onMyChats={() => {}}
+      onMyPrograms={() => window.open('/', '_self')}
+      onMyChats={() => window.open('/', '_self')}
+      onSaveChat={() => {}}
+      isChatSaved={false}
     />
   )
 }
