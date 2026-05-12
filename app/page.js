@@ -37,6 +37,12 @@ export default function App() {
 
   // ── Supabase auth listener ──────────────────────────────────
   useEffect(() => {
+    // Load saved chats from localStorage on mount
+    try {
+      const raw = localStorage.getItem('unifind_saved_chats')
+      if (raw) setSavedChats(JSON.parse(raw))
+    } catch {}
+
     // Check existing session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -123,6 +129,18 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('Signed out')
   }
 
+  // Sync savedChats from localStorage when tab regains focus (program tab may have saved)
+  useEffect(() => {
+    const sync = () => {
+      try {
+        const raw = localStorage.getItem('unifind_saved_chats')
+        if (raw) setSavedChats(JSON.parse(raw))
+      } catch {}
+    }
+    window.addEventListener('focus', sync)
+    return () => window.removeEventListener('focus', sync)
+  }, [])
+
   const handleSaveChat = ({ uni, messages }) => {
     setSavedChats(prev => {
       const exists = prev.find(c => c.uni.name === uni.name)
@@ -130,8 +148,10 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
         showToast('Chat already saved')
         return prev
       }
+      const updated = [...prev, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
+      try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
       showToast('✓ Chat saved to My Chats')
-      return [...prev, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
+      return updated
     })
   }
 

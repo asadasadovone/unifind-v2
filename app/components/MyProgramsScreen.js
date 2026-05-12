@@ -6,7 +6,7 @@ export default function MyProgramsScreen({ user, savedPrograms = [], onBack, onO
     <div className="results-screen">
       <header className="results-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Logo size="sm" />
+          <Logo size="sm" onClick={onBack} />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div className="user-pill">
@@ -21,14 +21,6 @@ export default function MyProgramsScreen({ user, savedPrograms = [], onBack, onO
       </header>
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '48px 32px' }}>
-        <button
-          className="btn btn-ghost"
-          onClick={onBack}
-          style={{ marginBottom: 24, padding: '8px 0', color: 'var(--ink-500)', fontSize: 13 }}
-        >
-          <Icon name="chevronLeft" size={16} /> Back to results
-        </button>
-
         <h2 className="serif" style={{ fontSize: 36, color: 'var(--green-900)', lineHeight: 1.1 }}>
           My <span className="serif-italic">Programs</span>
         </h2>
