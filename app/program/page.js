@@ -18,6 +18,7 @@ function persistSavedChats(chats) {
 
 export default function ProgramPage() {
   const [uni, setUni] = useState(null)
+  const [initialMessages, setInitialMessages] = useState(null)
   const [user, setUser] = useState(null)
   const [savedChats, setSavedChats] = useState([])
   const [toast, setToast] = useState(null)
@@ -27,6 +28,15 @@ export default function ProgramPage() {
     try {
       const stored = localStorage.getItem('unifind_active_uni')
       if (stored) setUni(JSON.parse(stored))
+    } catch {}
+
+    // Load restored messages (if opened from My Chats)
+    try {
+      const msgs = localStorage.getItem('unifind_active_messages')
+      if (msgs) {
+        setInitialMessages(JSON.parse(msgs))
+        localStorage.removeItem('unifind_active_messages') // consume once
+      }
     } catch {}
 
     // Load saved chats from localStorage
@@ -84,6 +94,7 @@ export default function ProgramPage() {
       <DetailScreen
         uni={uni}
         onBack={() => window.close()}
+        initialMessages={initialMessages}
         user={user}
         onSignOut={handleSignOut}
         onOpenAuth={() => {}}

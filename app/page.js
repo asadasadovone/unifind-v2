@@ -248,7 +248,10 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           savedChats={savedChats}
           onBack={() => setScreen('results')}
           onOpenChat={(chat) => {
-            try { localStorage.setItem('unifind_active_uni', JSON.stringify(chat.uni)) } catch {}
+            try {
+              localStorage.setItem('unifind_active_uni', JSON.stringify(chat.uni))
+              localStorage.setItem('unifind_active_messages', JSON.stringify(chat.messages))
+            } catch {}
             window.open('/program', '_blank')
           }}
         />

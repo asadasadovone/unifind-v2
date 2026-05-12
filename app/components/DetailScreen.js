@@ -23,13 +23,12 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file)
 })
 
-export default function DetailScreen({ uni, onBack, initialPrompt, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats, onSaveChat, isChatSaved }) {
-  const [messages, setMessages] = useState([
-    {
-      role: 'ai',
-      text: `Ask me anything about **${uni.name}** — admissions, scholarships, life in ${uni.city}, requirements, visa, career prospects. What would you like to know? 🎓`
-    }
-  ])
+export default function DetailScreen({ uni, onBack, initialPrompt, initialMessages, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats, onSaveChat, isChatSaved }) {
+  const [messages, setMessages] = useState(
+    initialMessages?.length
+      ? initialMessages
+      : [{ role: 'ai', text: `Ask me anything about **${uni.name}** — admissions, scholarships, life in ${uni.city}, requirements, visa, career prospects. What would you like to know? 🎓` }]
+  )
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
   const [attachments, setAttachments] = useState([]) // [{file, name, mediaType, previewUrl, kind}]
