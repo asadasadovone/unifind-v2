@@ -252,7 +252,7 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
-          onProfile={() => { setMenuOpen(false); onProfile?.() }
+          onProfile={() => { setMenuOpen(false); onProfile?.() }}
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }} }}
