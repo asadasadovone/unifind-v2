@@ -45,7 +45,7 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats }) {
+export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats,  onProfile, onFeedback, onTerms, onPrivacy }) {
   const update = (k, v) => setFilters(f => ({ ...f, [k]: v }))
   const [fieldOpen, setFieldOpen] = useState(false)
   const [tuitionOpen, setTuitionOpen] = useState(false)
@@ -78,21 +78,18 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
             <Icon name="menu" size={22} />
           </button>
           <Logo />
-          <nav className="zap-nav-links">
-            {user && <a href="#" className="zap-nav-link">My Universities</a>}
-          </nav>
         </div>
         <div className="zap-nav-right">
-          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
+          <button className="zap-nav-link nav-desktop-only"
             onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}>
             <Icon name="heart" size={14} /> My Programs
           </button>
-          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
+          <button className="zap-nav-link nav-desktop-only"
             onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}>
             <Icon name="sparkle" size={14} /> My Chats
           </button>
           {user ? (
-            <UserDropdown user={user} onSignOut={onSignOut} />
+            <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} />
           ) : (
             <>
               <button className="zap-link nav-desktop-only" onClick={() => onOpenAuth('login')}>Log in</button>
@@ -233,6 +230,10 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           onSignOut={() => { setMenuOpen(false); onSignOut() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
+          onProfile={() => { setMenuOpen(false); onProfile?.() }
+          onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
+          onTerms={() => { setMenuOpen(false); onTerms?.() }}
+          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }} }}
         />
       )}
     </div>
@@ -241,33 +242,46 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
 
 function TuitionCard({ value, onChange }) {
   const [draft, setDraft] = useState(value)
+  const [loStr, setLoStr] = useState(String(value[0]))
+  const [hiStr, setHiStr] = useState(String(value[1]))
 
   // Sync if parent resets (e.g. "Clear all")
-  useEffect(() => { setDraft(value) }, [value])
+  useEffect(() => {
+    setDraft(value)
+    setLoStr(String(value[0]))
+    setHiStr(String(value[1]))
+  }, [value])
 
   const [lo, hi] = draft
 
   const applyLo = (raw) => {
     const n = Math.max(0, Math.min(Number(raw) || 0, hi - 100))
     setDraft([n, hi])
+    setLoStr(String(n))
   }
   const applyHi = (raw) => {
     const n = Math.min(100000, Math.max(Number(raw) || 0, lo + 100))
     setDraft([lo, n])
+    setHiStr(String(n))
+  }
+
+  const handleSliderChange = (v) => {
+    setDraft(v)
+    setLoStr(String(v[0]))
+    setHiStr(String(v[1]))
   }
 
   return (
     <div className="tuition-card">
-      <RangeSlider min={0} max={100000} step={100} value={draft} onChange={setDraft} hideInputs />
+      <RangeSlider min={0} max={100000} step={100} value={draft} onChange={handleSliderChange} hideInputs />
       <div className="tuition-card-inputs">
         <div className="tuition-input-wrap">
           <span className="tuition-dollar">$</span>
           <input
             type="number"
-            value={lo}
+            value={loStr}
             min={0}
-            max={hi - 100}
-            onChange={(e) => setDraft([Math.max(0, Math.min(Number(e.target.value) || 0, hi - 100)), hi])}
+            onChange={(e) => setLoStr(e.target.value)}
             onBlur={(e) => applyLo(e.target.value)}
           />
         </div>
@@ -276,10 +290,9 @@ function TuitionCard({ value, onChange }) {
           <span className="tuition-dollar">$</span>
           <input
             type="number"
-            value={hi}
-            min={lo + 100}
+            value={hiStr}
             max={100000}
-            onChange={(e) => setDraft([lo, Math.min(100000, Math.max(Number(e.target.value) || 0, lo + 100))])}
+            onChange={(e) => setHiStr(e.target.value)}
             onBlur={(e) => applyHi(e.target.value)}
           />
         </div>

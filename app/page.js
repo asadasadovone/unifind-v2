@@ -5,6 +5,10 @@ import ResultsScreen from './components/ResultsScreen'
 import DetailScreen from './components/DetailScreen'
 import MyProgramsScreen from './components/MyProgramsScreen'
 import MyChatsScreen from './components/MyChatsScreen'
+import ProfileScreen from './components/ProfileScreen'
+import FeedbackScreen from './components/FeedbackScreen'
+import TermsScreen from './components/TermsScreen'
+import PrivacyScreen from './components/PrivacyScreen'
 import AuthModal from './components/AuthModal'
 import { supabase, signOut } from './lib/supabase'
 
@@ -144,13 +148,19 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
   const handleSaveChat = ({ uni, messages }) => {
     setSavedChats(prev => {
       const exists = prev.find(c => c.uni.name === uni.name)
-      if (exists) {
-        showToast('Chat already saved')
-        return prev
-      }
+      if (exists) return prev
       const updated = [...prev, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
       try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
       showToast('✓ Chat saved to My Chats')
+      return updated
+    })
+  }
+
+  const handleUnsaveChat = ({ uni }) => {
+    setSavedChats(prev => {
+      const updated = prev.filter(c => c.uni.name !== uni.name)
+      try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
+      showToast('Chat removed')
       return updated
     })
   }
@@ -185,6 +195,10 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           isPremium={isPremium}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
@@ -208,6 +222,10 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onFindMore={handleFindMore}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
           savedIds={new Set(savedPrograms.map(p => p.name))}
           onSaveToggle={handleSaveToggle}
           onSignOut={handleSignOut}
@@ -228,7 +246,12 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onOpenAuth={setAuthMode}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
           onSaveChat={handleSaveChat}
+          onUnsaveChat={handleUnsaveChat}
           isChatSaved={savedChats.some(c => c.uni.name === activeUni?.name)}
         />
       )}
@@ -237,8 +260,15 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
         <MyProgramsScreen
           user={user}
           savedPrograms={savedPrograms}
-          onBack={() => setScreen('results')}
+          onBack={() => setScreen('search')}
           onOpenUni={openUni}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+          onSignOut={handleSignOut}
         />
       )}
 
@@ -246,7 +276,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
         <MyChatsScreen
           user={user}
           savedChats={savedChats}
-          onBack={() => setScreen('results')}
+          onBack={() => setScreen('search')}
           onOpenChat={(chat) => {
             try {
               localStorage.setItem('unifind_active_uni', JSON.stringify(chat.uni))
@@ -254,6 +284,69 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
             } catch {}
             window.open('/program', '_blank')
           }}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+          onSignOut={handleSignOut}
+        />
+      )}
+
+      {screen === 'profile' && user && (
+        <ProfileScreen
+          user={user}
+          onBack={() => setScreen('search')}
+          onSignOut={handleSignOut}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+        />
+      )}
+
+      {screen === 'feedback' && (
+        <FeedbackScreen
+          user={user}
+          onBack={() => setScreen('search')}
+          onSignOut={handleSignOut}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+        />
+      )}
+
+      {screen === 'terms' && (
+        <TermsScreen
+          user={user}
+          onBack={() => setScreen('search')}
+          onSignOut={handleSignOut}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+        />
+      )}
+
+      {screen === 'privacy' && (
+        <PrivacyScreen
+          user={user}
+          onBack={() => setScreen('search')}
+          onSignOut={handleSignOut}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
         />
       )}
 

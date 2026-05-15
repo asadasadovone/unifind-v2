@@ -23,7 +23,7 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file)
 })
 
-export default function DetailScreen({ uni, onBack, initialPrompt, initialMessages, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats, onSaveChat, isChatSaved }) {
+export default function DetailScreen({ uni, onBack, initialPrompt, initialMessages, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats, onProfile, onSaveChat, onUnsaveChat, isChatSaved }) {
   const [messages, setMessages] = useState(
     initialMessages?.length
       ? initialMessages
@@ -190,18 +190,22 @@ PERSONALIZATION:
           <Logo onClick={onBack} size="sm" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
+          <button className="zap-nav-link nav-desktop-only"
             onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}>
             <Icon name="heart" size={14} /> My Programs
           </button>
-          <button className="btn btn-outline nav-desktop-only" style={{ padding: '8px 14px' }}
+          <button className="zap-nav-link nav-desktop-only"
             onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}>
             <Icon name="sparkle" size={14} /> My Chats
           </button>
           <button
             className={`btn ${isChatSaved ? 'btn-primary' : 'btn-outline'}`}
             style={{ padding: '8px 14px' }}
-            onClick={() => user ? onSaveChat?.({ uni, messages }) : onOpenAuth?.('save-chats')}
+            onClick={() => {
+              if (!user) { onOpenAuth?.('save-chats'); return }
+              if (isChatSaved) onUnsaveChat?.({ uni })
+              else onSaveChat?.({ uni, messages })
+            }}
           >
             <Icon name={isChatSaved ? 'heartFilled' : 'star'} size={14} />
             {isChatSaved ? 'Saved' : 'Save chat'}
@@ -216,7 +220,7 @@ PERSONALIZATION:
             Visit program <Icon name="arrow" size={14} />
           </a>
           {user ? (
-            <UserDropdown user={user} onSignOut={onSignOut} />
+            <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} />
           ) : null}
         </div>
       </header>
@@ -397,6 +401,10 @@ PERSONALIZATION:
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
+          onProfile={() => { setMenuOpen(false); onProfile?.() }
+          onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
+          onTerms={() => { setMenuOpen(false); onTerms?.() }}
+          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }} }}
         />
       )}
     </div>

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Icon, Logo } from './Icons'
 
-export default function MobileMenuDrawer({ user, onClose, onOpenAuth, onSignOut, onMyPrograms, onMyChats }) {
+export default function MobileMenuDrawer({ user, onClose, onOpenAuth, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
   const [helpOpen, setHelpOpen] = useState(false)
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
@@ -55,13 +55,9 @@ export default function MobileMenuDrawer({ user, onClose, onOpenAuth, onSignOut,
           {user && (
             <>
               <div className="mobile-menu-divider" />
-              <button className="mobile-menu-item">
+              <button className="mobile-menu-item" onClick={() => { onClose(); onProfile?.() }}>
                 <span className="mobile-menu-item-icon"><Icon name="person" size={17} /></span>
                 Profile
-              </button>
-              <button className="mobile-menu-item">
-                <span className="mobile-menu-item-icon"><Icon name="settings" size={17} /></span>
-                Settings
               </button>
             </>
           )}
@@ -80,10 +76,15 @@ export default function MobileMenuDrawer({ user, onClose, onOpenAuth, onSignOut,
             </button>
             {helpOpen && (
               <div className="mobile-menu-sub">
-                <button className="mobile-menu-subitem">FAQs</button>
-                <button className="mobile-menu-subitem">Terms of Service</button>
-                <button className="mobile-menu-subitem">Privacy Policy</button>
-                <button className="mobile-menu-subitem">Report a bug</button>
+                <button className="mobile-menu-subitem" onClick={() => { onClose(); onFeedback?.() }}>
+                  <Icon name="feedback" size={14} /> Send feedback
+                </button>
+                <button className="mobile-menu-subitem" onClick={() => { onClose(); onTerms?.() }}>
+                  <Icon name="doc" size={14} /> Terms of Service
+                </button>
+                <button className="mobile-menu-subitem" onClick={() => { onClose(); onPrivacy?.() }}>
+                  <Icon name="shield" size={14} /> Privacy Policy
+                </button>
               </div>
             )}
           </div>

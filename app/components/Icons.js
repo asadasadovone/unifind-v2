@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 
 export function Icon({ name, size = 18, stroke = 1.6 }) {
   const props = {
@@ -39,6 +40,9 @@ export function Icon({ name, size = 18, stroke = 1.6 }) {
     tag: <><path d="M12 2H2v10l9.3 9.3a1 1 0 0 0 1.4 0l8.3-8.3a1 1 0 0 0 0-1.4L12 2Z"/><circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none"/></>,
     paperclip: <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>,
     file: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></>,
+    feedback: <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
+    doc: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></>,
+    shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></>,
   };
   return <svg {...props}>{paths[name]}</svg>;
 }
@@ -76,6 +80,24 @@ export function RangeSlider({ min, max, step, value, onChange, hideInputs = fals
   const pctLo = ((lo - min) / (max - min)) * 100;
   const pctHi = ((hi - min) / (max - min)) * 100;
 
+  const [loStr, setLoStr] = useState(String(lo));
+  const [hiStr, setHiStr] = useState(String(hi));
+
+  // Sync string states when value changes externally (e.g. slider drag)
+  useEffect(() => { setLoStr(String(lo)); }, [lo]);
+  useEffect(() => { setHiStr(String(hi)); }, [hi]);
+
+  const applyLo = (raw) => {
+    const n = Math.max(min, Math.min(Number(raw) || min, hi - step));
+    onChange([n, hi]);
+    setLoStr(String(n));
+  };
+  const applyHi = (raw) => {
+    const n = Math.min(max, Math.max(Number(raw) || min, lo + step));
+    onChange([lo, n]);
+    setHiStr(String(n));
+  };
+
   const handleDrag = (which) => (e) => {
     e.preventDefault();
     const track = e.currentTarget.parentElement;
@@ -105,11 +127,13 @@ export function RangeSlider({ min, max, step, value, onChange, hideInputs = fals
       </div>
       {!hideInputs && (
         <div className="range-inputs">
-          <input className="input" type="number" value={lo}
-            onChange={(e) => onChange([Math.max(min, Math.min(+e.target.value, hi - step)), hi])} />
+          <input className="input" type="number" value={loStr}
+            onChange={(e) => setLoStr(e.target.value)}
+            onBlur={(e) => applyLo(e.target.value)} />
           <span className="muted">to</span>
-          <input className="input" type="number" value={hi}
-            onChange={(e) => onChange([lo, Math.min(max, Math.max(+e.target.value, lo + step))])} />
+          <input className="input" type="number" value={hiStr}
+            onChange={(e) => setHiStr(e.target.value)}
+            onBlur={(e) => applyHi(e.target.value)} />
         </div>
       )}
     </div>

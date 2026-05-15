@@ -46,7 +46,7 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, savedIds = new Set(), onSaveToggle, onSignOut }) {
+export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, onProfile, savedIds = new Set(), onSaveToggle, onSignOut }) {
   const [sort, setSort] = useState('Best match')
   const [shownCount, setShownCount] = useState(10)
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
@@ -113,21 +113,19 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
-            className="btn btn-outline nav-desktop-only"
-            style={{ padding: '8px 14px' }}
+            className="zap-nav-link nav-desktop-only"
             onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}
           >
             <Icon name="heart" size={14} /> My Programs
           </button>
           <button
-            className="btn btn-outline nav-desktop-only"
-            style={{ padding: '8px 14px' }}
+            className="zap-nav-link nav-desktop-only"
             onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}
           >
             <Icon name="sparkle" size={14} /> My Chats
           </button>
           {user ? (
-            <UserDropdown user={user} onSignOut={onSignOut} />
+            <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} />
           ) : (
             <button className="btn btn-primary nav-desktop-only" style={{ padding: '8px 14px' }} onClick={() => onOpenAuth?.('login')}>
               Log in
@@ -254,6 +252,10 @@ export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, 
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
+          onProfile={() => { setMenuOpen(false); onProfile?.() }
+          onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
+          onTerms={() => { setMenuOpen(false); onTerms?.() }}
+          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }} }}
         />
       )}
     </div>

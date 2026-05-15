@@ -60,14 +60,19 @@ export default function ProgramPage() {
   const handleSaveChat = ({ uni, messages }) => {
     const current = loadSavedChats()
     const exists = current.find(c => c.uni.name === uni.name)
-    if (exists) {
-      showToast('Chat already saved')
-      return
-    }
+    if (exists) return
     const updated = [...current, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
     persistSavedChats(updated)
     setSavedChats(updated)
     showToast('✓ Chat saved to My Chats')
+  }
+
+  const handleUnsaveChat = ({ uni }) => {
+    const current = loadSavedChats()
+    const updated = current.filter(c => c.uni.name !== uni.name)
+    persistSavedChats(updated)
+    setSavedChats(updated)
+    showToast('Chat removed')
   }
 
   const handleSignOut = async () => {
@@ -101,6 +106,7 @@ export default function ProgramPage() {
         onMyPrograms={() => window.open('/', '_self')}
         onMyChats={() => window.open('/', '_self')}
         onSaveChat={handleSaveChat}
+        onUnsaveChat={handleUnsaveChat}
         isChatSaved={isChatSaved}
       />
       {toast && <div className="toast">{toast}</div>}

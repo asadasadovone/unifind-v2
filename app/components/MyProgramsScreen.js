@@ -1,7 +1,8 @@
 'use client'
 import { Icon, Logo } from './Icons'
+import UserDropdown from './UserDropdown'
 
-export default function MyProgramsScreen({ user, savedPrograms = [], onBack, onOpenUni }) {
+export default function MyProgramsScreen({ user, savedPrograms = [], onBack, onOpenUni, onMyPrograms, onMyChats, onProfile, onSignOut }) {
   return (
     <div className="results-screen">
       <header className="results-header">
@@ -9,14 +10,13 @@ export default function MyProgramsScreen({ user, savedPrograms = [], onBack, onO
           <Logo size="sm" onClick={onBack} />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div className="user-pill">
-            <div className="user-avatar">
-              {(user?.user_metadata?.full_name || user?.email || 'U')[0].toUpperCase()}
-            </div>
-            <span style={{ fontSize: 13 }}>
-              {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0]}
-            </span>
-          </div>
+          <button className="zap-nav-link nav-desktop-only" onClick={onMyPrograms}>
+            <Icon name="heart" size={14} /> My Programs
+          </button>
+          <button className="zap-nav-link nav-desktop-only" onClick={onMyChats}>
+            <Icon name="sparkle" size={14} /> My Chats
+          </button>
+          <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} />
         </div>
       </header>
 
