@@ -23,7 +23,7 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file)
 })
 
-export default function DetailScreen({ uni, onBack, initialPrompt, initialMessages, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats, onProfile, onSaveChat, onUnsaveChat, isChatSaved }) {
+export default function DetailScreen({ uni, onBack, initialPrompt, initialMessages, user, onSignOut, onOpenAuth, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSaveChat, onUnsaveChat, isChatSaved }) {
   const [messages, setMessages] = useState(
     initialMessages?.length
       ? initialMessages

@@ -46,7 +46,7 @@ function FieldIcon({ name, size = 16 }) {
   }
 }
 
-export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, onProfile, savedIds = new Set(), onSaveToggle, onSignOut }) {
+export default function ResultsScreen({ filters, setFilters, onOpenUni, onBack, isPremium, onUpgrade, isLoading, isFindingMore, apiResults, user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, savedIds = new Set(), onSaveToggle, onSignOut }) {
   const [sort, setSort] = useState('Best match')
   const [shownCount, setShownCount] = useState(10)
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
