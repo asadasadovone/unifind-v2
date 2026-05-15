@@ -233,7 +233,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           onProfile={() => { setMenuOpen(false); onProfile?.() }}
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
-          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }} }}
+          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
         />
       )}
     </div>

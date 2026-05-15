@@ -404,7 +404,7 @@ PERSONALIZATION:
           onProfile={() => { setMenuOpen(false); onProfile?.() }}
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
-          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }} }}
+          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
         />
       )}
     </div>
