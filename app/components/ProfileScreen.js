@@ -50,7 +50,7 @@ function loadProfile() {
   } catch { return {} }
 }
 
-export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats }) {
+export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -98,7 +98,7 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
           <button className="zap-nav-link nav-desktop-only" onClick={onMyChats}>
             <Icon name="sparkle" size={14} /> My Chats
           </button>
-          <UserDropdown user={user} onSignOut={onSignOut} onProfile={onBack} />
+          <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} />
         </div>
       </header>
 

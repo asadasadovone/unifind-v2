@@ -2,7 +2,7 @@
 import { Icon, Logo } from './Icons'
 import UserDropdown from './UserDropdown'
 
-export default function MyProgramsScreen({ user, savedPrograms = [], onBack, onOpenUni, onMyPrograms, onMyChats, onProfile, onSignOut }) {
+export default function MyProgramsScreen({ user, savedPrograms = [], onBack, onOpenUni, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSignOut }) {
   return (
     <div className="results-screen">
       <header className="results-header">

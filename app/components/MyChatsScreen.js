@@ -2,7 +2,7 @@
 import { Icon, Logo } from './Icons'
 import UserDropdown from './UserDropdown'
 
-export default function MyChatsScreen({ user, savedChats = [], onBack, onOpenChat, onMyPrograms, onMyChats, onProfile, onSignOut }) {
+export default function MyChatsScreen({ user, savedChats = [], onBack, onOpenChat, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSignOut }) {
   return (
     <div className="results-screen">
       <header className="results-header">
