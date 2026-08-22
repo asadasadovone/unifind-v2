@@ -210,10 +210,12 @@ function TuitionCard({ value, onChange }) {
 export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showTuition, setShowTuition] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const [masterField, setMasterField] = useState('Computer Science')
   const [bachelorField, setBachelorField] = useState('Computer Science')
   const [sliderVal, setSliderVal] = useState(0)
   const tuitionRef = useRef(null)
+  const helpRef = useRef(null)
 
   // derived display values
   const degree = filters.degree?.[0] || 'Bachelor'
@@ -222,7 +224,10 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
   const hoursVal = Math.round(240 - (sliderVal / 100) * 239)
 
   useEffect(() => {
-    const close = e => { if (tuitionRef.current && !tuitionRef.current.contains(e.target)) setShowTuition(false) }
+    const close = e => {
+      if (tuitionRef.current && !tuitionRef.current.contains(e.target)) setShowTuition(false)
+      if (helpRef.current && !helpRef.current.contains(e.target)) setShowHelp(false)
+    }
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [])
@@ -235,27 +240,44 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
 
       {/* ── NAV ── */}
       <header style={{ background: '#05203C', borderBottom: '1px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Left */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-            <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu" style={{ color: '#fff', display: 'none' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+          {/* Left — logo + center nav */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+            <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu" style={{ color: '#fff' }}>
               <Icon name="menu" size={22} />
             </button>
-            <Logo size="sm" style={{ color: '#fff' }} />
-            <nav className="nav-desktop-only" style={{ display: 'flex', gap: 24 }}>
-              <button style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Homepage</button>
-              <button onClick={onMyPrograms} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>My Programs</button>
-              <button onClick={onMyChats} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>My Chats</button>
-            </nav>
+            <Logo size="sm" />
           </div>
+
+          {/* Center nav */}
+          <nav className="nav-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 4, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+            <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', padding: '8px 14px', borderRadius: 8 }}>Homepage</button>
+            <button onClick={onMyPrograms} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.75)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', padding: '8px 14px', borderRadius: 8 }}>My Programs</button>
+            <button onClick={onMyChats} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.75)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', padding: '8px 14px', borderRadius: 8 }}>My Chats</button>
+            {/* Help dropdown */}
+            <div ref={helpRef} style={{ position: 'relative' }}>
+              <button onClick={() => setShowHelp(s => !s)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.75)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', padding: '8px 14px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+                Help
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              {showHelp && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', background: '#fff', border: '1px solid #E8E8E8', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: 200, zIndex: 300, overflow: 'hidden' }}>
+                  <button onClick={() => { setShowHelp(false); onFeedback?.() }} style={{ display: 'block', width: '100%', padding: '12px 18px', background: 'none', border: 'none', textAlign: 'left', fontSize: 14, color: '#111', cursor: 'pointer', fontFamily: 'inherit' }}>Send feedback</button>
+                  <button onClick={() => { setShowHelp(false); onTerms?.() }} style={{ display: 'block', width: '100%', padding: '12px 18px', background: 'none', border: 'none', textAlign: 'left', fontSize: 14, color: '#111', cursor: 'pointer', fontFamily: 'inherit' }}>Terms of Service</button>
+                  <button onClick={() => { setShowHelp(false); onPrivacy?.() }} style={{ display: 'block', width: '100%', padding: '12px 18px', background: 'none', border: 'none', textAlign: 'left', fontSize: 14, color: '#111', cursor: 'pointer', fontFamily: 'inherit' }}>Privacy Policy</button>
+                </div>
+              )}
+            </div>
+          </nav>
+
           {/* Right */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {user ? (
               <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} dark />
             ) : (
               <>
-                <button onClick={onOpenAuth} style={{ padding: '9px 20px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.35)', background: 'transparent', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Log in</button>
-                <button onClick={onOpenAuth} style={{ padding: '9px 20px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.35)', background: 'transparent', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Sign up for free</button>
+                <button onClick={onOpenAuth} style={{ padding: '9px 22px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.5)', background: '#fff', color: '#05203C', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Log in</button>
+                <button onClick={onOpenAuth} style={{ padding: '9px 22px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.5)', background: 'transparent', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Sign up for free</button>
               </>
             )}
           </div>
