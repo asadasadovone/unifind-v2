@@ -286,78 +286,162 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
       </header>
 
       {/* ── HERO ── */}
-      <section style={{ background: '#05203C', padding: '72px 32px 80px', textAlign: 'center' }}>
-        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 16 }}>YOUR GOALS. YOUR BUDGET. ANY UNIVERSITY.</p>
-        <h1 style={{ fontSize: 'clamp(36px,5vw,64px)', fontWeight: 700, color: '#fff', margin: '0 0 32px', lineHeight: 1.15, fontFamily: 'Geist, sans-serif' }}>Find your next university</h1>
+      <section style={{ background: '#05203C', padding: '56px 48px 72px', textAlign: 'center' }}>
+        <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.02em', color: '#fff', textTransform: 'uppercase', marginBottom: 20 }}>YOUR GOALS. YOUR BUDGET. ANY UNIVERSITY.</p>
+        <h1 style={{ fontSize: 'clamp(40px,5.5vw,68px)', fontWeight: 700, color: '#fff', margin: '0 0 36px', lineHeight: 1.1, fontFamily: 'Geist, sans-serif', letterSpacing: '-0.02em' }}>Find your next university</h1>
 
-        {/* Degree pills */}
-        <div style={{ display: 'inline-flex', gap: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 999, padding: 6, marginBottom: 32 }}>
-          {['Bachelor', 'Master', 'PhD'].map(d => (
-            <button key={d} onClick={() => setDegree(d)} style={{ padding: '9px 28px', borderRadius: 999, border: 'none', background: degree === d ? '#fff' : 'transparent', color: degree === d ? '#05203C' : 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{d}</button>
-          ))}
+        {/* Degree pills — cream container, navy filled active */}
+        <div style={{ display: 'inline-flex', gap: 0, background: '#E8E0CC', borderRadius: 999, padding: 4, marginBottom: 32 }}>
+          {['Bachelor', 'Master', 'PhD'].map(d => {
+            const active = degree === d
+            return (
+              <button
+                key={d}
+                onClick={() => setDegree(d)}
+                style={{
+                  padding: '10px 32px',
+                  borderRadius: 999,
+                  border: active ? '2px solid #fff' : 'none',
+                  background: active ? '#05203C' : 'transparent',
+                  color: active ? '#fff' : '#05203C',
+                  fontWeight: 500,
+                  fontSize: 15,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {d}
+              </button>
+            )
+          })}
         </div>
 
         {/* Search bar */}
-        <div style={{ maxWidth: 900, margin: '0 auto', background: '#fff', borderRadius: 16, padding: '0', display: 'flex', alignItems: 'stretch', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
-          {/* Field of study */}
-          <div style={{ flex: '1 1 200px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Field of Study</label>
-            <input
-              value={filters.field || ''}
-              onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
-              placeholder="e.g. Computer Science"
-              style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', padding: 0 }}
-            />
-          </div>
-          {/* Country */}
-          <div style={{ flex: '1 1 160px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, position: 'relative' }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Country</label>
-            <select value={filters.country || ''} onChange={e => setFilters(f => ({ ...f, country: e.target.value }))} style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: 0, width: '100%' }}>
-              <option value="">Any country</option>
-              {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-              <option disabled>──────────</option>
-              {ALL_COUNTRIES.filter(c => !POPULAR_COUNTRIES.includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-          {/* Start date */}
-          <div style={{ flex: '1 1 140px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Start Date</label>
-            <select value={filters.startDate || ''} onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))} style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: 0 }}>
-              <option value="">Any intake</option>
-              {['Jan 2025','Feb 2025','Mar 2025','Apr 2025','May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </div>
-          {/* Tuition */}
-          <div ref={tuitionRef} style={{ flex: '1 1 160px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, position: 'relative', cursor: 'pointer' }} onClick={() => setShowTuition(s => !s)}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em', pointerEvents: 'none' }}>Tuition (USD/yr)</label>
-            <span style={{ fontSize: 15, color: '#111', userSelect: 'none' }}>{tuitionLabel}</span>
-            {showTuition && (
-              <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', left: 0, minWidth: 260, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
-                <TuitionCard value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
+        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', alignItems: 'stretch', gap: 12 }}>
+          <div style={{ flex: 1, background: '#fff', borderRadius: 16, display: 'flex', alignItems: 'stretch', overflow: 'visible', boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }}>
+            {/* Field of study */}
+            <div style={{ flex: '1 1 240px', padding: '16px 24px', borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Field of Study</label>
+              <input
+                value={filters.field || ''}
+                onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
+                placeholder="e.g. Computer Science"
+                style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', padding: 0 }}
+              />
+            </div>
+            {/* Country */}
+            <div style={{ flex: '1 1 180px', padding: '16px 24px', borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0, position: 'relative' }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Country</label>
+              <div style={{ position: 'relative' }}>
+                <select
+                  value={filters.country || ''}
+                  onChange={e => setFilters(f => ({ ...f, country: e.target.value }))}
+                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: '0 22px 0 0' }}
+                >
+                  <option value="">Any country</option>
+                  {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  <option disabled>──────────</option>
+                  {ALL_COUNTRIES.filter(c => !POPULAR_COUNTRIES.includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
               </div>
-            )}
+            </div>
+            {/* Start date */}
+            <div style={{ flex: '1 1 160px', padding: '16px 24px', borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Start Date</label>
+              <div style={{ position: 'relative' }}>
+                <select
+                  value={filters.startDate || ''}
+                  onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))}
+                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: '0 22px 0 0' }}
+                >
+                  <option value="">Any start date</option>
+                  {['Jan 2025','Feb 2025','Mar 2025','Apr 2025','May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+            {/* Tuition */}
+            <div ref={tuitionRef} style={{ flex: '1 1 180px', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0, position: 'relative', cursor: 'pointer' }} onClick={() => setShowTuition(s => !s)}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', pointerEvents: 'none' }}>Tuition (USD/yr)</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ fontSize: 15, color: '#111', userSelect: 'none', display: 'block', padding: '0 22px 0 0' }}>{tuitionLabel}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+              {showTuition && (
+                <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: 300, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
+                  <TuitionCard value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
+                </div>
+              )}
+            </div>
           </div>
-          {/* Search button */}
-          <button onClick={onSearch} style={{ flexShrink: 0, padding: '0 28px', background: '#0162E3', color: '#fff', border: 'none', fontSize: 16, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', borderRadius: '0 16px 16px 0' }}>
+          {/* Search button — separate rounded */}
+          <button
+            onClick={onSearch}
+            style={{ flexShrink: 0, padding: '0 40px', background: '#0162E3', color: '#fff', border: 'none', fontSize: 16, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', borderRadius: 16, minWidth: 120 }}
+          >
             Search
           </button>
         </div>
 
         {/* Format + Attendance chips */}
-        <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 20, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Format</span>
-            {['Full-time', 'Part-time'].map(v => {
-              const active = (filters.format || []).includes(v)
-              return <button key={v} onClick={() => setFilters(f => ({ ...f, format: active ? (f.format || []).filter(x => x !== v) : [...(f.format || []), v] }))} style={{ padding: '7px 18px', borderRadius: 999, border: `1px solid ${active ? '#fff' : 'rgba(255,255,255,0.3)'}`, background: active ? '#fff' : 'transparent', color: active ? '#05203C' : 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{v}</button>
-            })}
+        <div style={{ display: 'flex', gap: 40, justifyContent: 'flex-start', maxWidth: 1240, margin: '20px auto 0', paddingLeft: 4, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Format</span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {['Full-time', 'Part-time'].map(v => {
+                const active = (filters.format || []).includes(v)
+                return (
+                  <button
+                    key={v}
+                    onClick={() => setFilters(f => ({ ...f, format: active ? (f.format || []).filter(x => x !== v) : [...(f.format || []), v] }))}
+                    style={{
+                      padding: '8px 20px',
+                      borderRadius: 999,
+                      border: `1px solid ${active ? '#0162E3' : 'rgba(255,255,255,0.35)'}`,
+                      background: active ? '#0162E3' : 'transparent',
+                      color: '#fff',
+                      fontSize: 14,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {v}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Attendance</span>
-            {['On-campus', 'Online', 'Blended'].map(v => {
-              const active = (filters.attendance || []).includes(v)
-              return <button key={v} onClick={() => setFilters(f => ({ ...f, attendance: active ? (f.attendance || []).filter(x => x !== v) : [...(f.attendance || []), v] }))} style={{ padding: '7px 18px', borderRadius: 999, border: `1px solid ${active ? '#fff' : 'rgba(255,255,255,0.3)'}`, background: active ? '#fff' : 'transparent', color: active ? '#05203C' : 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{v}</button>
-            })}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Attendance</span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {['On-campus', 'Online', 'Blended'].map(v => {
+                const active = (filters.attendance || []).includes(v)
+                return (
+                  <button
+                    key={v}
+                    onClick={() => setFilters(f => ({ ...f, attendance: active ? (f.attendance || []).filter(x => x !== v) : [...(f.attendance || []), v] }))}
+                    style={{
+                      padding: '8px 20px',
+                      borderRadius: 999,
+                      border: `1px solid ${active ? '#0162E3' : 'rgba(255,255,255,0.35)'}`,
+                      background: active ? '#0162E3' : 'transparent',
+                      color: '#fff',
+                      fontSize: 14,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {v}
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
       </section>
