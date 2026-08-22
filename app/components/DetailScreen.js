@@ -187,7 +187,7 @@ PERSONALIZATION:
           <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu">
             <Icon name="menu" size={22} />
           </button>
-          <Logo onClick={onBack} size="sm" />
+          <Logo onClick={onBack} size="sm" color="#05203C" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button className="zap-nav-link nav-desktop-only"

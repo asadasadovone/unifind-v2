@@ -89,7 +89,7 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
           <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu">
             <Icon name="menu" size={22} />
           </button>
-          <Logo size="sm" onClick={onBack} />
+          <Logo size="sm" onClick={onBack} color="#05203C" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button className="zap-nav-link nav-desktop-only" onClick={onMyPrograms}>

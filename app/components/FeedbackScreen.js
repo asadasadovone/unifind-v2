@@ -22,7 +22,7 @@ export default function FeedbackScreen({ user, onBack, onSignOut, onMyPrograms, 
     <div className="results-screen">
       <header className="results-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Logo size="sm" onClick={onBack} />
+          <Logo size="sm" onClick={onBack} color="#05203C" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button className="zap-nav-link nav-desktop-only" onClick={onMyPrograms}>

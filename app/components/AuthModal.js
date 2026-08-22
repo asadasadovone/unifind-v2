@@ -88,7 +88,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-          <Logo size="sm" />
+          <Logo size="sm" color="#05203C" />
           <button className="btn btn-ghost" style={{ padding: 6 }} onClick={onClose}>
             <Icon name="close" size={18} />
           </button>
