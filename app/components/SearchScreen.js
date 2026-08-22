@@ -190,32 +190,38 @@ function TuitionCard({ value, onChange }) {
   return (
     <div style={{ padding: 4 }}>
       {/* Slider */}
-      <div style={{ position: 'relative', height: 32, margin: '4px 0 14px' }}>
+      <div style={{ position: 'relative', height: 32, margin: '4px 0 14px', padding: '0 9px' }}>
         {/* Track */}
-        <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: 4, background: '#E0E0E0', borderRadius: 999, transform: 'translateY(-50%)' }} />
-        {/* Filled */}
-        <div style={{ position: 'absolute', left: `${pctLo}%`, right: `${100 - pctHi}%`, top: '50%', height: 4, background: '#0162E3', borderRadius: 999, transform: 'translateY(-50%)' }} />
+        <div style={{ position: 'absolute', left: 9, right: 9, top: '50%', height: 4, background: '#E0E0E0', borderRadius: 999, transform: 'translateY(-50%)' }} />
+        {/* Filled — thumb center = 9px + pct * (100% - 18px) */}
+        <div style={{
+          position: 'absolute',
+          left: `calc(9px + (100% - 18px) * ${pctLo / 100})`,
+          right: `calc(9px + (100% - 18px) * ${(100 - pctHi) / 100})`,
+          top: '50%', height: 4, background: '#0162E3', borderRadius: 999, transform: 'translateY(-50%)'
+        }} />
         {/* Lo input */}
         <input
           type="range" min={MIN} max={MAX} step={STEP} value={lo} onChange={onLoRange}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', appearance: 'none', WebkitAppearance: 'none', pointerEvents: 'none', margin: 0, opacity: 1 }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', appearance: 'none', WebkitAppearance: 'none', pointerEvents: 'none', margin: 0 }}
           className="tuition-range tuition-range-lo"
         />
         {/* Hi input */}
         <input
           type="range" min={MIN} max={MAX} step={STEP} value={hi} onChange={onHiRange}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', appearance: 'none', WebkitAppearance: 'none', pointerEvents: 'none', margin: 0, opacity: 1 }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', appearance: 'none', WebkitAppearance: 'none', pointerEvents: 'none', margin: 0 }}
           className="tuition-range tuition-range-hi"
         />
         <style jsx>{`
-          .tuition-range { -webkit-appearance: none; appearance: none; background: transparent; }
-          .tuition-range::-webkit-slider-runnable-track { background: transparent; height: 32px; }
-          .tuition-range::-moz-range-track { background: transparent; height: 32px; }
+          .tuition-range { -webkit-appearance: none; appearance: none; background: transparent; padding: 0; }
+          .tuition-range::-webkit-slider-runnable-track { background: transparent; height: 32px; border: none; }
+          .tuition-range::-moz-range-track { background: transparent; height: 32px; border: none; }
           .tuition-range::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
             width: 18px; height: 18px; border-radius: 50%;
             background: #fff; border: 2px solid #0162E3;
-            cursor: grab; pointer-events: auto; margin-top: 0;
+            cursor: grab; pointer-events: auto;
+            margin-top: 7px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.15);
           }
           .tuition-range::-moz-range-thumb {
@@ -355,7 +361,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         </div>
 
         {/* Search bar */}
-        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', alignItems: 'stretch', gap: 12 }}>
+        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', alignItems: 'stretch', gap: 12, textAlign: 'left' }}>
           <div style={{ flex: 1, background: '#fff', borderRadius: 16, display: 'flex', alignItems: 'stretch', overflow: 'visible', boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }}>
             {/* Field of study */}
             <div style={{ flex: '1 1 240px', padding: '16px 24px', borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
