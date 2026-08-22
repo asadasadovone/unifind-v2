@@ -73,8 +73,8 @@ const BACHELOR_UNIS = {
 
 const STORIES = [
   { stat: '8', label: 'free programs found', name: 'Seung', desc: 'Seung found 8 fully-funded CS programs in under 5 minutes and got into his first choice', tags: ['Computer Science', 'Germany', 'Free tuition'], img: '/students/s1.jpg' },
-  { stat: '6 weeks', label: 'of research saved', name: 'Sofia', desc: 'Sofia replaced 6 weeks of browser tabs with one UniAsk conversation — then got into KTH', tags: ['European Law', 'Sweden', 'Free tuition'], img: '/students/s2.jpg' },
-  { stat: '€0', label: 'tuition per year', name: 'Mohamed', desc: 'Mohamed discovered he could study Data Science in Europe for free', tags: ['Data Science', 'Netherlands', 'Free tuition'], img: '/students/s3.jpg' },
+  { stat: '6 weeks', label: 'of research saved', name: 'Sofia', desc: 'Sofia replaced 6 weeks of browser tabs with one UniAsk conversation — then got into KTH', tags: ['European Law', 'Sweden', 'Free tuition'], img: '/students/s4.jpg' },
+  { stat: '€0', label: 'tuition per year', name: 'Mohamed', desc: 'Mohamed discovered he could study Data Science in Europe for free', tags: ['Data Science', 'Netherlands', 'Free tuition'], img: '/students/s5.jpg' },
 ]
 
 const FAQS = [
@@ -91,30 +91,38 @@ const FAQS = [
 // ── sub-components ────────────────────────────────────────────────────────────
 
 function UniCard({ uni, field }) {
-  const isFree = uni.tuition === 'Free tuition'
   return (
-    <div style={{ minWidth: 280, maxWidth: 280, background: '#fff', borderRadius: 16, border: '1px solid #E8E8E8', overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ height: 172, overflow: 'hidden', position: 'relative' }}>
+    <div style={{ minWidth: 314, maxWidth: 314, background: '#fff', borderRadius: 16, overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column', scrollSnapAlign: 'start' }}>
+      <div style={{ height: 200, overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
         <img src={uni.img} alt={uni.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
       </div>
-      <div style={{ padding: '16px 16px 20px', display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#0162E3' }}>{field}</div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#111', lineHeight: 1.3 }}>{uni.name}</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#555', marginTop: 2 }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div style={{ padding: '18px 18px 18px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ fontSize: 18, fontWeight: 600, color: '#0162E3', lineHeight: 1.28, marginBottom: 10 }}>{uni.name}</div>
+        <div style={{ fontSize: 14, fontWeight: 500, color: '#0162E3', marginBottom: 10 }}>{field}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#1A1A1A', marginBottom: 6 }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
           {uni.city}, {uni.country}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#555' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#1A1A1A' }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
           Starts {uni.start}
         </div>
-        <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
-          <span style={{ padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 500, background: isFree ? '#E8F5E9' : '#F2F2F2', color: isFree ? '#1B7C3A' : '#444', border: `1px solid ${isFree ? '#B8E0C0' : '#E0E0E0'}` }}>{uni.tuition}</span>
-          <span style={{ padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 500, background: '#F2F2F2', color: '#444', border: '1px solid #E0E0E0' }}>English</span>
-          <span style={{ padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 500, background: '#F2F2F2', color: '#444', border: '1px solid #E0E0E0' }}>{uni.duration}</span>
+        <div style={{ display: 'flex', gap: 6, marginTop: 16, flexWrap: 'wrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 11px', borderRadius: 999, fontSize: 12.5, fontWeight: 400, background: '#F2F2F2', color: '#1A1A1A' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-2.5-2.5h-1a2.5 2.5 0 0 0 0 5h1a2.5 2.5 0 0 1 0 5h-1A2.5 2.5 0 0 1 9 14.5"/></svg>
+            {uni.tuition}
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 11px', borderRadius: 999, fontSize: 12.5, fontWeight: 400, background: '#F2F2F2', color: '#1A1A1A' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+            English
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 11px', borderRadius: 999, fontSize: 12.5, fontWeight: 400, background: '#F2F2F2', color: '#1A1A1A' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {uni.duration}
+          </span>
         </div>
         <button
-          style={{ marginTop: 12, width: '100%', padding: '11px', background: '#0162E3', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}
+          style={{ marginTop: 'auto', width: '100%', padding: '13px', background: '#0162E3', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 500, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' }}
         >
           Ask AI
         </button>
@@ -125,34 +133,77 @@ function UniCard({ uni, field }) {
 
 function CardsSection({ heading, data, field, onFieldChange }) {
   const rowRef = useRef(null)
-  const scroll = (dir) => {
-    if (rowRef.current) rowRef.current.scrollBy({ left: dir * 300, behavior: 'smooth' })
-  }
+  const [active, setActive] = useState(0)
   const unis = data[field] || []
+
+  const CARD_STEP = 330 // card width 314 + gap 16
+
+  const scroll = (dir) => {
+    if (rowRef.current) rowRef.current.scrollBy({ left: dir * CARD_STEP, behavior: 'smooth' })
+  }
+  const onScroll = () => {
+    if (!rowRef.current) return
+    setActive(Math.round(rowRef.current.scrollLeft / CARD_STEP))
+  }
+
   return (
-    <section style={{ background: '#fff', padding: '72px 0 80px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
-        <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 28px', fontFamily: 'Geist, sans-serif' }}>{heading}</h2>
+    <section style={{ background: '#F2F2F2', padding: '80px 0' }}>
+      <div style={{ maxWidth: 1448, margin: '0 auto', paddingLeft: 64 }}>
+        <h2 style={{ fontSize: 'clamp(30px,3.4vw,42px)', fontWeight: 600, color: '#1A1A1A', margin: '0 0 34px', fontFamily: 'Geist, sans-serif', letterSpacing: '-0.02em' }}>{heading}</h2>
+
         {/* Field tabs */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 28, borderBottom: '1px solid #E8E8E8', paddingBottom: 0 }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid #DCDCDC', marginBottom: 28, paddingRight: 64 }}>
           {FIELD_TABS.map(t => (
-            <button key={t} onClick={() => onFieldChange(t)} style={{ padding: '8px 0', marginRight: 24, fontSize: 15, fontWeight: 500, color: t === field ? '#0162E3' : '#888', background: 'none', border: 'none', borderBottom: t === field ? '2px solid #0162E3' : '2px solid transparent', cursor: 'pointer', fontFamily: 'inherit', marginBottom: -1, transition: 'all 0.15s' }}>
+            <button
+              key={t}
+              onClick={() => onFieldChange(t)}
+              style={{
+                padding: '10px 16px', marginBottom: -1, fontSize: 16, fontWeight: 500,
+                color: t === field ? '#0162E3' : '#1A1A1A', background: 'none', border: 'none',
+                borderBottom: t === field ? '2px solid #0162E3' : '2px solid transparent',
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+              }}
+            >
               {t}
             </button>
           ))}
         </div>
+
         {/* Cards row */}
-        <div ref={rowRef} style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: 4 }}>
+        <div
+          ref={rowRef}
+          onScroll={onScroll}
+          className="uni-cards-row"
+          style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: 4 }}
+        >
           {unis.map((u, i) => <UniCard key={i} uni={u} field={field} />)}
         </div>
-        {/* Nav arrows */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-          <button onClick={() => scroll(-1)} style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid #E0E0E0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <button onClick={() => scroll(1)} style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid #E0E0E0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+        <style jsx>{`.uni-cards-row::-webkit-scrollbar { display: none; } .uni-cards-row { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
+
+        {/* Pagination + arrows */}
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: 28, paddingRight: 64, position: 'relative' }}>
+          {/* Centered dots */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 auto' }}>
+            {unis.map((_, i) => (
+              <span
+                key={i}
+                style={{
+                  width: i === active ? 30 : 7, height: i === active ? 4 : 7,
+                  borderRadius: 999, background: i === active ? '#1A1A1A' : '#C4C4C4',
+                  transition: 'all 0.2s',
+                }}
+              />
+            ))}
+          </div>
+          {/* Arrows pinned right */}
+          <div style={{ display: 'flex', gap: 12, position: 'absolute', right: 64 }}>
+            <button onClick={() => scroll(-1)} style={{ width: 46, height: 46, borderRadius: '50%', border: '1px solid #1A1A1A', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button onClick={() => scroll(1)} style={{ width: 46, height: 46, borderRadius: '50%', border: '1px solid #1A1A1A', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -498,29 +549,44 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
       />
 
       {/* ── STUDENTS GETTING ACCEPTED ── */}
-      <section style={{ background: '#F2F2F2', padding: '80px 32px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 36px', fontFamily: 'Geist, sans-serif' }}>Students getting accepted.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+      <section style={{ background: '#fff', padding: '80px 64px 96px' }}>
+        <div style={{ maxWidth: 1384, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(30px,3.4vw,42px)', fontWeight: 600, color: '#1A1A1A', margin: '0 0 60px', fontFamily: 'Geist, sans-serif', textAlign: 'center', letterSpacing: '-0.02em' }}>
+            Students getting accepted.
+          </h2>
+
+          {/* Staggered layout: middle card is wider + taller, all images bottom-aligned */}
+          <div className="stories-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2.15fr 1fr', gap: 24 }}>
             {STORIES.map((s, i) => (
-              <div key={i} style={{ borderRadius: 16, overflow: 'hidden', background: '#fff', border: '1px solid #E8E8E8' }}>
-                <div style={{ position: 'relative', height: 220 }}>
-                  <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)' }} />
-                  <div style={{ position: 'absolute', bottom: 16, left: 16 }}>
-                    <div style={{ fontSize: 36, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{s.stat}</div>
-                    <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>{s.label}</div>
+              <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+                {/* Image area — fixed tall box, image pinned to its bottom */}
+                <div className="story-img-area" style={{ height: 412, display: 'flex', alignItems: 'flex-end', marginBottom: 20 }}>
+                  <div style={{ position: 'relative', width: '100%', height: i === 1 ? 412 : 346, borderRadius: 16, overflow: 'hidden' }}>
+                    <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 40%, transparent 65%)' }} />
+                    <div style={{ position: 'absolute', bottom: 22, left: 22 }}>
+                      <div style={{ fontSize: 38, fontWeight: 500, color: '#fff', lineHeight: 1.05, letterSpacing: '-0.01em' }}>{s.stat}</div>
+                      <div style={{ fontSize: 16, color: '#fff', marginTop: 4 }}>{s.label}</div>
+                    </div>
                   </div>
                 </div>
-                <div style={{ padding: '16px 20px 20px' }}>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-                    {s.tags.map(t => <span key={t} style={{ padding: '3px 10px', borderRadius: 999, background: '#F2F2F2', fontSize: 12, color: '#555', border: '1px solid #E0E0E0' }}>{t}</span>)}
-                  </div>
-                  <p style={{ margin: 0, fontSize: 15, color: '#111', lineHeight: 1.5, fontWeight: 500 }}>{s.desc}</p>
+                {/* Tags + description */}
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+                  {s.tags.map(t => (
+                    <span key={t} style={{ padding: '5px 12px', borderRadius: 999, background: '#F2F2F2', fontSize: 13, color: '#1A1A1A', fontWeight: 400 }}>{t}</span>
+                  ))}
                 </div>
+                <p style={{ margin: 0, fontSize: 17, color: '#1A1A1A', lineHeight: 1.45, fontWeight: 500 }}>{s.desc}</p>
               </div>
             ))}
           </div>
+          <style jsx>{`
+            @media (max-width: 900px) {
+              .stories-grid { grid-template-columns: 1fr !important; }
+              .stories-grid .story-img-area { height: auto !important; }
+              .stories-grid .story-img-area > div { height: 300px !important; }
+            }
+          `}</style>
         </div>
       </section>
 
