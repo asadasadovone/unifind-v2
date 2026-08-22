@@ -178,27 +178,64 @@ function TuitionCard({ value, onChange }) {
   const [lo, hi] = value
   const [loStr, setLoStr] = useState(String(lo))
   const [hiStr, setHiStr] = useState(String(hi))
+  const MIN = 0, MAX = 100000, STEP = 500, GAP = 1000
   useEffect(() => { setLoStr(String(lo)) }, [lo])
   useEffect(() => { setHiStr(String(hi)) }, [hi])
-  const applyLo = raw => { const n = Math.max(0, Math.min(Number(raw) || 0, hi - 1000)); onChange([n, hi]); setLoStr(String(n)) }
-  const applyHi = raw => { const n = Math.min(100000, Math.max(Number(raw) || 0, lo + 1000)); onChange([lo, n]); setHiStr(String(n)) }
-  const pct = v => (v / 100000) * 100
+  const applyLoTxt = raw => { const n = Math.max(MIN, Math.min(Number(raw) || MIN, hi - GAP)); onChange([n, hi]); setLoStr(String(n)) }
+  const applyHiTxt = raw => { const n = Math.min(MAX, Math.max(Number(raw) || MIN, lo + GAP)); onChange([lo, n]); setHiStr(String(n)) }
+  const onLoRange = e => { const n = Math.min(Number(e.target.value), hi - GAP); onChange([n, hi]) }
+  const onHiRange = e => { const n = Math.max(Number(e.target.value), lo + GAP); onChange([lo, n]) }
+  const pctLo = (lo / MAX) * 100
+  const pctHi = (hi / MAX) * 100
   return (
     <div style={{ padding: 4 }}>
-      <div style={{ position: 'relative', height: 6, background: '#E0E0E0', borderRadius: 999, margin: '20px 0 14px' }}>
-        <div style={{ position: 'absolute', left: `${pct(lo)}%`, right: `${100 - pct(hi)}%`, top: 0, height: '100%', background: '#0162E3', borderRadius: 999 }} />
-        <div style={{ position: 'absolute', left: `${pct(lo)}%`, top: '50%', width: 16, height: 16, borderRadius: '50%', background: '#fff', border: '2px solid #0162E3', transform: 'translate(-50%,-50%)', cursor: 'grab' }} />
-        <div style={{ position: 'absolute', left: `${pct(hi)}%`, top: '50%', width: 16, height: 16, borderRadius: '50%', background: '#fff', border: '2px solid #0162E3', transform: 'translate(-50%,-50%)', cursor: 'grab' }} />
+      {/* Slider */}
+      <div style={{ position: 'relative', height: 32, margin: '4px 0 14px' }}>
+        {/* Track */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: 4, background: '#E0E0E0', borderRadius: 999, transform: 'translateY(-50%)' }} />
+        {/* Filled */}
+        <div style={{ position: 'absolute', left: `${pctLo}%`, right: `${100 - pctHi}%`, top: '50%', height: 4, background: '#0162E3', borderRadius: 999, transform: 'translateY(-50%)' }} />
+        {/* Lo input */}
+        <input
+          type="range" min={MIN} max={MAX} step={STEP} value={lo} onChange={onLoRange}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', appearance: 'none', WebkitAppearance: 'none', pointerEvents: 'none', margin: 0, opacity: 1 }}
+          className="tuition-range tuition-range-lo"
+        />
+        {/* Hi input */}
+        <input
+          type="range" min={MIN} max={MAX} step={STEP} value={hi} onChange={onHiRange}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', appearance: 'none', WebkitAppearance: 'none', pointerEvents: 'none', margin: 0, opacity: 1 }}
+          className="tuition-range tuition-range-hi"
+        />
+        <style jsx>{`
+          .tuition-range { -webkit-appearance: none; appearance: none; background: transparent; }
+          .tuition-range::-webkit-slider-runnable-track { background: transparent; height: 32px; }
+          .tuition-range::-moz-range-track { background: transparent; height: 32px; }
+          .tuition-range::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #fff; border: 2px solid #0162E3;
+            cursor: grab; pointer-events: auto; margin-top: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+          }
+          .tuition-range::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #fff; border: 2px solid #0162E3;
+            cursor: grab; pointer-events: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+          }
+        `}</style>
       </div>
+      {/* Text inputs */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px' }}>
           <span style={{ fontSize: 12, color: '#888' }}>$</span>
-          <input value={loStr} onChange={e => setLoStr(e.target.value)} onBlur={e => applyLo(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0 }} />
+          <input value={loStr} onChange={e => setLoStr(e.target.value)} onBlur={e => applyLoTxt(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0, fontFamily: 'inherit' }} />
         </div>
         <span style={{ color: '#ccc' }}>—</span>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px' }}>
           <span style={{ fontSize: 12, color: '#888' }}>$</span>
-          <input value={hiStr} onChange={e => setHiStr(e.target.value)} onBlur={e => applyHi(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0 }} />
+          <input value={hiStr} onChange={e => setHiStr(e.target.value)} onBlur={e => applyHiTxt(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0, fontFamily: 'inherit' }} />
         </div>
       </div>
     </div>
@@ -290,8 +327,8 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.02em', color: '#fff', textTransform: 'uppercase', marginBottom: 20 }}>YOUR GOALS. YOUR BUDGET. ANY UNIVERSITY.</p>
         <h1 style={{ fontSize: 'clamp(40px,5.5vw,68px)', fontWeight: 700, color: '#fff', margin: '0 0 36px', lineHeight: 1.1, fontFamily: 'Geist, sans-serif', letterSpacing: '-0.02em' }}>Find your next university</h1>
 
-        {/* Degree pills — cream container, navy filled active */}
-        <div style={{ display: 'inline-flex', gap: 0, background: '#E8E0CC', borderRadius: 999, padding: 4, marginBottom: 32 }}>
+        {/* Degree pills — white container, navy filled active */}
+        <div style={{ display: 'inline-flex', gap: 0, background: '#fff', borderRadius: 999, padding: 4, marginBottom: 32 }}>
           {['Bachelor', 'Master', 'PhD'].map(d => {
             const active = degree === d
             return (
