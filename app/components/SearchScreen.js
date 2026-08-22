@@ -5,284 +5,153 @@ import UserDropdown from './UserDropdown'
 import MobileMenuDrawer from './MobileMenuDrawer'
 import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
-const FIELDS = [
-  { name: 'Agriculture & Forestry', count: '1.6k', icon: 'leaf' },
-  { name: 'Applied Sciences & Professions', count: '3.5k', icon: 'flask' },
-  { name: 'Arts, Design & Architecture', count: '7.8k', icon: 'palette' },
-  { name: 'Business & Management', count: '21.9k', icon: 'briefcase' },
-  { name: 'Computer Science & IT', count: '9.8k', icon: 'terminal' },
-  { name: 'Education & Training', count: '9.8k', icon: 'book2' },
-  { name: 'Engineering & Technology', count: '10.5k', icon: 'cog' },
-  { name: 'Environmental Studies & Earth Sciences', count: '4.8k', icon: 'globe2' },
-  { name: 'Hospitality, Leisure & Sports', count: '2.2k', icon: 'boat' },
-  { name: 'Humanities', count: '7.8k', icon: 'feather' },
-  { name: 'Journalism & Media', count: '1.7k', icon: 'video' },
-  { name: 'Law', count: '3.4k', icon: 'scale' },
-  { name: 'Medicine & Health', count: '13.2k', icon: 'medkit' },
-  { name: 'Natural Sciences & Mathematics', count: '10.3k', icon: 'atom' },
-  { name: 'Social Sciences', count: '15.8k', icon: 'people' },
-]
+// ── data ──────────────────────────────────────────────────────────────────────
 
 const FIELD_TABS = ['Computer Science', 'Business & MBA', 'Engineering', 'Law']
 
 const MASTER_UNIS = {
   'Computer Science': [
-    { name: 'Technical University of Munich', city: 'Munich', country: 'Germany', tuition: 'Free', start: 'Sep 2026', duration: '2 years', img: 'tum' },
-    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free', start: 'Sep 2026', duration: '2 years', img: 'ethzurich' },
-    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free', start: 'Aug 2026', duration: '2 years', img: 'kth' },
-    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,209/yr', start: 'Sep 2026', duration: '2 years', img: 'tudelft' },
-    { name: 'Aalto University', city: 'Espoo', country: 'Finland', tuition: 'Free', start: 'Sep 2026', duration: '2 years', img: 'aalto' },
+    { name: 'Technical University of Munich', city: 'Munich', country: 'Germany', tuition: 'Free tuition', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/tum.jpg' },
+    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/eth.jpg' },
+    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '2 years', img: '/unis/master/cs/kth.jpg' },
+    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/tudelft.jpg' },
+    { name: 'MIT', city: 'Cambridge', country: 'USA', tuition: '$59,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/mit.jpg' },
   ],
   'Business & MBA': [
-    { name: 'HEC Paris', city: 'Paris', country: 'France', tuition: '€15,500/yr', start: 'Sep 2026', duration: '1 year', img: 'hecparis' },
-    { name: 'London Business School', city: 'London', country: 'UK', tuition: '£45,000/yr', start: 'Sep 2026', duration: '2 years', img: 'lbs' },
-    { name: 'ESADE', city: 'Barcelona', country: 'Spain', tuition: '€29,900/yr', start: 'Sep 2026', duration: '1 year', img: 'esade' },
-    { name: 'IE Business School', city: 'Madrid', country: 'Spain', tuition: '€32,000/yr', start: 'Sep 2026', duration: '1 year', img: 'iebusiness' },
-    { name: 'Rotterdam School of Management', city: 'Rotterdam', country: 'Netherlands', tuition: '€17,500/yr', start: 'Sep 2026', duration: '2 years', img: 'rsm' },
+    { name: 'HEC Paris', city: 'Paris', country: 'France', tuition: '€15,500/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/business/hec.jpg' },
+    { name: 'London Business School', city: 'London', country: 'UK', tuition: '£45,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/business/lbs.jpg' },
+    { name: 'INSEAD', city: 'Fontainebleau', country: 'France', tuition: '€95,000/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/business/insead.webp' },
+    { name: 'Bocconi University', city: 'Milan', country: 'Italy', tuition: '€14,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/business/bocconi.jpg' },
+    { name: 'Erasmus University (RSM)', city: 'Rotterdam', country: 'Netherlands', tuition: '€17,500/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/business/rsm.jpg' },
   ],
   'Engineering': [
-    { name: 'TU Munich', city: 'Munich', country: 'Germany', tuition: 'Free', start: 'Sep 2026', duration: '2 years', img: 'tumunich' },
-    { name: 'Delft University', city: 'Delft', country: 'Netherlands', tuition: '€2,209/yr', start: 'Sep 2026', duration: '2 years', img: 'delft' },
-    { name: 'EPFL', city: 'Lausanne', country: 'Switzerland', tuition: 'CHF 1,566/yr', start: 'Sep 2026', duration: '2 years', img: 'epfl' },
-    { name: 'KU Leuven', city: 'Leuven', country: 'Belgium', tuition: '€1,500/yr', start: 'Sep 2026', duration: '2 years', img: 'kuleuven' },
-    { name: 'Chalmers University', city: 'Gothenburg', country: 'Sweden', tuition: 'Free', start: 'Sep 2026', duration: '2 years', img: 'chalmers' },
+    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '2 years', img: '/unis/master/engineering/eth.jpg' },
+    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/engineering/tudelft.jpg' },
+    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '2 years', img: '/unis/master/engineering/kth.jpg' },
+    { name: 'RWTH Aachen University', city: 'Aachen', country: 'Germany', tuition: 'Free tuition', start: 'Oct 2026', duration: '2 years', img: '/unis/master/engineering/rwth.jpg' },
+    { name: 'University of Cambridge', city: 'Cambridge', country: 'UK', tuition: '£35,000/yr', start: 'Oct 2026', duration: '1 year', img: '/unis/master/engineering/cambridge.jpg' },
   ],
   'Law': [
-    { name: 'University of Amsterdam', city: 'Amsterdam', country: 'Netherlands', tuition: '€2,209/yr', start: 'Sep 2026', duration: '1 year', img: 'amsterdam' },
-    { name: 'Uppsala University', city: 'Uppsala', country: 'Sweden', tuition: 'Free', start: 'Sep 2026', duration: '2 years', img: 'uppsala' },
-    { name: 'University of Vienna', city: 'Vienna', country: 'Austria', tuition: '€1,500/yr', start: 'Sep 2026', duration: '2 years', img: 'vienna' },
-    { name: 'Leiden University', city: 'Leiden', country: 'Netherlands', tuition: '€2,209/yr', start: 'Sep 2026', duration: '2 years', img: 'leiden' },
-    { name: 'University of Helsinki', city: 'Helsinki', country: 'Finland', tuition: 'Free', start: 'Sep 2026', duration: '2 years', img: 'helsinki' },
+    { name: 'Leiden University', city: 'Leiden', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/law/leiden.webp' },
+    { name: 'University of Oxford', city: 'Oxford', country: 'UK', tuition: '£31,000/yr', start: 'Oct 2026', duration: '1 year', img: '/unis/master/law/oxford.webp' },
+    { name: 'Harvard Law School', city: 'Cambridge', country: 'USA', tuition: '$67,000/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/law/harvard.webp' },
+    { name: 'University of Amsterdam', city: 'Amsterdam', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/law/amsterdam.jpg' },
+    { name: 'Sciences Po Law School', city: 'Paris', country: 'France', tuition: '€14,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/law/sciencespo.jpg' },
   ],
 }
 
-const BACHELOR_UNIS = MASTER_UNIS
+const BACHELOR_UNIS = {
+  'Computer Science': [
+    { name: 'Technical University of Munich', city: 'Munich', country: 'Germany', tuition: 'Free tuition', start: 'Oct 2026', duration: '3 years', img: '/unis/bachelor/cs/tum.jpg' },
+    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/cs/eth.jpg' },
+    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '3 years', img: '/unis/bachelor/cs/kth.jpg' },
+    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/cs/tudelft.jpg' },
+    { name: 'EPFL', city: 'Lausanne', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/cs/epfl.webp' },
+  ],
+  'Business & MBA': [
+    { name: 'Bocconi University', city: 'Milan', country: 'Italy', tuition: '€14,000/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/bocconi.jpg' },
+    { name: 'Copenhagen Business School', city: 'Copenhagen', country: 'Denmark', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/cbs.jpg' },
+    { name: 'Erasmus University (RSM)', city: 'Rotterdam', country: 'Netherlands', tuition: '€12,000/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/rsm.jpg' },
+    { name: 'University of St. Gallen', city: 'St. Gallen', country: 'Switzerland', tuition: 'CHF 1,566/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/hsg.jpg' },
+    { name: 'NUS Business School', city: 'Singapore', country: 'Singapore', tuition: 'S$17,500/yr', start: 'Aug 2026', duration: '4 years', img: '/unis/bachelor/business/nus.jpg' },
+  ],
+  'Engineering': [
+    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/engineering/eth.jpg' },
+    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/engineering/tudelft.jpg' },
+    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '3 years', img: '/unis/bachelor/engineering/kth.jpg' },
+    { name: 'RWTH Aachen University', city: 'Aachen', country: 'Germany', tuition: 'Free tuition', start: 'Oct 2026', duration: '3 years', img: '/unis/bachelor/engineering/rwth.jpg' },
+    { name: 'MIT', city: 'Cambridge', country: 'USA', tuition: '$59,000/yr', start: 'Sep 2026', duration: '4 years', img: '/unis/bachelor/engineering/mit.jpg' },
+  ],
+  'Law': [
+    { name: 'Leiden University', city: 'Leiden', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/leiden.webp' },
+    { name: 'University of Oxford', city: 'Oxford', country: 'UK', tuition: '£9,250/yr', start: 'Oct 2026', duration: '3 years', img: '/unis/bachelor/law/oxford.webp' },
+    { name: 'University of Amsterdam', city: 'Amsterdam', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/amsterdam.jpg' },
+    { name: 'Maastricht University', city: 'Maastricht', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/maastricht.jpg' },
+    { name: 'Sciences Po Law School', city: 'Paris', country: 'France', tuition: '€14,000/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/sciencespo.jpg' },
+  ],
+}
 
 const STORIES = [
-  {
-    stat: '8',
-    label: 'free programs found',
-    name: 'Seung',
-    desc: 'Seung found 8 fully-funded CS programs in under 5 minutes and got into his first choice',
-    tags: 'Computer Science · Germany · Free tuition',
-    seed: 'student1',
-  },
-  {
-    stat: '6 weeks',
-    label: 'of research saved',
-    name: 'Sofia',
-    desc: 'Sofia replaced 6 weeks of browser tabs with one UniFind conversation — then got into KTH',
-    tags: 'Computer Science · Sweden · Free tuition',
-    seed: 'student2',
-  },
-  {
-    stat: '€0',
-    label: 'tuition per year',
-    name: 'Mohamed',
-    desc: 'Mohamed discovered he could study Data Science in Europe for free',
-    tags: 'Data Science · Netherlands · Free tuition',
-    seed: 'student3',
-  },
+  { stat: '8', label: 'free programs found', name: 'Seung', desc: 'Seung found 8 fully-funded CS programs in under 5 minutes and got into his first choice', tags: ['Computer Science', 'Germany', 'Free tuition'], img: '/students/s1.jpg' },
+  { stat: '6 weeks', label: 'of research saved', name: 'Sofia', desc: 'Sofia replaced 6 weeks of browser tabs with one UniAsk conversation — then got into KTH', tags: ['European Law', 'Sweden', 'Free tuition'], img: '/students/s2.jpg' },
+  { stat: '€0', label: 'tuition per year', name: 'Mohamed', desc: 'Mohamed discovered he could study Data Science in Europe for free', tags: ['Data Science', 'Netherlands', 'Free tuition'], img: '/students/s3.jpg' },
 ]
 
 const FAQS = [
-  {
-    q: "Is UniFind really free? What's the catch?",
-    a: 'While you would spend weeks Googling, our AI scans thousands of programs in seconds — and ranks them by fit.',
-  },
-  {
-    q: 'How is this different from just Googling or using StudyPortals?',
-    a: 'UniFind uses AI to understand your goals, budget, and preferences — then finds and ranks programs that actually match, saving you weeks of manual research.',
-  },
-  {
-    q: 'How accurate is the information? Can I rely on it for my application?',
-    a: 'Our data is updated weekly from official university sources. Always verify final details directly with the university before applying.',
-  },
-  {
-    q: "I don't know what I want to study yet. Can UniFind still help me?",
-    a: 'Absolutely. Describe your interests, budget, and target countries — our AI will suggest fields and programs that match your profile.',
-  },
-  {
-    q: 'My situation is complicated. Will the AI actually understand me?',
-    a: 'Yes. The AI is trained to handle complex situations — dual nationality, gap years, non-traditional backgrounds, specific visa requirements.',
-  },
-  {
-    q: 'Does UniFind cover visa requirements and cost of living?',
-    a: 'Yes. The AI advisor on each program page can answer questions about visas, cost of living, housing, and life in that city.',
-  },
-  {
-    q: 'What programs and countries does UniFind cover?',
-    a: 'UniFind covers thousands of programs across 50+ countries, with a focus on English-taught and European programs.',
-  },
-  {
-    q: 'Can I save my research and come back later?',
-    a: 'Yes — create a free account to save programs, continue AI chats, and track your shortlist across devices.',
-  },
+  { q: "Is UniAsk really free? What's the catch?", a: 'While you would spend weeks Googling, our AI scans thousands of programs in seconds — and ranks them by fit. The core search is always free.' },
+  { q: 'How is this different from just Googling or using StudyPortals?', a: 'UniAsk uses AI to understand your goals, budget, and preferences — then finds and ranks programs that actually match, saving you weeks of manual research.' },
+  { q: 'How accurate is the information? Can I rely on it for my application?', a: 'Our data is updated weekly from official university sources. Always verify final details directly with the university before applying.' },
+  { q: "I don't know what I want to study yet. Can UniAsk still help me?", a: 'Absolutely. Describe your interests, budget, and target countries — our AI will suggest fields and programs that match your profile.' },
+  { q: 'My situation is complicated. Will the AI actually understand me?', a: 'Yes. The AI is trained to handle complex situations — dual nationality, gap years, non-traditional backgrounds, specific visa requirements.' },
+  { q: 'Does UniAsk cover visa requirements and cost of living?', a: 'Yes. The AI advisor on each program page can answer questions about visas, cost of living, housing, and life in that city.' },
+  { q: 'What programs and countries does UniAsk cover?', a: 'UniAsk covers thousands of programs across 50+ countries, with a focus on English-taught and European programs.' },
+  { q: 'Can I save my research and come back later?', a: 'Yes — create a free account to save programs, continue AI chats, and track your shortlist across devices.' },
 ]
 
-function FieldIcon({ name, size = 16 }) {
-  const props = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' }
-  switch (name) {
-    case 'leaf': return <svg {...props}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.5 2c.5 9 .5 13-2 17-1.5 2-4 2.5-6 2.5"/><path d="M2 21c0-3 1-7 8-13"/></svg>
-    case 'flask': return <svg {...props}><path d="M9 2v6L4 18a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L15 8V2"/><path d="M8 2h8"/><path d="M7 14h10"/></svg>
-    case 'palette': return <svg {...props}><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 22a10 10 0 1 1 10-10c0 2-2 3-4 3h-3a2 2 0 0 0-1 4 2 2 0 0 1-2 3"/></svg>
-    case 'briefcase': return <svg {...props}><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-    case 'terminal': return <svg {...props}><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    case 'book2': return <svg {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-    case 'cog': return <svg {...props}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    case 'globe2': return <svg {...props}><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
-    case 'boat': return <svg {...props}><path d="M3 18 12 4l9 14"/><path d="M3 18a4 4 0 0 0 4 2c2 0 2-1 4-1s2 1 4 1c2 0 2-1 4-1"/></svg>
-    case 'feather': return <svg {...props}><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
-    case 'video': return <svg {...props}><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m22 8-6 4 6 4z"/></svg>
-    case 'scale': return <svg {...props}><path d="M12 3v18M5 21h14M5 6h14M3 12l3-6 3 6a3 3 0 0 1-6 0M15 12l3-6 3 6a3 3 0 0 1-6 0"/></svg>
-    case 'medkit': return <svg {...props}><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M9 7V4h6v3M12 11v6M9 14h6"/></svg>
-    case 'atom': return <svg {...props}><circle cx="12" cy="12" r="1.5"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>
-    case 'people': return <svg {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    default: return null
-  }
-}
+// ── sub-components ────────────────────────────────────────────────────────────
 
-function UniCard({ uni, onSearch }) {
-  const isFree = uni.tuition === 'Free'
+function UniCard({ uni, field }) {
+  const isFree = uni.tuition === 'Free tuition'
   return (
-    <div className="home-card">
-      <img
-        className="uni-card-img"
-        src={`https://picsum.photos/seed/${uni.img}/400/220`}
-        alt={uni.name}
-      />
-      <div className="home-card-body">
-        <div style={{ fontWeight: 700, color: 'var(--green-800)', fontSize: 14, marginBottom: 6, lineHeight: 1.3 }}>
-          {uni.name}
+    <div style={{ minWidth: 280, maxWidth: 280, background: '#fff', borderRadius: 16, border: '1px solid #E8E8E8', overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ height: 172, overflow: 'hidden', position: 'relative' }}>
+        <img src={uni.img} alt={uni.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      </div>
+      <div style={{ padding: '16px 16px 20px', display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#0162E3' }}>{field}</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#111', lineHeight: 1.3 }}>{uni.name}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#555', marginTop: 2 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          {uni.city}, {uni.country}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--green-700)', marginBottom: 4 }}>
-          <Icon name="tag" size={11} />
-          <span>Master's Program</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#555' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          Starts {uni.start}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--ink-500)', marginBottom: 3 }}>
-          <Icon name="pin" size={11} />
-          <span>{uni.city}, {uni.country}</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--ink-500)', marginBottom: 12 }}>
-          <Icon name="calendar" size={11} />
-          <span>{uni.start}</span>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 14 }}>
-          <span
-            className="badge"
-            style={isFree ? { background: 'var(--green-800)', color: 'var(--cream-100)', border: 'none', fontWeight: 600 } : {}}
-          >
-            {isFree ? 'Free' : uni.tuition}
-          </span>
-          <span className="badge badge-green">English</span>
-          <span className="badge">{uni.duration}</span>
+        <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+          <span style={{ padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 500, background: isFree ? '#E8F5E9' : '#F2F2F2', color: isFree ? '#1B7C3A' : '#444', border: `1px solid ${isFree ? '#B8E0C0' : '#E0E0E0'}` }}>{uni.tuition}</span>
+          <span style={{ padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 500, background: '#F2F2F2', color: '#444', border: '1px solid #E0E0E0' }}>English</span>
+          <span style={{ padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 500, background: '#F2F2F2', color: '#444', border: '1px solid #E0E0E0' }}>{uni.duration}</span>
         </div>
         <button
-          onClick={() => onSearch()}
-          style={{
-            width: '100%',
-            padding: '9px 0',
-            border: '1.5px solid var(--green-700)',
-            borderRadius: 'var(--r-md)',
-            color: 'var(--green-800)',
-            fontSize: 13,
-            fontWeight: 600,
-            background: 'transparent',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--green-800)'; e.currentTarget.style.color = 'var(--cream-100)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--green-800)' }}
+          style={{ marginTop: 12, width: '100%', padding: '11px', background: '#0162E3', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}
         >
-          <Icon name="sparkle" size={13} /> Ask AI
+          Ask AI
         </button>
       </div>
     </div>
   )
 }
 
-function CardsSection({ title, unisData, onSearch }) {
-  const [activeTab, setActiveTab] = useState(FIELD_TABS[0])
+function CardsSection({ heading, data, field, onFieldChange }) {
   const rowRef = useRef(null)
-  const scrollRow = (dir) => {
-    if (rowRef.current) rowRef.current.scrollBy({ left: dir * 280, behavior: 'smooth' })
+  const scroll = (dir) => {
+    if (rowRef.current) rowRef.current.scrollBy({ left: dir * 300, behavior: 'smooth' })
   }
-  const unis = unisData[activeTab] || []
+  const unis = data[field] || []
   return (
-    <section style={{ background: 'var(--cream-100)', padding: '80px 0' }}>
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
-        <h2
-          style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 400, marginBottom: 28, color: 'var(--ink-900)', lineHeight: 1.2 }}
-          dangerouslySetInnerHTML={{ __html: title }}
-        />
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
-          {FIELD_TABS.map(tab => (
-            <button
-              key={tab}
-              className={`field-tab${tab === activeTab ? ' active' : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
+    <section style={{ background: '#fff', padding: '72px 0 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
+        <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 28px', fontFamily: 'Geist, sans-serif' }}>{heading}</h2>
+        {/* Field tabs */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 28, borderBottom: '1px solid #E8E8E8', paddingBottom: 0 }}>
+          {FIELD_TABS.map(t => (
+            <button key={t} onClick={() => onFieldChange(t)} style={{ padding: '8px 0', marginRight: 24, fontSize: 15, fontWeight: 500, color: t === field ? '#0162E3' : '#888', background: 'none', border: 'none', borderBottom: t === field ? '2px solid #0162E3' : '2px solid transparent', cursor: 'pointer', fontFamily: 'inherit', marginBottom: -1, transition: 'all 0.15s' }}>
+              {t}
             </button>
           ))}
         </div>
-        <div style={{ position: 'relative' }}>
-          <div className="home-cards-row" ref={rowRef}>
-            {unis.map(uni => (
-              <UniCard key={uni.name} uni={uni} onSearch={onSearch} />
-            ))}
-          </div>
-          <button
-            onClick={() => scrollRow(-1)}
-            aria-label="Scroll left"
-            style={{
-              position: 'absolute',
-              left: -18,
-              top: '40%',
-              transform: 'translateY(-50%)',
-              zIndex: 10,
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: 'var(--white)',
-              border: '1px solid var(--border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 'var(--shadow-md)',
-              cursor: 'pointer',
-              color: 'var(--ink-700)',
-            }}
-          >
-            <Icon name="chevronLeft" size={16} />
+        {/* Cards row */}
+        <div ref={rowRef} style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: 4 }}>
+          {unis.map((u, i) => <UniCard key={i} uni={u} field={field} />)}
+        </div>
+        {/* Nav arrows */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
+          <button onClick={() => scroll(-1)} style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid #E0E0E0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <button
-            onClick={() => scrollRow(1)}
-            aria-label="Scroll right"
-            style={{
-              position: 'absolute',
-              right: -18,
-              top: '40%',
-              transform: 'translateY(-50%) rotate(180deg)',
-              zIndex: 10,
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: 'var(--white)',
-              border: '1px solid var(--border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 'var(--shadow-md)',
-              cursor: 'pointer',
-              color: 'var(--ink-700)',
-            }}
-          >
-            <Icon name="chevronLeft" size={16} />
+          <button onClick={() => scroll(1)} style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid #E0E0E0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         </div>
       </div>
@@ -293,268 +162,212 @@ function CardsSection({ title, unisData, onSearch }) {
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="faq-item">
-      <button className="faq-question" onClick={() => setOpen(o => !o)}>
-        <span>{q}</span>
-        <span style={{ fontSize: 22, fontWeight: 300, lineHeight: 1, flexShrink: 0 }}>
-          {open ? '−' : '+'}
-        </span>
+    <div style={{ borderBottom: '1px solid #E8E8E8', padding: '20px 0' }}>
+      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', padding: 0 }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: '#111', paddingRight: 24 }}>{q}</span>
+        <span style={{ fontSize: 22, color: '#555', lineHeight: 1, flexShrink: 0, fontWeight: 300 }}>{open ? '−' : '+'}</span>
       </button>
-      {open && (
-        <div className="faq-answer">{a}</div>
-      )}
+      {open && <p style={{ margin: '12px 0 0', fontSize: 15, color: '#555', lineHeight: 1.7 }}>{a}</p>}
     </div>
   )
 }
 
-export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
-  const update = (k, v) => setFilters(f => ({ ...f, [k]: v }))
-  const [fieldOpen, setFieldOpen] = useState(false)
-  const [tuitionOpen, setTuitionOpen] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [sliderVal, setSliderVal] = useState(0)
-  const fieldRef = useRef(null)
-  const tuitionRef = useRef(null)
+// ── TuitionCard (local) ───────────────────────────────────────────────────────
 
-  useEffect(() => {
-    const onClick = (e) => {
-      if (fieldRef.current && !fieldRef.current.contains(e.target)) setFieldOpen(false)
-      if (tuitionRef.current && !tuitionRef.current.contains(e.target)) setTuitionOpen(false)
-    }
-    document.addEventListener('mousedown', onClick)
-    return () => document.removeEventListener('mousedown', onClick)
-  }, [])
-
-  const filteredFields = FIELDS.filter(f =>
-    !filters.field || f.name.toLowerCase().includes(filters.field.toLowerCase())
-  )
-
-  const hours = Math.round(240 - 239 * (sliderVal / 100))
-
+function TuitionCard({ value, onChange }) {
+  const [lo, hi] = value
+  const [loStr, setLoStr] = useState(String(lo))
+  const [hiStr, setHiStr] = useState(String(hi))
+  useEffect(() => { setLoStr(String(lo)) }, [lo])
+  useEffect(() => { setHiStr(String(hi)) }, [hi])
+  const applyLo = raw => { const n = Math.max(0, Math.min(Number(raw) || 0, hi - 1000)); onChange([n, hi]); setLoStr(String(n)) }
+  const applyHi = raw => { const n = Math.min(100000, Math.max(Number(raw) || 0, lo + 1000)); onChange([lo, n]); setHiStr(String(n)) }
+  const pct = v => (v / 100000) * 100
   return (
-    <div className="zap-screen">
-      {/* ── Nav ──────────────────────────────────────────────── */}
-      <header className="zap-nav">
-        <div className="zap-nav-left">
-          <button
-            className="mobile-burger-btn"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <Icon name="menu" size={22} />
-          </button>
-          <Logo />
+    <div style={{ padding: 4 }}>
+      <div style={{ position: 'relative', height: 6, background: '#E0E0E0', borderRadius: 999, margin: '20px 0 14px' }}>
+        <div style={{ position: 'absolute', left: `${pct(lo)}%`, right: `${100 - pct(hi)}%`, top: 0, height: '100%', background: '#0162E3', borderRadius: 999 }} />
+        <div style={{ position: 'absolute', left: `${pct(lo)}%`, top: '50%', width: 16, height: 16, borderRadius: '50%', background: '#fff', border: '2px solid #0162E3', transform: 'translate(-50%,-50%)', cursor: 'grab' }} />
+        <div style={{ position: 'absolute', left: `${pct(hi)}%`, top: '50%', width: 16, height: 16, borderRadius: '50%', background: '#fff', border: '2px solid #0162E3', transform: 'translate(-50%,-50%)', cursor: 'grab' }} />
+      </div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px' }}>
+          <span style={{ fontSize: 12, color: '#888' }}>$</span>
+          <input value={loStr} onChange={e => setLoStr(e.target.value)} onBlur={e => applyLo(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0 }} />
         </div>
-        <div className="zap-nav-right">
-          <button
-            className="zap-nav-link nav-desktop-only"
-            onClick={() => user ? onMyPrograms?.() : onOpenAuth?.('save-programs')}
-          >
-            <Icon name="heart" size={14} /> My Programs
-          </button>
-          <button
-            className="zap-nav-link nav-desktop-only"
-            onClick={() => user ? onMyChats?.() : onOpenAuth?.('save-chats')}
-          >
-            <Icon name="sparkle" size={14} /> My Chats
-          </button>
-          {user ? (
-            <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} />
-          ) : (
-            <>
-              <button className="zap-link nav-desktop-only" onClick={() => onOpenAuth('login')}>Log in</button>
-              <button className="zap-btn zap-btn-primary nav-desktop-only" onClick={() => onOpenAuth('register')}>Sign up</button>
-            </>
-          )}
-        </div>
-      </header>
-
-      {/* ── Section 1: Hero ──────────────────────────────────── */}
-      <div style={{ background: 'var(--cream-200)', padding: '60px 24px 56px' }}>
-        <div className="home-search-card">
-          {/* Eyebrow */}
-          <div
-            className="eyebrow"
-            style={{ textAlign: 'center', marginBottom: 14, letterSpacing: '0.12em' }}
-          >
-            YOUR GOALS. YOUR BUDGET. ANY UNIVERSITY.
-          </div>
-
-          {/* H1 */}
-          <h1
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontWeight: 400,
-              fontSize: 'clamp(32px, 5vw, 52px)',
-              textAlign: 'center',
-              color: 'var(--ink-900)',
-              lineHeight: 1.12,
-              margin: '0 0 24px',
-            }}
-          >
-            Find your next university
-          </h1>
-
-          {/* Degree toggle pills */}
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 32, flexWrap: 'wrap' }}>
-            {['Bachelor', 'Master', 'PhD'].map(d => (
-              <button
-                key={d}
-                className={`degree-pill${filters.degree?.includes(d) ? ' active' : ''}`}
-                onClick={() => update('degree', [d])}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-
-          {/* Search bar */}
-          <div className="zap-search-bar" style={{ marginBottom: 20 }}>
-            {/* Field of study */}
-            <div className="zap-cell zap-cell-field" ref={fieldRef}>
-              <label>Field of study</label>
-              <input
-                placeholder="e.g. Computer Science"
-                value={filters.field}
-                onChange={(e) => { update('field', e.target.value); setFieldOpen(true) }}
-                onFocus={() => setFieldOpen(true)}
-                onKeyDown={(e) => e.key === 'Enter' && onSearch()}
-              />
-              {fieldOpen && (
-                <div className="field-dropdown" onMouseDown={(e) => e.preventDefault()}>
-                  <div className="field-dropdown-head">Suggested fields of study</div>
-                  <div className="field-dropdown-list">
-                    {filteredFields.length === 0 && (
-                      <div className="field-empty">No matches — press Enter to search &ldquo;{filters.field}&rdquo;</div>
-                    )}
-                    {filteredFields.map((f) => {
-                      const selected = filters.field === f.name
-                      return (
-                        <button
-                          key={f.name}
-                          className={`field-option${selected ? ' selected' : ''}`}
-                          onClick={() => { update('field', f.name); setFieldOpen(false) }}
-                        >
-                          <span className="field-option-icon"><FieldIcon name={f.icon} size={16} /></span>
-                          <span className="field-option-name">{f.name}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Country */}
-            <div className="zap-cell">
-              <label>Country</label>
-              <select value={filters.country} onChange={(e) => update('country', e.target.value)}>
-                <optgroup label="— Popular —">
-                  {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </optgroup>
-                <optgroup label="— All countries —">
-                  {ALL_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </optgroup>
-              </select>
-            </div>
-
-            {/* Start date */}
-            <div className="zap-cell">
-              <label>Start date</label>
-              <select value={filters.startDate} onChange={(e) => update('startDate', e.target.value)}>
-                <option value="">Any intake</option>
-                <option value="Fall 2026">Fall 2026</option>
-                <option value="Spring 2027">Spring 2027</option>
-                <option value="Fall 2027">Fall 2027</option>
-              </select>
-            </div>
-
-            {/* Tuition */}
-            <div className="zap-cell zap-cell-tuition" ref={tuitionRef}>
-              <label>Tuition (USD/yr)</label>
-              <button className="zap-tuition-trigger" onClick={() => setTuitionOpen(o => !o)}>
-                <span>
-                  {filters.tuition[0] === 0 ? 'Free' : `$${filters.tuition[0].toLocaleString()}`}
-                  {' – '}
-                  ${filters.tuition[1].toLocaleString()}
-                </span>
-              </button>
-              {tuitionOpen && (
-                <div className="tuition-dropdown" onMouseDown={(e) => e.stopPropagation()}>
-                  <TuitionCard
-                    value={filters.tuition}
-                    onChange={(v) => { update('tuition', v); setTuitionOpen(false) }}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Search button */}
-            <button className="zap-btn zap-btn-primary zap-search-btn" onClick={onSearch}>
-              <Icon name="search" size={16} /> Search
-            </button>
-          </div>
-
-          {/* Format + Attendance chips */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, paddingTop: 16, borderTop: '1px solid var(--cream-300)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span className="zap-filter-label">Format</span>
-              <ChipGroup options={['Full-time', 'Part-time']} value={filters.format} onChange={(v) => update('format', v)} />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span className="zap-filter-label">Attendance</span>
-              <ChipGroup options={['On-campus', 'Online', 'Blended']} value={filters.attendance} onChange={(v) => update('attendance', v)} />
-            </div>
-          </div>
+        <span style={{ color: '#ccc' }}>—</span>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px' }}>
+          <span style={{ fontSize: 12, color: '#888' }}>$</span>
+          <input value={hiStr} onChange={e => setHiStr(e.target.value)} onBlur={e => applyHi(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0 }} />
         </div>
       </div>
+    </div>
+  )
+}
 
-      {/* ── Section 2: Master programs ───────────────────────── */}
+// ── main export ───────────────────────────────────────────────────────────────
+
+export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [showTuition, setShowTuition] = useState(false)
+  const [masterField, setMasterField] = useState('Computer Science')
+  const [bachelorField, setBachelorField] = useState('Computer Science')
+  const [sliderVal, setSliderVal] = useState(0)
+  const tuitionRef = useRef(null)
+
+  // derived display values
+  const degree = filters.degree?.[0] || 'Bachelor'
+  const [tuitionLo, tuitionHi] = filters.tuition || [0, 100000]
+  const tuitionLabel = tuitionLo === 0 && tuitionHi === 100000 ? 'Free – $100,000' : `$${tuitionLo.toLocaleString()} – $${tuitionHi.toLocaleString()}`
+  const hoursVal = Math.round(240 - (sliderVal / 100) * 239)
+
+  useEffect(() => {
+    const close = e => { if (tuitionRef.current && !tuitionRef.current.contains(e.target)) setShowTuition(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
+
+  const setDegree = d => setFilters(f => ({ ...f, degree: [d] }))
+
+  // ── render ─────────────────────────────────────────────────────────────────
+  return (
+    <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', background: '#fff', minHeight: '100vh' }}>
+
+      {/* ── NAV ── */}
+      <header style={{ background: '#05203C', borderBottom: '1px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* Left */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+            <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu" style={{ color: '#fff', display: 'none' }}>
+              <Icon name="menu" size={22} />
+            </button>
+            <Logo size="sm" style={{ color: '#fff' }} />
+            <nav className="nav-desktop-only" style={{ display: 'flex', gap: 24 }}>
+              <button style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Homepage</button>
+              <button onClick={onMyPrograms} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>My Programs</button>
+              <button onClick={onMyChats} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>My Chats</button>
+            </nav>
+          </div>
+          {/* Right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {user ? (
+              <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} dark />
+            ) : (
+              <>
+                <button onClick={onOpenAuth} style={{ padding: '9px 20px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.35)', background: 'transparent', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Log in</button>
+                <button onClick={onOpenAuth} style={{ padding: '9px 20px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.35)', background: 'transparent', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Sign up for free</button>
+              </>
+            )}
+          </div>
+        </div>
+        <style>{`.mobile-burger-btn { display: none !important; } @media (max-width: 768px) { .mobile-burger-btn { display: flex !important; } }`}</style>
+      </header>
+
+      {/* ── HERO ── */}
+      <section style={{ background: '#05203C', padding: '72px 32px 80px', textAlign: 'center' }}>
+        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 16 }}>YOUR GOALS. YOUR BUDGET. ANY UNIVERSITY.</p>
+        <h1 style={{ fontSize: 'clamp(36px,5vw,64px)', fontWeight: 700, color: '#fff', margin: '0 0 32px', lineHeight: 1.15, fontFamily: 'Geist, sans-serif' }}>Find your next university</h1>
+
+        {/* Degree pills */}
+        <div style={{ display: 'inline-flex', gap: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 999, padding: 6, marginBottom: 32 }}>
+          {['Bachelor', 'Master', 'PhD'].map(d => (
+            <button key={d} onClick={() => setDegree(d)} style={{ padding: '9px 28px', borderRadius: 999, border: 'none', background: degree === d ? '#fff' : 'transparent', color: degree === d ? '#05203C' : 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{d}</button>
+          ))}
+        </div>
+
+        {/* Search bar */}
+        <div style={{ maxWidth: 900, margin: '0 auto', background: '#fff', borderRadius: 16, padding: '0', display: 'flex', alignItems: 'stretch', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+          {/* Field of study */}
+          <div style={{ flex: '1 1 200px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Field of Study</label>
+            <input
+              value={filters.field || ''}
+              onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
+              placeholder="e.g. Computer Science"
+              style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', padding: 0 }}
+            />
+          </div>
+          {/* Country */}
+          <div style={{ flex: '1 1 160px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, position: 'relative' }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Country</label>
+            <select value={filters.country || ''} onChange={e => setFilters(f => ({ ...f, country: e.target.value }))} style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: 0, width: '100%' }}>
+              <option value="">Any country</option>
+              {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+              <option disabled>──────────</option>
+              {ALL_COUNTRIES.filter(c => !POPULAR_COUNTRIES.includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          {/* Start date */}
+          <div style={{ flex: '1 1 140px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Start Date</label>
+            <select value={filters.startDate || ''} onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))} style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: 0 }}>
+              <option value="">Any intake</option>
+              {['Jan 2025','Feb 2025','Mar 2025','Apr 2025','May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+          {/* Tuition */}
+          <div ref={tuitionRef} style={{ flex: '1 1 160px', padding: '16px 20px', borderRight: '1px solid #F0F0F0', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, position: 'relative', cursor: 'pointer' }} onClick={() => setShowTuition(s => !s)}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.07em', pointerEvents: 'none' }}>Tuition (USD/yr)</label>
+            <span style={{ fontSize: 15, color: '#111', userSelect: 'none' }}>{tuitionLabel}</span>
+            {showTuition && (
+              <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', left: 0, minWidth: 260, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
+                <TuitionCard value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
+              </div>
+            )}
+          </div>
+          {/* Search button */}
+          <button onClick={onSearch} style={{ flexShrink: 0, padding: '0 28px', background: '#0162E3', color: '#fff', border: 'none', fontSize: 16, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', borderRadius: '0 16px 16px 0' }}>
+            Search
+          </button>
+        </div>
+
+        {/* Format + Attendance chips */}
+        <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 20, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Format</span>
+            {['Full-time', 'Part-time'].map(v => {
+              const active = (filters.format || []).includes(v)
+              return <button key={v} onClick={() => setFilters(f => ({ ...f, format: active ? (f.format || []).filter(x => x !== v) : [...(f.format || []), v] }))} style={{ padding: '7px 18px', borderRadius: 999, border: `1px solid ${active ? '#fff' : 'rgba(255,255,255,0.3)'}`, background: active ? '#fff' : 'transparent', color: active ? '#05203C' : 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{v}</button>
+            })}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Attendance</span>
+            {['On-campus', 'Online', 'Blended'].map(v => {
+              const active = (filters.attendance || []).includes(v)
+              return <button key={v} onClick={() => setFilters(f => ({ ...f, attendance: active ? (f.attendance || []).filter(x => x !== v) : [...(f.attendance || []), v] }))} style={{ padding: '7px 18px', borderRadius: 999, border: `1px solid ${active ? '#fff' : 'rgba(255,255,255,0.3)'}`, background: active ? '#fff' : 'transparent', color: active ? '#05203C' : 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>{v}</button>
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── MASTER PROGRAMS ── */}
       <CardsSection
-        title="Popular fields. Top <em style='font-style:italic'>master</em> programs."
-        unisData={MASTER_UNIS}
-        onSearch={onSearch}
+        heading={<>Popular fields. Top <span style={{ color: '#0162E3' }}>master</span> programs.</>}
+        data={MASTER_UNIS}
+        field={masterField}
+        onFieldChange={setMasterField}
       />
 
-      {/* ── Section 3: Student stories ───────────────────────── */}
-      <section style={{ background: 'var(--cream-200)', padding: '80px 24px' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontWeight: 400,
-              fontSize: 'clamp(26px, 4vw, 40px)',
-              color: 'var(--ink-900)',
-              marginBottom: 40,
-              lineHeight: 1.2,
-            }}
-          >
-            Students getting accepted.
-          </h2>
-          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-            {STORIES.map((s) => (
-              <div
-                key={s.name}
-                className="story-card"
-                style={{
-                  backgroundImage: `url(https://picsum.photos/seed/${s.seed}/400/300)`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'linear-gradient(160deg, rgba(10,30,20,0.55) 0%, rgba(10,30,20,0.82) 100%)',
-                    borderRadius: 'var(--r-lg)',
-                  }}
-                />
-                <div style={{ position: 'relative', zIndex: 1, padding: 28, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
-                  <div className="story-stat">{s.stat}</div>
-                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 12, marginTop: 2 }}>{s.label}</div>
-                  <div style={{ fontSize: 15, color: 'white', lineHeight: 1.55, marginBottom: 14 }}>{s.desc}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.02em' }}>{s.tags}</div>
+      {/* ── STUDENTS GETTING ACCEPTED ── */}
+      <section style={{ background: '#F2F2F2', padding: '80px 32px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 36px', fontFamily: 'Geist, sans-serif' }}>Students getting accepted.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+            {STORIES.map((s, i) => (
+              <div key={i} style={{ borderRadius: 16, overflow: 'hidden', background: '#fff', border: '1px solid #E8E8E8' }}>
+                <div style={{ position: 'relative', height: 220 }}>
+                  <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)' }} />
+                  <div style={{ position: 'absolute', bottom: 16, left: 16 }}>
+                    <div style={{ fontSize: 36, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{s.stat}</div>
+                    <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>{s.label}</div>
+                  </div>
+                </div>
+                <div style={{ padding: '16px 20px 20px' }}>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+                    {s.tags.map(t => <span key={t} style={{ padding: '3px 10px', borderRadius: 999, background: '#F2F2F2', fontSize: 12, color: '#555', border: '1px solid #E0E0E0' }}>{t}</span>)}
+                  </div>
+                  <p style={{ margin: 0, fontSize: 15, color: '#111', lineHeight: 1.5, fontWeight: 500 }}>{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -562,322 +375,97 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         </div>
       </section>
 
-      {/* ── Section 4: Bachelor programs ─────────────────────── */}
+      {/* ── BACHELOR PROGRAMS ── */}
       <CardsSection
-        title="Popular fields. Top <em style='font-style:italic'>bachelor</em> programs."
-        unisData={BACHELOR_UNIS}
-        onSearch={onSearch}
+        heading={<>Popular fields. Top <span style={{ color: '#0162E3' }}>bachelor</span> programs.</>}
+        data={BACHELOR_UNIS}
+        field={bachelorField}
+        onFieldChange={setBachelorField}
       />
 
-      {/* ── Section 5: Time comparison ───────────────────────── */}
-      <section style={{ background: 'var(--cream-200)', padding: '80px 24px' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontWeight: 400,
-              fontSize: 'clamp(26px, 4vw, 42px)',
-              color: 'var(--ink-900)',
-              marginBottom: 18,
-              lineHeight: 1.2,
-            }}
-          >
-            Students waste months on research that should take minutes.
-          </h2>
-          <p style={{ fontSize: 16, color: 'var(--ink-500)', lineHeight: 1.65, marginBottom: 48, maxWidth: 580, margin: '0 auto 48px' }}>
-            The average student spends 6–10 weeks comparing programs across dozens of browser tabs. UniFind replaces all of that with one conversation.
-          </p>
-
-          <div style={{ fontSize: 15, color: 'var(--ink-700)', fontWeight: 500, marginBottom: 20 }}>
-            I&apos;ve been researching universities for
-          </div>
-
-          <input
-            type="range"
-            className="time-slider"
-            min={0}
-            max={100}
-            value={sliderVal}
-            onChange={e => setSliderVal(Number(e.target.value))}
-            style={{ width: '100%', marginBottom: 40 }}
-          />
-
-          <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {/* Left stat */}
-            <div
-              style={{
-                flex: 1,
-                minWidth: 200,
-                background: 'var(--white)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--r-xl)',
-                padding: '36px 24px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <div className="time-stat-red">{hours}</div>
-              <div style={{ fontSize: 14, color: 'var(--ink-500)', fontWeight: 500 }}>hours spent researching</div>
-            </div>
-            {/* Right stat */}
-            <div
-              style={{
-                flex: 1,
-                minWidth: 200,
-                background: 'var(--white)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--r-xl)',
-                padding: '36px 24px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <div className="time-stat-green">3</div>
-              <div style={{ fontSize: 14, color: 'var(--ink-500)', fontWeight: 500 }}>minutes to your shortlist</div>
-              <div
-                style={{
-                  marginTop: 4,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  color: 'var(--green-700)',
-                  textTransform: 'uppercase',
-                }}
-              >
-                WITH UNIFIND
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 6: FAQ ───────────────────────────────────── */}
-      <section style={{ background: 'var(--cream-100)', padding: '80px 24px' }}>
+      {/* ── TIME COMPARISON ── */}
+      <section style={{ background: '#F2F2F2', padding: '80px 32px', textAlign: 'center' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontWeight: 400,
-              fontSize: 'clamp(26px, 4vw, 40px)',
-              color: 'var(--ink-900)',
-              marginBottom: 40,
-              lineHeight: 1.2,
-            }}
-          >
-            More questions?
-          </h2>
-          {FAQS.map((item) => (
-            <FaqItem key={item.q} q={item.q} a={item.a} />
-          ))}
+          <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 16px', fontFamily: 'Geist, sans-serif', lineHeight: 1.2 }}>Students waste months on research<br />that should take minutes.</h2>
+          <p style={{ fontSize: 16, color: '#666', margin: '0 0 48px', lineHeight: 1.6 }}>The average student spends 6–10 weeks comparing programs across dozens of browser tabs. UniAsk replaces all of that with one conversation.</p>
+          <p style={{ fontSize: 15, color: '#555', marginBottom: 16 }}>I've been researching universities for</p>
+          <input type="range" min="0" max="100" value={sliderVal} onChange={e => setSliderVal(Number(e.target.value))} style={{ width: '100%', accentColor: '#05203C', cursor: 'pointer', marginBottom: 36 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <div style={{ background: '#fff', borderRadius: 16, padding: '28px', border: '1px solid #E8E8E8', textAlign: 'left' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>YOUR RESEARCH SO FAR</div>
+              <div style={{ fontSize: 64, fontWeight: 800, color: '#E53E3E', lineHeight: 1 }}>{hoursVal}</div>
+              <div style={{ fontSize: 15, color: '#555', marginTop: 8 }}><strong>hours</strong> spent researching</div>
+            </div>
+            <div style={{ background: '#fff', borderRadius: 16, padding: '28px', border: '1px solid #E8E8E8', textAlign: 'left' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#0162E3', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>WITH <strong>UNIASK</strong></div>
+              <div style={{ fontSize: 64, fontWeight: 800, color: '#0162E3', lineHeight: 1 }}>3</div>
+              <div style={{ fontSize: 15, color: '#555', marginTop: 8 }}><strong>minutes</strong> to your shortlist</div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── Section 7: Footer ────────────────────────────────── */}
-      <footer className="home-footer">
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: 48,
-              marginBottom: 56,
-            }}
-          >
-            {/* Left: logo + tagline */}
+      {/* ── FAQ ── */}
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 8px', fontFamily: 'Geist, sans-serif', textAlign: 'center' }}>More questions?</h2>
+          <p style={{ textAlign: 'center', color: '#888', marginBottom: 40, fontSize: 15 }}>Everything you need to know about UniAsk.</p>
+          {FAQS.map((f, i) => <FaqItem key={i} {...f} />)}
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background: '#05203C', padding: '64px 32px 40px', color: '#fff' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
+            {/* Col 1 */}
             <div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: 22,
-                  color: 'white',
-                  marginBottom: 16,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                }}
-              >
-                <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 9,
-                    background: 'rgba(255,255,255,0.15)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    fontStyle: 'italic',
-                    fontSize: 20,
-                  }}
-                >
-                  U
+              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>UniAsk</div>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: 0 }}>University research is broken. Students spend weeks across dozens of tabs — and still miss the best options. UniAsk fixes that. Describe your goals, and our AI finds, ranks, and explains the right programs for you. Free for every student. Always.</p>
+            </div>
+            {/* Col 2 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 4 }}>
+              <button onClick={() => {}} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>Home</button>
+              <button onClick={onMyPrograms} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>My Programs</button>
+              <button onClick={onMyChats} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>My Chats</button>
+              <button style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', padding: 0 }}>Contact Us</button>
+            </div>
+            {/* Col 3 — social */}
+            <div style={{ display: 'flex', gap: 10, paddingTop: 4, alignItems: 'flex-start' }}>
+              {[
+                { label: 'Instagram', d: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z' },
+                { label: 'Facebook', d: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' },
+                { label: 'TikTok', d: 'M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34l-.03-8.49a8.18 8.18 0 0 0 4.79 1.52V5.01a4.85 4.85 0 0 1-1-.32z' },
+                { label: 'X', d: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.745l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z' },
+              ].map(({ label, d }) => (
+                <div key={label} style={{ width: 36, height: 36, borderRadius: '50%', background: '#0162E3', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d={d} /></svg>
                 </div>
-                UniFind
-              </div>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: 'rgba(255,255,255,0.6)',
-                  lineHeight: 1.7,
-                  maxWidth: 280,
-                }}
-              >
-                University research is broken. Students spend weeks across dozens of tabs — and still miss the best options. UniFind fixes that. Describe your goals, and our AI finds, ranks, and explains the right programs for you. Free for every student. Always.
-              </p>
-            </div>
-
-            {/* Center: links */}
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', marginBottom: 20 }}>
-                Navigation
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {[
-                  { label: 'Home', action: null },
-                  { label: 'My Programs', action: () => user ? onMyPrograms?.() : onOpenAuth?.('save-programs') },
-                  { label: 'My Chats', action: () => user ? onMyChats?.() : onOpenAuth?.('save-chats') },
-                  { label: 'Contact Us', action: () => onFeedback?.() },
-                ].map(link => (
-                  <button
-                    key={link.label}
-                    onClick={link.action}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'rgba(255,255,255,0.7)',
-                      fontSize: 14,
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      padding: 0,
-                      transition: 'color 0.15s ease',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.color = 'white' }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-                  >
-                    {link.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: social + legal */}
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', marginBottom: 20 }}>
-                Follow Us
-              </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                {/* Twitter/X */}
-                <a
-                  href="#"
-                  aria-label="Twitter"
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    color: 'rgba(255,255,255,0.6)',
-                    textDecoration: 'none',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)'; e.currentTarget.style.color = 'white' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.745l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-                {/* LinkedIn */}
-                <a
-                  href="#"
-                  aria-label="LinkedIn"
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    color: 'rgba(255,255,255,0.6)',
-                    textDecoration: 'none',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)'; e.currentTarget.style.color = 'white' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-                </a>
-                {/* Instagram */}
-                <a
-                  href="#"
-                  aria-label="Instagram"
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    color: 'rgba(255,255,255,0.6)',
-                    textDecoration: 'none',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)'; e.currentTarget.style.color = 'white' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-                </a>
-              </div>
+              ))}
             </div>
           </div>
-
           {/* Bottom bar */}
-          <div
-            style={{
-              borderTop: '1px solid rgba(255,255,255,0.1)',
-              paddingTop: 24,
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 16,
-              fontSize: 13,
-              color: 'rgba(255,255,255,0.4)',
-            }}
-          >
-            <div style={{ display: 'flex', gap: 20 }}>
-              <button
-                onClick={() => onPrivacy?.()}
-                style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
-              >
-                Privacy Policy
-              </button>
-              <span>·</span>
-              <button
-                onClick={() => onTerms?.()}
-                style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
-              >
-                Terms
-              </button>
-              <span>·</span>
-              <span>Cookies</span>
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <button onClick={onPrivacy} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Privacy Policy</button>
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+              <button onClick={onTerms} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Terms</button>
+              <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+              <button style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Cookies</button>
             </div>
-            <div>© {new Date().getFullYear()} UniFind AI. All rights reserved.</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>© 2025 UniAsk · Built for students, by people who remember the struggle.</div>
           </div>
         </div>
-
         {/* Watermark */}
-        <div className="home-footer-watermark">UniFind AI</div>
+        <div style={{ fontSize: 'clamp(64px,12vw,160px)', fontWeight: 800, color: 'rgba(255,255,255,0.05)', textAlign: 'center', userSelect: 'none', marginTop: 24, lineHeight: 1, letterSpacing: '-2px' }}>UniAsk AI</div>
       </footer>
 
-      {/* ── Mobile menu drawer ────────────────────────────────── */}
       {menuOpen && (
         <MobileMenuDrawer
           user={user}
           onClose={() => setMenuOpen(false)}
-          onOpenAuth={(mode) => { setMenuOpen(false); onOpenAuth(mode) }}
-          onSignOut={() => { setMenuOpen(false); onSignOut() }}
+          onOpenAuth={() => { setMenuOpen(false); onOpenAuth?.() }}
+          onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
           onProfile={() => { setMenuOpen(false); onProfile?.() }}
@@ -886,69 +474,6 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
         />
       )}
-    </div>
-  )
-}
-
-function TuitionCard({ value, onChange }) {
-  const [draft, setDraft] = useState(value)
-  const [loStr, setLoStr] = useState(String(value[0]))
-  const [hiStr, setHiStr] = useState(String(value[1]))
-
-  useEffect(() => {
-    setDraft(value)
-    setLoStr(String(value[0]))
-    setHiStr(String(value[1]))
-  }, [value])
-
-  const [lo, hi] = draft
-
-  const applyLo = (raw) => {
-    const n = Math.max(0, Math.min(Number(raw) || 0, hi - 100))
-    setDraft([n, hi])
-    setLoStr(String(n))
-  }
-  const applyHi = (raw) => {
-    const n = Math.min(100000, Math.max(Number(raw) || 0, lo + 100))
-    setDraft([lo, n])
-    setHiStr(String(n))
-  }
-
-  const handleSliderChange = (v) => {
-    setDraft(v)
-    setLoStr(String(v[0]))
-    setHiStr(String(v[1]))
-  }
-
-  return (
-    <div className="tuition-card">
-      <RangeSlider min={0} max={100000} step={100} value={draft} onChange={handleSliderChange} hideInputs />
-      <div className="tuition-card-inputs">
-        <div className="tuition-input-wrap">
-          <span className="tuition-dollar">$</span>
-          <input
-            type="number"
-            value={loStr}
-            min={0}
-            onChange={(e) => setLoStr(e.target.value)}
-            onBlur={(e) => applyLo(e.target.value)}
-          />
-        </div>
-        <span className="tuition-dash">—</span>
-        <div className="tuition-input-wrap">
-          <span className="tuition-dollar">$</span>
-          <input
-            type="number"
-            value={hiStr}
-            max={100000}
-            onChange={(e) => setHiStr(e.target.value)}
-            onBlur={(e) => applyHi(e.target.value)}
-          />
-        </div>
-      </div>
-      <button className="tuition-apply-btn" onClick={() => onChange(draft)}>
-        Apply
-      </button>
     </div>
   )
 }
