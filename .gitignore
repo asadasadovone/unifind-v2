@@ -21,3 +21,7 @@ yarn-error.log*
 
 # Claude worktree config
 .claude/
+
+# Source data files (not part of the app)
+*.pdf
+UniAsk.zip

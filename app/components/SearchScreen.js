@@ -7,67 +7,82 @@ import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 
 // ── data ──────────────────────────────────────────────────────────────────────
 
-const FIELD_TABS = ['Computer Science', 'Business & MBA', 'Engineering', 'Law']
+const MASTER_TABS = ['Computer Science', 'Business & MBA', 'Engineering', 'Law']
+const BACHELOR_TABS = ['Business & MBA', 'Engineering', 'Law']
 
 const MASTER_UNIS = {
   'Computer Science': [
-    { name: 'Technical University of Munich', city: 'Munich', country: 'Germany', tuition: 'Free tuition', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/tum.jpg' },
-    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/eth.jpg' },
-    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '2 years', img: '/unis/master/cs/kth.jpg' },
-    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/tudelft.jpg' },
-    { name: 'MIT', city: 'Cambridge', country: 'USA', tuition: '$59,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/cs/mit.jpg' },
+    { name: 'Technical University of Munich', program: 'MSc Informatics', loc: 'Munich, Germany', start: 'Oct 2026', tuition: 'Free tuition', duration: '2 years', img: '/unis/m/cs/tum.jpg' },
+    { name: 'ETH Zürich', program: 'MSc Computer Science', loc: 'Zürich, Switzerland', start: 'Sep 2026', tuition: 'CHF 1,460/yr', duration: '2 years', img: '/unis/m/cs/eth.jpg' },
+    { name: 'KTH Royal Institute of Technology', program: 'MSc Computer Science', loc: 'Stockholm, Sweden', start: 'Aug 2026', tuition: 'Free tuition (EU)', duration: '2 years', img: '/unis/m/cs/kth.jpg' },
+    { name: 'TU Delft', program: 'MSc Computer Science', loc: 'Delft, Netherlands', start: 'Sep 2026', tuition: '€2,530/yr', duration: '2 years', img: '/unis/m/cs/delft.jpg' },
+    { name: 'Imperial College London', program: 'MSc Computing', loc: 'London, United Kingdom', start: 'Sep 2026', tuition: '£17,400/yr', duration: '1 year', img: null },
+    { name: 'Massachusetts Institute of Technology (MIT)', program: 'MSc Computer Science', loc: 'Cambridge, USA', start: 'Sep 2026', tuition: '$61,990/yr', duration: '2 years', img: '/unis/m/cs/mit.jpg' },
+    { name: 'Carnegie Mellon University', program: 'MSc Computer Science', loc: 'Pittsburgh, USA', start: 'Sep 2026', tuition: '$54,672/yr', duration: '2 years', img: '/unis/m/cs/cmu.jpg' },
+    { name: 'National University of Singapore (NUS)', program: 'MSc Computer Science', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 18,400/yr', duration: '1.5 years', img: '/unis/m/cs/nus.jpg' },
   ],
   'Business & MBA': [
-    { name: 'HEC Paris', city: 'Paris', country: 'France', tuition: '€15,500/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/business/hec.jpg' },
-    { name: 'London Business School', city: 'London', country: 'UK', tuition: '£45,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/business/lbs.jpg' },
-    { name: 'INSEAD', city: 'Fontainebleau', country: 'France', tuition: '€95,000/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/business/insead.webp' },
-    { name: 'Bocconi University', city: 'Milan', country: 'Italy', tuition: '€14,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/business/bocconi.jpg' },
-    { name: 'Erasmus University (RSM)', city: 'Rotterdam', country: 'Netherlands', tuition: '€17,500/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/business/rsm.jpg' },
+    { name: 'HEC Paris', program: 'MIM (Master in Management)', loc: 'Paris, France', start: 'Sep 2026', tuition: '€41,500 total', duration: '2 years', img: '/unis/m/biz/hec.jpg' },
+    { name: 'Bocconi University', program: 'MSc International Management (MISB)', loc: 'Milan, Italy', start: 'Sep 2026', tuition: '€17,116/yr', duration: '2 years', img: '/unis/m/biz/bocconi.jpg' },
+    { name: 'Erasmus University Rotterdam (RSM)', program: 'MSc International Management / CEMS', loc: 'Rotterdam, Netherlands', start: 'Sep 2026', tuition: '€2,530/yr (EU)', duration: '1 year', img: '/unis/m/biz/rsm.jpg' },
+    { name: 'Copenhagen Business School', program: 'MSc Economics & Business Administration', loc: 'Copenhagen, Denmark', start: 'Sep 2026', tuition: 'Free tuition (EU)', duration: '2 years', img: '/unis/m/biz/cbs.jpg' },
+    { name: 'London Business School', program: 'MBA', loc: 'London, United Kingdom', start: 'Aug 2026', tuition: '£119,900 total', duration: '15–21 months', img: '/unis/m/biz/lbs.jpg' },
+    { name: 'Harvard Business School', program: 'MBA', loc: 'Boston, USA', start: 'Sep 2026', tuition: '$76,410/yr', duration: '2 years', img: '/unis/m/biz/hbs.jpg' },
+    { name: 'Stanford Graduate School of Business', program: 'MBA', loc: 'Stanford, USA', start: 'Sep 2026', tuition: '$84,168/yr', duration: '2 years', img: '/unis/m/biz/gsb.webp' },
+    { name: 'INSEAD', program: 'MBA (Singapore campus)', loc: 'Singapore', start: 'Aug 2026 / Jan 2027', tuition: '€103,500 total', duration: '10 months', img: '/unis/m/biz/insead.webp' },
   ],
   'Engineering': [
-    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '2 years', img: '/unis/master/engineering/eth.jpg' },
-    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/engineering/tudelft.jpg' },
-    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '2 years', img: '/unis/master/engineering/kth.jpg' },
-    { name: 'RWTH Aachen University', city: 'Aachen', country: 'Germany', tuition: 'Free tuition', start: 'Oct 2026', duration: '2 years', img: '/unis/master/engineering/rwth.jpg' },
-    { name: 'University of Cambridge', city: 'Cambridge', country: 'UK', tuition: '£35,000/yr', start: 'Oct 2026', duration: '1 year', img: '/unis/master/engineering/cambridge.jpg' },
+    { name: 'ETH Zürich', program: 'MSc Mechanical Engineering', loc: 'Zürich, Switzerland', start: 'Sep 2026', tuition: 'CHF 1,460/yr', duration: '1.5 years', img: '/unis/m/eng/eth.jpg' },
+    { name: 'TU Delft', program: 'MSc Aerospace Engineering', loc: 'Delft, Netherlands', start: 'Sep 2026', tuition: '€2,530/yr (EU)', duration: '2 years', img: '/unis/m/eng/delft.jpg' },
+    { name: 'RWTH Aachen University', program: 'MSc Mechanical Engineering', loc: 'Aachen, Germany', start: 'Oct 2026', tuition: 'Free tuition', duration: '2 years', img: '/unis/m/eng/rwth.jpg' },
+    { name: 'KTH Royal Institute of Technology', program: 'MSc Electrical Engineering', loc: 'Stockholm, Sweden', start: 'Aug 2026', tuition: 'Free tuition (EU)', duration: '2 years', img: '/unis/m/eng/kth.jpg' },
+    { name: 'University of Cambridge', program: 'MPhil Engineering', loc: 'Cambridge, United Kingdom', start: 'Oct 2026', tuition: '£37,734/yr', duration: '1 year', img: '/unis/m/eng/cambridge.jpg' },
+    { name: 'Massachusetts Institute of Technology (MIT)', program: 'MSc Mechanical Engineering', loc: 'Cambridge, USA', start: 'Sep 2026', tuition: '$61,990/yr', duration: '2 years', img: '/unis/m/eng/mit.jpg' },
+    { name: 'Stanford University', program: 'MSc Electrical Engineering', loc: 'Stanford, USA', start: 'Sep 2026', tuition: '$59,250/yr', duration: '1.5–2 years', img: '/unis/m/eng/stanford.webp' },
+    { name: 'National University of Singapore (NUS)', program: 'MSc Mechanical Engineering', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 19,250/yr', duration: '1.5 years', img: '/unis/m/eng/nus.jpg' },
   ],
   'Law': [
-    { name: 'Leiden University', city: 'Leiden', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/law/leiden.webp' },
-    { name: 'University of Oxford', city: 'Oxford', country: 'UK', tuition: '£31,000/yr', start: 'Oct 2026', duration: '1 year', img: '/unis/master/law/oxford.webp' },
-    { name: 'Harvard Law School', city: 'Cambridge', country: 'USA', tuition: '$67,000/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/law/harvard.webp' },
-    { name: 'University of Amsterdam', city: 'Amsterdam', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '1 year', img: '/unis/master/law/amsterdam.jpg' },
-    { name: 'Sciences Po Law School', city: 'Paris', country: 'France', tuition: '€14,000/yr', start: 'Sep 2026', duration: '2 years', img: '/unis/master/law/sciencespo.jpg' },
+    { name: 'Leiden University', program: 'LLM Advanced Studies in International Law', loc: 'Leiden, Netherlands', start: 'Sep 2026', tuition: '€21,800/yr', duration: '1 year', img: '/unis/m/law/leiden.webp' },
+    { name: 'University of Amsterdam', program: 'LLM International & European Law', loc: 'Amsterdam, Netherlands', start: 'Sep 2026', tuition: '€17,500/yr (non-EU)', duration: '1 year', img: '/unis/m/law/uva.jpg' },
+    { name: 'Sciences Po Law School', program: 'LLM Transnational Arbitration & Dispute Settlement', loc: 'Paris, France', start: 'Sep 2026', tuition: '€21,950/yr', duration: '1 year', img: '/unis/m/law/sciencespo.jpg' },
+    { name: 'Humboldt University of Berlin', program: 'LLM International Dispute Resolution', loc: 'Berlin, Germany', start: 'Oct 2026', tuition: '€13,400 total', duration: '1 year', img: null },
+    { name: 'University of Oxford', program: 'BCL / MJur (Master of Law)', loc: 'Oxford, United Kingdom', start: 'Oct 2026', tuition: '£42,840/yr', duration: '1 year', img: '/unis/m/law/oxford.webp' },
+    { name: 'Harvard Law School', program: 'LLM (Master of Laws)', loc: 'Cambridge, USA', start: 'Sep 2026', tuition: '$78,000/yr', duration: '1 year', img: '/unis/m/law/harvard.webp' },
+    { name: 'Columbia Law School', program: 'LLM (Master of Laws)', loc: 'New York, USA', start: 'Aug 2026', tuition: '$84,376/yr', duration: '1 year', img: '/unis/m/law/columbia.jpg' },
+    { name: 'National University of Singapore (NUS)', program: 'LLM Asian Legal Studies', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 47,950 total', duration: '1 year', img: '/unis/m/law/nus.jpg' },
   ],
 }
 
 const BACHELOR_UNIS = {
-  'Computer Science': [
-    { name: 'Technical University of Munich', city: 'Munich', country: 'Germany', tuition: 'Free tuition', start: 'Oct 2026', duration: '3 years', img: '/unis/bachelor/cs/tum.jpg' },
-    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/cs/eth.jpg' },
-    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '3 years', img: '/unis/bachelor/cs/kth.jpg' },
-    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/cs/tudelft.jpg' },
-    { name: 'EPFL', city: 'Lausanne', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/cs/epfl.webp' },
-  ],
   'Business & MBA': [
-    { name: 'Bocconi University', city: 'Milan', country: 'Italy', tuition: '€14,000/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/bocconi.jpg' },
-    { name: 'Copenhagen Business School', city: 'Copenhagen', country: 'Denmark', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/cbs.jpg' },
-    { name: 'Erasmus University (RSM)', city: 'Rotterdam', country: 'Netherlands', tuition: '€12,000/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/rsm.jpg' },
-    { name: 'University of St. Gallen', city: 'St. Gallen', country: 'Switzerland', tuition: 'CHF 1,566/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/business/hsg.jpg' },
-    { name: 'NUS Business School', city: 'Singapore', country: 'Singapore', tuition: 'S$17,500/yr', start: 'Aug 2026', duration: '4 years', img: '/unis/bachelor/business/nus.jpg' },
+    { name: 'Bocconi University', program: 'BSc Economics and Management', loc: 'Milan, Italy', start: 'Sep 2026', tuition: '€13,986/yr', duration: '3 years', img: '/unis/b/biz/bocconi.jpg' },
+    { name: 'Erasmus University Rotterdam (RSM)', program: 'BSc International Business Administration', loc: 'Rotterdam, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/biz/rsm.jpg' },
+    { name: 'University of St. Gallen (HSG)', program: 'BSc Business Administration', loc: 'St. Gallen, Switzerland', start: 'Sep 2026', tuition: 'CHF 720/yr', duration: '3 years', img: '/unis/b/biz/hsg.jpg' },
+    { name: 'Copenhagen Business School', program: 'BSc Business Administration & Information Systems', loc: 'Copenhagen, Denmark', start: 'Sep 2026', tuition: 'Free tuition (EU)', duration: '3 years', img: '/unis/b/biz/cbs.jpg' },
+    { name: 'London School of Economics', program: 'BSc Management', loc: 'London, United Kingdom', start: 'Sep 2026', tuition: '£9,250/yr', duration: '4 years', img: null },
+    { name: 'University of Pennsylvania (Wharton)', program: 'BSc in Economics', loc: 'Philadelphia, USA', start: 'Sep 2026', tuition: '$59,928/yr', duration: '4 years', img: '/unis/b/biz/wharton.jpg' },
+    { name: 'New York University (Stern)', program: 'BS in Business', loc: 'New York, USA', start: 'Sep 2026', tuition: '$54,630/yr', duration: '4 years', img: null },
+    { name: 'National University of Singapore (NUS)', program: 'BBA Business Administration', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 8,250/yr', duration: '4 years', img: '/unis/b/biz/nus.jpg' },
   ],
   'Engineering': [
-    { name: 'ETH Zürich', city: 'Zürich', country: 'Switzerland', tuition: 'Free tuition', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/engineering/eth.jpg' },
-    { name: 'TU Delft', city: 'Delft', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/engineering/tudelft.jpg' },
-    { name: 'KTH Royal Institute of Technology', city: 'Stockholm', country: 'Sweden', tuition: 'Free tuition', start: 'Aug 2026', duration: '3 years', img: '/unis/bachelor/engineering/kth.jpg' },
-    { name: 'RWTH Aachen University', city: 'Aachen', country: 'Germany', tuition: 'Free tuition', start: 'Oct 2026', duration: '3 years', img: '/unis/bachelor/engineering/rwth.jpg' },
-    { name: 'MIT', city: 'Cambridge', country: 'USA', tuition: '$59,000/yr', start: 'Sep 2026', duration: '4 years', img: '/unis/bachelor/engineering/mit.jpg' },
+    { name: 'ETH Zürich', program: 'BSc Mechanical Engineering', loc: 'Zürich, Switzerland', start: 'Sep 2026', tuition: 'CHF 730/yr', duration: '3 years', img: '/unis/b/eng/eth.jpg' },
+    { name: 'TU Delft', program: 'BSc Mechanical Engineering', loc: 'Delft, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/eng/delft.jpg' },
+    { name: 'RWTH Aachen University', program: 'BSc Mechanical Engineering', loc: 'Aachen, Germany', start: 'Oct 2026', tuition: 'Free tuition', duration: '3 years', img: '/unis/b/eng/rwth.jpg' },
+    { name: 'KTH Royal Institute of Technology', program: 'BSc Engineering (Track: CS & IT)', loc: 'Stockholm, Sweden', start: 'Aug 2026', tuition: 'Free tuition', duration: '3 years', img: '/unis/b/eng/kth.jpg' },
+    { name: 'Imperial College London', program: 'BSc Engineering', loc: 'London, United Kingdom', start: 'Sep 2026', tuition: '£9,250/yr', duration: '4 years', img: null },
+    { name: 'Massachusetts Institute of Technology (MIT)', program: 'BSc Mechanical Engineering', loc: 'Cambridge, USA', start: 'Sep 2026', tuition: '$57,986/yr', duration: '4 years', img: '/unis/b/eng/mit.jpg' },
+    { name: 'Stanford University', program: 'BSc Engineering', loc: 'Stanford, USA', start: 'Sep 2026', tuition: '$56,169/yr', duration: '4 years', img: '/unis/b/eng/stanford.webp' },
+    { name: 'National University of Singapore (NUS)', program: 'BSc Engineering', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 8,800/yr', duration: '4 years', img: '/unis/b/eng/nus.jpg' },
   ],
   'Law': [
-    { name: 'Leiden University', city: 'Leiden', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/leiden.webp' },
-    { name: 'University of Oxford', city: 'Oxford', country: 'UK', tuition: '£9,250/yr', start: 'Oct 2026', duration: '3 years', img: '/unis/bachelor/law/oxford.webp' },
-    { name: 'University of Amsterdam', city: 'Amsterdam', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/amsterdam.jpg' },
-    { name: 'Maastricht University', city: 'Maastricht', country: 'Netherlands', tuition: '€2,314/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/maastricht.jpg' },
-    { name: 'Sciences Po Law School', city: 'Paris', country: 'France', tuition: '€14,000/yr', start: 'Sep 2026', duration: '3 years', img: '/unis/bachelor/law/sciencespo.jpg' },
+    { name: 'University of Amsterdam', program: 'LLB International Business Law', loc: 'Amsterdam, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/law/uva.jpg' },
+    { name: 'Leiden University', program: 'LLB Law', loc: 'Leiden, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/law/leiden.webp' },
+    { name: 'Maastricht University', program: 'LLB Law', loc: 'Maastricht, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/law/maastricht.jpg' },
+    { name: 'Sciences Po', program: 'BA Law & Politics', loc: 'Paris, France', start: 'Sep 2026', tuition: '€3,770/yr', duration: '3 years', img: '/unis/b/law/sciencespo.jpg' },
+    { name: 'University of Oxford', program: 'BA Jurisprudence (Law)', loc: 'Oxford, United Kingdom', start: 'Oct 2026', tuition: '£9,250/yr', duration: '4 years', img: '/unis/b/law/oxford.webp' },
+    { name: 'Yale University', program: 'BA Political Science & Law', loc: 'New Haven, USA', start: 'Sep 2026', tuition: '$61,750/yr', duration: '4 years', img: '/unis/b/law/yale.png' },
+    { name: 'Georgetown University', program: 'BSc Justice & Legal Studies', loc: 'Washington D.C., USA', start: 'Sep 2026', tuition: '$57,590/yr', duration: '4 years', img: null },
+    { name: 'National University of Singapore (NUS)', program: 'LLB Law', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 8,250/yr', duration: '4 years', img: '/unis/b/law/nus.jpg' },
   ],
 }
 
@@ -90,18 +105,24 @@ const FAQS = [
 
 // ── sub-components ────────────────────────────────────────────────────────────
 
-function UniCard({ uni, field }) {
+function UniCard({ uni }) {
   return (
     <div style={{ minWidth: 314, maxWidth: 314, background: '#fff', borderRadius: 16, overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column', scrollSnapAlign: 'start' }}>
-      <div style={{ height: 200, overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
-        <img src={uni.img} alt={uni.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      <div style={{ height: 200, overflow: 'hidden', position: 'relative', flexShrink: 0, background: '#05203C' }}>
+        {uni.img ? (
+          <img src={uni.img} alt={uni.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #05203C 0%, #0A3A66 100%)', color: 'rgba(255,255,255,0.85)', fontSize: 15, fontWeight: 500, textAlign: 'center', padding: 20, lineHeight: 1.4 }}>
+            {uni.name}
+          </div>
+        )}
       </div>
       <div style={{ padding: '18px 18px 18px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <div style={{ fontSize: 18, fontWeight: 600, color: '#0162E3', lineHeight: 1.28, marginBottom: 10 }}>{uni.name}</div>
-        <div style={{ fontSize: 14, fontWeight: 500, color: '#0162E3', marginBottom: 10 }}>{field}</div>
+        <div style={{ fontSize: 14, fontWeight: 500, color: '#0162E3', marginBottom: 10 }}>{uni.program}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#1A1A1A', marginBottom: 6 }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          {uni.city}, {uni.country}
+          {uni.loc}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#1A1A1A' }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
@@ -131,7 +152,7 @@ function UniCard({ uni, field }) {
   )
 }
 
-function CardsSection({ heading, data, field, onFieldChange }) {
+function CardsSection({ heading, data, tabs, field, onFieldChange }) {
   const rowRef = useRef(null)
   const [active, setActive] = useState(0)
   const unis = data[field] || []
@@ -153,7 +174,7 @@ function CardsSection({ heading, data, field, onFieldChange }) {
 
         {/* Field tabs */}
         <div style={{ display: 'flex', borderBottom: '1px solid #DCDCDC', marginBottom: 28, paddingRight: 64 }}>
-          {FIELD_TABS.map(t => (
+          {tabs.map(t => (
             <button
               key={t}
               onClick={() => onFieldChange(t)}
@@ -176,7 +197,7 @@ function CardsSection({ heading, data, field, onFieldChange }) {
           className="uni-cards-row"
           style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: 4 }}
         >
-          {unis.map((u, i) => <UniCard key={i} uni={u} field={field} />)}
+          {unis.map((u, i) => <UniCard key={i} uni={u} />)}
         </div>
         <style jsx>{`.uni-cards-row::-webkit-scrollbar { display: none; } .uni-cards-row { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
 
@@ -306,7 +327,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
   const [showTuition, setShowTuition] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [masterField, setMasterField] = useState('Computer Science')
-  const [bachelorField, setBachelorField] = useState('Computer Science')
+  const [bachelorField, setBachelorField] = useState('Business & MBA')
   const [sliderVal, setSliderVal] = useState(0)
   const tuitionRef = useRef(null)
   const helpRef = useRef(null)
@@ -544,6 +565,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
       <CardsSection
         heading={<>Popular fields. Top <span style={{ color: '#0162E3' }}>master</span> programs.</>}
         data={MASTER_UNIS}
+        tabs={MASTER_TABS}
         field={masterField}
         onFieldChange={setMasterField}
       />
@@ -594,6 +616,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
       <CardsSection
         heading={<>Popular fields. Top <span style={{ color: '#0162E3' }}>bachelor</span> programs.</>}
         data={BACHELOR_UNIS}
+        tabs={BACHELOR_TABS}
         field={bachelorField}
         onFieldChange={setBachelorField}
       />
