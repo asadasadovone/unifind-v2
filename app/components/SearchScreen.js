@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
 import UserDropdown from './UserDropdown'
 import MobileMenuDrawer from './MobileMenuDrawer'
@@ -105,7 +105,7 @@ const FAQS = [
 
 // ── sub-components ────────────────────────────────────────────────────────────
 
-function UniCard({ uni }) {
+function UniCard({ uni, progMinH }) {
   // Figma 506:1028 — Article
   const iconRow = { display: 'flex', alignItems: 'center', gap: 5 }
   const iconTxt = { fontSize: 14, fontWeight: 400, color: '#000', lineHeight: '19.5px' }
@@ -131,16 +131,17 @@ function UniCard({ uni }) {
       <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center', flex: 1 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', width: '100%' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start', width: '100%' }}>
-            {/* Name + program — each a fixed 2-line slot so cards align */}
+            {/* Name gets a fixed 2-line slot (as in Figma); program is always
+                a single line, so every card keeps the same vertical rhythm. */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
               <div style={{
                 fontSize: 22, fontWeight: 500, color: '#0162e3', lineHeight: '26.4px',
                 minHeight: 52.8, wordBreak: 'break-word',
                 display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
               }}>{uni.name}</div>
-              <div style={{
+              <div data-prog style={{
                 fontSize: 16, fontWeight: 500, color: '#0162e3', lineHeight: '19.5px',
-                minHeight: 39, wordBreak: 'break-word',
+                wordBreak: 'break-word', width: '100%', minHeight: progMinH || undefined,
                 display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
               }}>{uni.program}</div>
             </div>
@@ -190,7 +191,25 @@ function UniCard({ uni }) {
 function CardsSection({ heading, data, tabs, field, onFieldChange }) {
   const rowRef = useRef(null)
   const [active, setActive] = useState(0)
+  const [progMinH, setProgMinH] = useState(0)
   const unis = data[field] || []
+
+  // The programme line is one line for most cards and two for a few long
+  // names. Reserve the tallest one across the visible tab so every card keeps
+  // the same rhythm, without padding tabs whose names all fit on one line.
+  useLayoutEffect(() => {
+    const measure = () => {
+      const els = rowRef.current?.querySelectorAll('[data-prog]')
+      if (!els?.length) return
+      let max = 0
+      els.forEach(el => { max = Math.max(max, el.scrollHeight) })
+      setProgMinH(prev => (Math.abs(prev - max) > 0.5 ? max : prev))
+    }
+    setProgMinH(0)
+    const raf = requestAnimationFrame(measure)
+    document.fonts?.ready.then(measure)
+    return () => cancelAnimationFrame(raf)
+  }, [field, unis])
 
   const CARD_STEP = 330 // card width 314 + gap 16
 
@@ -233,7 +252,7 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
           className="uni-cards-row"
           style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: 4 }}
         >
-          {unis.map((u, i) => <UniCard key={i} uni={u} />)}
+          {unis.map((u, i) => <UniCard key={i} uni={u} progMinH={progMinH} />)}
         </div>
         <style jsx>{`.uni-cards-row::-webkit-scrollbar { display: none; } .uni-cards-row { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
 
