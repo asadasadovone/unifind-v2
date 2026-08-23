@@ -198,6 +198,110 @@ function UniCard({ uni, progMinH }) {
   )
 }
 
+function StoriesSection() {
+  const rowRef = useRef(null)
+  const [tagFS, setTagFS] = useState(12)
+
+  // Figma sizes the tags at 12px and they sit on one line at the 1512px design
+  // width. Below that the side columns narrow, so step the size down just
+  // enough to keep every tag row on a single line.
+  useLayoutEffect(() => {
+    const el = rowRef.current
+    if (!el) return
+    const ctx = document.createElement('canvas').getContext('2d')
+    const PAD_X = 10, GAP = 8
+    const SIZES = [12, 11.5, 11, 10.5, 10]
+    let lastW = -1
+    const fit = () => {
+      const groups = Array.from(el.querySelectorAll('[data-tags]'))
+      if (!groups.length) return
+      let chosen = SIZES[SIZES.length - 1]
+      for (const size of SIZES) {
+        ctx.font = `500 ${size}px Geist, sans-serif`
+        const ok = groups.every(g => {
+          const texts = Array.from(g.children).map(c => c.textContent)
+          const need = texts.reduce((a, t) => a + ctx.measureText(t).width + PAD_X * 2, 0) + GAP * (texts.length - 1)
+          return need <= g.clientWidth
+        })
+        if (ok) { chosen = size; break }
+      }
+      setTagFS(prev => (prev === chosen ? prev : chosen))
+    }
+    const onResize = () => {
+      const w = el.clientWidth
+      if (w === lastW) return // ignore height-only changes so this cannot loop
+      lastW = w
+      fit()
+    }
+    onResize()
+    // Both signals: ResizeObserver for container-driven changes, and window
+    // resize because RO alone can be unreliable depending on the environment.
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(onResize) : null
+    ro?.observe(el)
+    window.addEventListener('resize', onResize)
+    document.fonts?.ready.then(fit)
+    return () => { ro?.disconnect(); window.removeEventListener('resize', onResize) }
+  }, [])
+
+  return (
+    <section style={{ background: '#fff', padding: '80px 64px', display: 'flex', flexDirection: 'column', gap: 40, alignItems: 'center' }}>
+      <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', margin: 0, fontFamily: 'Geist, sans-serif', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', width: '100%' }}>
+        Students getting accepted.
+      </h2>
+
+      {/* Column ratio 318 : 691 : 318 reproduces Figma at the design width and
+          scales proportionally below it. Images bottom-align. */}
+      <div ref={rowRef} className="stories-row" style={{ display: 'flex', gap: 24, alignItems: 'flex-start', justifyContent: 'center', width: '100%', maxWidth: 1384 }}>
+        {STORIES.map((s, i) => {
+          const wide = i === 1
+          return (
+            <div
+              key={i}
+              className="story-col"
+              style={{
+                display: 'flex', flexDirection: 'column', gap: 24,
+                alignItems: 'flex-start',
+                flex: wide ? '2.173 0 0' : '1 0 0', minWidth: 1,
+              }}
+            >
+              {/* Photo — radius 32, 348px (406 for the wide one), bottom-aligned
+                  inside a 406px slot so every column's photo ends on one line */}
+              <div className="story-photo-slot" style={{ width: '100%', height: 406, display: 'flex', alignItems: 'flex-end' }}>
+              <div className="story-photo" style={{ position: 'relative', width: '100%', height: wide ? 406 : 348, borderRadius: 32, overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 24 }}>
+                <img src={s.img} alt={s.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: wide ? 122 : 155, background: 'linear-gradient(180deg, rgba(65,65,65,0) 0%, #031930 100%)' }} />
+                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start', color: '#fff', width: '100%' }}>
+                  <div style={{ fontSize: 40, fontWeight: 500, lineHeight: 'normal' }}>{s.stat}</div>
+                  <div style={{ fontSize: 20, fontWeight: 400, lineHeight: 'normal' }}>{s.label}</div>
+                </div>
+              </div>
+              </div>
+
+              {/* Tags + description */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start', width: '100%' }}>
+                <div data-tags style={{ display: 'flex', flexWrap: 'wrap', columnGap: 8, rowGap: 0, alignItems: 'flex-start', width: '100%' }}>
+                  {s.tags.map(t => (
+                    <span key={t} style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 10px', borderRadius: 10, background: '#f7f7f7', fontSize: tagFS, fontWeight: 500, color: '#3a3a35', lineHeight: '18px', whiteSpace: 'nowrap' }}>{t}</span>
+                  ))}
+                </div>
+                <p style={{ margin: 0, fontSize: 20, fontWeight: 500, color: '#000', lineHeight: 'normal' }}>{s.desc}</p>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <style jsx>{`
+        @media (max-width: 1279px) {
+          .stories-row { flex-wrap: wrap; }
+          .stories-row .story-col { flex: 1 1 100% !important; }
+          .stories-row .story-photo-slot { height: auto !important; }
+          .stories-row .story-photo { height: 320px !important; }
+        }
+      `}</style>
+    </section>
+  )
+}
+
 function CardsSection({ heading, data, tabs, field, onFieldChange }) {
   const rowRef = useRef(null)
   const [active, setActive] = useState(0)
@@ -655,47 +759,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         onFieldChange={setMasterField}
       />
 
-      {/* ── STUDENTS GETTING ACCEPTED ── */}
-      <section style={{ background: '#fff', padding: '80px 64px 96px' }}>
-        <div style={{ maxWidth: 1384, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(30px,3.4vw,42px)', fontWeight: 600, color: '#1A1A1A', margin: '0 0 60px', fontFamily: 'Geist, sans-serif', textAlign: 'center', letterSpacing: '-0.02em' }}>
-            Students getting accepted.
-          </h2>
-
-          {/* Staggered layout: middle card is wider + taller, all images bottom-aligned */}
-          <div className="stories-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2.15fr 1fr', gap: 24 }}>
-            {STORIES.map((s, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-                {/* Image area — fixed tall box, image pinned to its bottom */}
-                <div className="story-img-area" style={{ height: 412, display: 'flex', alignItems: 'flex-end', marginBottom: 20 }}>
-                  <div style={{ position: 'relative', width: '100%', height: i === 1 ? 412 : 346, borderRadius: 16, overflow: 'hidden' }}>
-                    <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 40%, transparent 65%)' }} />
-                    <div style={{ position: 'absolute', bottom: 22, left: 22 }}>
-                      <div style={{ fontSize: 38, fontWeight: 500, color: '#fff', lineHeight: 1.05, letterSpacing: '-0.01em' }}>{s.stat}</div>
-                      <div style={{ fontSize: 16, color: '#fff', marginTop: 4 }}>{s.label}</div>
-                    </div>
-                  </div>
-                </div>
-                {/* Tags + description */}
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-                  {s.tags.map(t => (
-                    <span key={t} style={{ padding: '5px 12px', borderRadius: 999, background: '#F2F2F2', fontSize: 13, color: '#1A1A1A', fontWeight: 400 }}>{t}</span>
-                  ))}
-                </div>
-                <p style={{ margin: 0, fontSize: 17, color: '#1A1A1A', lineHeight: 1.45, fontWeight: 500 }}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-          <style jsx>{`
-            @media (max-width: 900px) {
-              .stories-grid { grid-template-columns: 1fr !important; }
-              .stories-grid .story-img-area { height: auto !important; }
-              .stories-grid .story-img-area > div { height: 300px !important; }
-            }
-          `}</style>
-        </div>
-      </section>
+      <StoriesSection />
 
       {/* ── BACHELOR PROGRAMS ── */}
       <CardsSection
