@@ -8,7 +8,7 @@ import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
 // ── data ──────────────────────────────────────────────────────────────────────
 
 const MASTER_TABS = ['Computer Science', 'Business & MBA', 'Engineering', 'Law']
-const BACHELOR_TABS = ['Business & MBA', 'Engineering', 'Law']
+const BACHELOR_TABS = ['Computer Science', 'Business & MBA', 'Engineering', 'Law']
 
 const MASTER_UNIS = {
   'Computer Science': [
@@ -54,6 +54,16 @@ const MASTER_UNIS = {
 }
 
 const BACHELOR_UNIS = {
+  'Computer Science': [
+    { name: 'Technical University of Munich', program: 'BSc Informatics', loc: 'Munich, Germany', start: 'Oct 2026', tuition: 'Free tuition', duration: '3 years', img: '/unis/b/cs/tum.jpg' },
+    { name: 'KTH Royal Institute of Technology', program: 'BSc Computer Science & Engineering', loc: 'Stockholm, Sweden', start: 'Aug 2026', tuition: 'Free tuition (EU)', duration: '3 years', img: '/unis/b/cs/kth.jpg' },
+    { name: 'TU Delft', program: 'BSc Computer Science & Engineering', loc: 'Delft, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/cs/delft.jpg' },
+    { name: 'ETH Zürich', program: 'BSc Computer Science', loc: 'Zürich, Switzerland', start: 'Sep 2026', tuition: 'CHF 730/yr', duration: '3 years', img: '/unis/b/cs/eth.jpg' },
+    { name: 'Imperial College London', program: 'MEng Computing', loc: 'London, United Kingdom', start: 'Sep 2026', tuition: '£9,250/yr', duration: '4 years', img: null },
+    { name: 'Massachusetts Institute of Technology (MIT)', program: 'BSc Computer Science & Engineering', loc: 'Cambridge, USA', start: 'Sep 2026', tuition: '$57,986/yr', duration: '4 years', img: '/unis/b/cs/mit.jpg' },
+    { name: 'Carnegie Mellon University', program: 'BSc Computer Science', loc: 'Pittsburgh, USA', start: 'Sep 2026', tuition: '$57,116/yr', duration: '4 years', img: '/unis/b/cs/cmu.jpg' },
+    { name: 'National University of Singapore (NUS)', program: 'BComp Computer Science', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 8,250/yr', duration: '4 years', img: '/unis/b/cs/nus.jpg' },
+  ],
   'Business & MBA': [
     { name: 'Bocconi University', program: 'BSc Economics and Management', loc: 'Milan, Italy', start: 'Sep 2026', tuition: '€13,986/yr', duration: '3 years', img: '/unis/b/biz/bocconi.jpg' },
     { name: 'Erasmus University Rotterdam (RSM)', program: 'BSc International Business', loc: 'Rotterdam, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/biz/rsm.jpg' },
@@ -402,7 +412,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
   const [showTuition, setShowTuition] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [masterField, setMasterField] = useState('Computer Science')
-  const [bachelorField, setBachelorField] = useState('Business & MBA')
+  const [bachelorField, setBachelorField] = useState('Computer Science')
   const [sliderVal, setSliderVal] = useState(0)
   const tuitionRef = useRef(null)
   const helpRef = useRef(null)
