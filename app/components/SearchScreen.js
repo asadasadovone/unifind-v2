@@ -253,6 +253,11 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
           style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: 4 }}
         >
           {unis.map((u, i) => <UniCard key={i} uni={u} progMinH={progMinH} />)}
+          {/* Trailing spacer so the last card clears the right edge by the same
+              64px the first card is inset from the left. 48px + the row's 16px
+              flex gap = 64. A spacer is used rather than padding-right, which
+              flex scroll containers drop at the end of the scroll range. */}
+          <div aria-hidden style={{ flex: '0 0 48px', alignSelf: 'stretch' }} />
         </div>
         <style jsx>{`.uni-cards-row::-webkit-scrollbar { display: none; } .uni-cards-row { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
 
