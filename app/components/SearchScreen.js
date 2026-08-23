@@ -198,6 +198,81 @@ function UniCard({ uni, progMinH }) {
   )
 }
 
+// Ratio anchor: what UniAsk does in 5 minutes takes 120 minutes by hand — 24x.
+const UNIASK_MIN = 5      // slider at 0
+const UNIASK_MAX = 60     // slider at 100 — an hour of UniAsk vs a full day by hand
+const MANUAL_FACTOR = 24
+
+function TimeSection() {
+  const [pos, setPos] = useState(0) // 0-100
+
+  const uniask = Math.round(UNIASK_MIN + (pos / 100) * (UNIASK_MAX - UNIASK_MIN))
+  const manual = uniask * MANUAL_FACTOR
+  const fmt = n => n.toLocaleString('en-US')
+
+  // Thumb is 18px, so its centre travels between 9px and (100% - 9px).
+  const centre = `calc(9px + (100% - 18px) * ${pos / 100})`
+
+  const statLabel = { fontSize: 16, fontWeight: 600, textTransform: 'uppercase', lineHeight: 'normal', margin: 0 }
+  const statNum = { fontSize: 64, fontWeight: 600, lineHeight: 'normal', margin: 0 }
+  const statFoot = { fontSize: 20, fontWeight: 400, color: '#1f1f1f', lineHeight: 'normal', margin: 0 }
+
+  return (
+    <section style={{ background: '#fff', padding: '80px 64px', display: 'flex', flexDirection: 'column', gap: 56, alignItems: 'center' }}>
+      {/* Heading */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', width: '100%', maxWidth: 1084 }}>
+        <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', margin: 0, width: '100%', fontFamily: 'Geist, sans-serif' }}>
+          Students waste months on research<br />that should take minutes.
+        </h2>
+        <p style={{ fontSize: 16, fontWeight: 400, color: '#31464b', textAlign: 'center', lineHeight: 'normal', margin: 0, maxWidth: 590 }}>
+          The average student spends 6–10 weeks comparing programs across dozens of browser tabs. UniAsk replaces all of that with one conversation.
+        </p>
+      </div>
+
+      {/* Slider + stats */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center', width: '100%', maxWidth: 856 }}>
+        <p style={{ fontSize: 20, fontWeight: 400, color: '#31464b', textAlign: 'center', lineHeight: 'normal', margin: 0, maxWidth: 590 }}>
+          I&apos;ve been researching universities for
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32, alignItems: 'center', width: '100%' }}>
+          {/* Slider — track #C9D5E7, fill gradient #E2EAF6 -> #0F2D63, thumb #173468 */}
+          <div style={{ position: 'relative', height: 18, width: '100%' }}>
+            <div style={{ position: 'absolute', left: 0, right: 0, top: 5, height: 8, borderRadius: 4, background: '#C9D5E7' }} />
+            <div style={{ position: 'absolute', left: 0, width: centre, top: 5, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #E2EAF6 0%, #0F2D63 100%)' }} />
+            <div style={{ position: 'absolute', left: centre, top: 0, width: 18, height: 18, borderRadius: '50%', background: '#173468', transform: 'translateX(-50%)', pointerEvents: 'none' }} />
+            <input
+              type="range" min={0} max={100} step={1} value={pos}
+              onChange={e => setPos(Number(e.target.value))}
+              aria-label="How long you have been researching universities"
+              className="time-range"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: 'pointer' }}
+            />
+            <style jsx>{`
+              .time-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; }
+              .time-range::-moz-range-thumb { width: 18px; height: 18px; border: none; border-radius: 50%; }
+            `}</style>
+          </div>
+
+          {/* Stats */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%', textAlign: 'center', gap: 24, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', width: 272 }}>
+              <p style={{ ...statLabel, color: '#73767b' }}>Your research so far</p>
+              <p style={{ ...statNum, color: '#ec4244' }}>{fmt(manual)}</p>
+              <p style={statFoot}><span style={{ fontWeight: 600 }}>minutes</span> spent researching</p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', whiteSpace: 'nowrap' }}>
+              <p style={{ ...statLabel, color: '#73767b' }}>With <span style={{ color: '#05203c' }}>UniAsk</span></p>
+              <p style={{ ...statNum, color: '#2e579f' }}>{fmt(uniask)}</p>
+              <p style={statFoot}><span style={{ fontWeight: 600 }}>minutes</span> to your shortlist</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function StoriesSection() {
   const rowRef = useRef(null)
   const [tagFS, setTagFS] = useState(12)
@@ -517,7 +592,6 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
   const [showHelp, setShowHelp] = useState(false)
   const [masterField, setMasterField] = useState('Computer Science')
   const [bachelorField, setBachelorField] = useState('Computer Science')
-  const [sliderVal, setSliderVal] = useState(0)
   const tuitionRef = useRef(null)
   const helpRef = useRef(null)
 
@@ -525,7 +599,6 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
   const degree = filters.degree?.[0] || 'Bachelor'
   const [tuitionLo, tuitionHi] = filters.tuition || [0, 100000]
   const tuitionLabel = tuitionLo === 0 && tuitionHi === 100000 ? 'Free – $100,000' : `$${tuitionLo.toLocaleString()} – $${tuitionHi.toLocaleString()}`
-  const hoursVal = Math.round(240 - (sliderVal / 100) * 239)
 
   useEffect(() => {
     const close = e => {
@@ -770,27 +843,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         onFieldChange={setBachelorField}
       />
 
-      {/* ── TIME COMPARISON ── */}
-      <section style={{ background: '#F2F2F2', padding: '80px 32px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 16px', fontFamily: 'Geist, sans-serif', lineHeight: 1.2 }}>Students waste months on research<br />that should take minutes.</h2>
-          <p style={{ fontSize: 16, color: '#666', margin: '0 0 48px', lineHeight: 1.6 }}>The average student spends 6–10 weeks comparing programs across dozens of browser tabs. UniAsk replaces all of that with one conversation.</p>
-          <p style={{ fontSize: 15, color: '#555', marginBottom: 16 }}>I've been researching universities for</p>
-          <input type="range" min="0" max="100" value={sliderVal} onChange={e => setSliderVal(Number(e.target.value))} style={{ width: '100%', accentColor: '#05203C', cursor: 'pointer', marginBottom: 36 }} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-            <div style={{ background: '#fff', borderRadius: 16, padding: '28px', border: '1px solid #E8E8E8', textAlign: 'left' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>YOUR RESEARCH SO FAR</div>
-              <div style={{ fontSize: 64, fontWeight: 800, color: '#E53E3E', lineHeight: 1 }}>{hoursVal}</div>
-              <div style={{ fontSize: 15, color: '#555', marginTop: 8 }}><strong>hours</strong> spent researching</div>
-            </div>
-            <div style={{ background: '#fff', borderRadius: 16, padding: '28px', border: '1px solid #E8E8E8', textAlign: 'left' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#0162E3', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>WITH <strong>UNIASK</strong></div>
-              <div style={{ fontSize: 64, fontWeight: 800, color: '#0162E3', lineHeight: 1 }}>3</div>
-              <div style={{ fontSize: 15, color: '#555', marginTop: 8 }}><strong>minutes</strong> to your shortlist</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <TimeSection />
 
       {/* ── FAQ ── */}
       <section style={{ background: '#fff', padding: '80px 32px' }}>
