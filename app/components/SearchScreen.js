@@ -118,8 +118,18 @@ function UniCard({ uni }) {
         )}
       </div>
       <div style={{ padding: '18px 18px 18px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <div style={{ fontSize: 18, fontWeight: 600, color: '#0162E3', lineHeight: 1.28, marginBottom: 10 }}>{uni.name}</div>
-        <div style={{ fontSize: 14, fontWeight: 500, color: '#0162E3', marginBottom: 10 }}>{uni.program}</div>
+        {/* Name — always occupies 2 lines so every card aligns below it */}
+        <div style={{
+          fontSize: 18, fontWeight: 600, color: '#0162E3', lineHeight: 1.3,
+          marginBottom: 10, minHeight: 46.8,
+          display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
+        }}>{uni.name}</div>
+        {/* Program — same fixed 2-line slot */}
+        <div style={{
+          fontSize: 14, fontWeight: 500, color: '#0162E3', lineHeight: 1.4,
+          marginBottom: 10, minHeight: 39.2,
+          display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
+        }}>{uni.program}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#1A1A1A', marginBottom: 6 }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
           {uni.loc}
