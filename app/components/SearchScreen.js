@@ -712,8 +712,8 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
               <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} dark />
             ) : (
               <>
-                <button onClick={onOpenAuth} style={{ padding: '9px 22px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.5)', background: '#fff', color: '#05203C', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Log in</button>
-                <button onClick={onOpenAuth} style={{ padding: '9px 22px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.5)', background: 'transparent', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Sign up for free</button>
+                <button onClick={() => onOpenAuth?.('login')} style={{ padding: '9px 22px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.5)', background: '#fff', color: '#05203C', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Log in</button>
+                <button onClick={() => onOpenAuth?.('register')} style={{ padding: '9px 22px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.5)', background: 'transparent', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>Sign up for free</button>
               </>
             )}
           </div>
@@ -977,7 +977,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         <MobileMenuDrawer
           user={user}
           onClose={() => setMenuOpen(false)}
-          onOpenAuth={() => { setMenuOpen(false); onOpenAuth?.() }}
+          onOpenAuth={m => { setMenuOpen(false); onOpenAuth?.(m) }}
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
