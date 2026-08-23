@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { signIn, signUp, signInWithGoogle, sendPasswordReset } from '../lib/supabase'
+import { signIn, signUp, signInWithGoogle, sendPasswordReset, updatePassword } from '../lib/supabase'
 
 /* Figma 619:1263 (Log in) and 444:768 (Sign Up) */
 const BORDER = 'rgba(0,0,0,0.15)'
@@ -61,6 +61,36 @@ const pillButton = {
   alignItems: 'center',
   justifyContent: 'center',
   gap: 8,
+}
+
+/* 20px eye toggle shown inside each password field (Figma 90:580). */
+function EyeButton({ shown, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={shown ? 'Hide password' : 'Show password'}
+      style={{
+        position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)',
+        width: 20, height: 20, padding: 0, border: 'none', background: 'none',
+        cursor: 'pointer', color: '#0d0d0d', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      {shown ? (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+          <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+          <path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+          <line x1="2" y1="2" x2="22" y2="22" />
+        </svg>
+      ) : (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      )}
+    </button>
+  )
 }
 
 /* Supabase returns one flat message; put it on the field it concerns so the
@@ -128,6 +158,11 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   const [errors, setErrors] = useState({})
   const [confirmation, setConfirmation] = useState(false)
   const [view, setView] = useState('form') // 'form' | 'forgot' | 'reset-sent'
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showNew, setShowNew] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [resetDone, setResetDone] = useState(false)
 
   const isLogin = mode === 'login'
   const subtitle = isLogin
@@ -146,6 +181,26 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     } catch (err) {
       setErrors({ general: err.message })
       setGoogleLoading(false)
+    }
+  }
+
+  const saveNewPassword = async (e) => {
+    e?.preventDefault()
+    const next = {}
+    if (newPassword.length < 6) next.newPassword = 'Password must be at least 6 characters.'
+    else if (newPassword !== confirmPassword) next.confirmPassword = 'Passwords do not match.'
+    if (Object.keys(next).length) { setErrors(next); return }
+
+    setErrors({})
+    setLoading(true)
+    try {
+      const { error } = await updatePassword(newPassword)
+      if (error) throw error
+      setResetDone(true)
+    } catch (err) {
+      setErrors(toFieldErrors(err.message))
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -197,6 +252,73 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  /* Figma 90:580 — Reset your password */
+  if (mode === 'reset') {
+    return (
+      <Shell onClose={onClose} label="Reset your password">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <h2 style={{ margin: 0, fontSize: 30, fontWeight: 400, lineHeight: '36px', letterSpacing: '0.42px', color: INK, textAlign: 'center' }}>
+            {resetDone ? 'Password updated' : 'Reset your password'}
+          </h2>
+          <p style={{ margin: 0, padding: '0 16px', fontSize: 16, fontWeight: 400, lineHeight: '24px', letterSpacing: '-0.32px', color: INK, textAlign: 'center' }}>
+            {resetDone
+              ? 'Your password has been changed. You can use it to log in from now on.'
+              : 'Choose a new password for your account.'}
+          </p>
+        </div>
+
+        {resetDone ? (
+          <button type="button" style={pillButton} onClick={onClose}>Continue</button>
+        ) : (
+          <form noValidate onSubmit={saveNewPassword} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    style={{ ...(errors.newPassword ? errored(pillInput) : pillInput), paddingRight: 48 }}
+                    type={showNew ? 'text' : 'password'}
+                    placeholder="New password"
+                    value={newPassword}
+                    onChange={e => { setNewPassword(e.target.value); if (errors.newPassword) setErrors(p => ({ ...p, newPassword: null })) }}
+                    aria-invalid={!!errors.newPassword}
+                    autoComplete="new-password"
+                    autoFocus
+                  />
+                  <EyeButton shown={showNew} onClick={() => setShowNew(v => !v)} />
+                </div>
+                {errors.newPassword && <FieldError>{errors.newPassword}</FieldError>}
+              </div>
+              <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    style={{ ...(errors.confirmPassword ? errored(pillInput) : pillInput), paddingRight: 48 }}
+                    type={showConfirm ? 'text' : 'password'}
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={e => { setConfirmPassword(e.target.value); if (errors.confirmPassword) setErrors(p => ({ ...p, confirmPassword: null })) }}
+                    aria-invalid={!!errors.confirmPassword}
+                    autoComplete="new-password"
+                  />
+                  <EyeButton shown={showConfirm} onClick={() => setShowConfirm(v => !v)} />
+                </div>
+                {errors.confirmPassword && <FieldError>{errors.confirmPassword}</FieldError>}
+              </div>
+            </div>
+            {errors.general && <FieldError>{errors.general}</FieldError>}
+            <button type="submit" style={{ ...pillButton, opacity: loading ? 0.7 : 1 }} disabled={loading}>
+              {loading ? <><Spinner /> Saving…</> : 'Set your new password'}
+            </button>
+          </form>
+        )}
+
+        <p style={{ margin: 0, textAlign: 'center', fontSize: 16, letterSpacing: '-0.32px', lineHeight: '24px', color: INK }}>
+          Need help? Go to the{' '}
+          <a href="#" onClick={e => e.preventDefault()} style={{ color: INK, textDecoration: 'underline' }}>Help Centre.</a>
+        </p>
+      </Shell>
+    )
   }
 
   /* Figma 83:320 — Forgot password?
