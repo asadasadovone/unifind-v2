@@ -106,9 +106,18 @@ const FAQS = [
 // ── sub-components ────────────────────────────────────────────────────────────
 
 function UniCard({ uni }) {
+  // Figma 506:1028 — Article
+  const iconRow = { display: 'flex', alignItems: 'center', gap: 5 }
+  const iconTxt = { fontSize: 14, fontWeight: 400, color: '#000', lineHeight: '19.5px' }
+  const badge = {
+    display: 'inline-flex', alignItems: 'center', gap: 5,
+    padding: '6px 10px', borderRadius: 10, background: '#f7f7f7',
+    fontSize: 12, fontWeight: 500, color: '#3a3a35', lineHeight: '18px',
+  }
   return (
-    <div style={{ minWidth: 314, maxWidth: 314, background: '#fff', borderRadius: 16, overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column', scrollSnapAlign: 'start' }}>
-      <div style={{ height: 200, overflow: 'hidden', position: 'relative', flexShrink: 0, background: '#05203C' }}>
+    <div style={{ minWidth: 314, maxWidth: 314, background: '#fff', borderRadius: 20, overflow: 'hidden', flexShrink: 0, display: 'flex', flexDirection: 'column', scrollSnapAlign: 'start' }}>
+      {/* Image — 202px, top corners 20px */}
+      <div style={{ height: 202, overflow: 'hidden', position: 'relative', flexShrink: 0, background: '#05203C' }}>
         {uni.img ? (
           <img src={uni.img} alt={uni.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         ) : (
@@ -117,44 +126,60 @@ function UniCard({ uni }) {
           </div>
         )}
       </div>
-      <div style={{ padding: '18px 18px 18px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        {/* Name — always occupies 2 lines so every card aligns below it */}
-        <div style={{
-          fontSize: 18, fontWeight: 600, color: '#0162E3', lineHeight: 1.3,
-          marginBottom: 10, minHeight: 46.8,
-          display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
-        }}>{uni.name}</div>
-        {/* Program — same fixed 2-line slot */}
-        <div style={{
-          fontSize: 14, fontWeight: 500, color: '#0162E3', lineHeight: 1.4,
-          marginBottom: 10, minHeight: 39.2,
-          display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
-        }}>{uni.program}</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#1A1A1A', marginBottom: 6 }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          {uni.loc}
+
+      {/* Body — p16, gap20 between content and button */}
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center', flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', width: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start', width: '100%' }}>
+            {/* Name + program — each a fixed 2-line slot so cards align */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
+              <div style={{
+                fontSize: 22, fontWeight: 500, color: '#0162e3', lineHeight: '26.4px',
+                minHeight: 52.8, wordBreak: 'break-word',
+                display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
+              }}>{uni.name}</div>
+              <div style={{
+                fontSize: 16, fontWeight: 500, color: '#0162e3', lineHeight: '19.5px',
+                minHeight: 39, wordBreak: 'break-word',
+                display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden',
+              }}>{uni.program}</div>
+            </div>
+            {/* Location + start date — gap 10, 20px icons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start', width: '100%' }}>
+              <div style={iconRow}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span style={iconTxt}>{uni.loc}</span>
+              </div>
+              <div style={iconRow}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                <span style={iconTxt}>Starts {uni.start}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Badges — gap 8, #f7f7f7, radius 10 */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'flex-start', width: '100%' }}>
+            <span style={badge}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-2.5-2.5h-1a2.5 2.5 0 0 0 0 5h1a2.5 2.5 0 0 1 0 5h-1A2.5 2.5 0 0 1 9 14.5"/></svg>
+              {uni.tuition}
+            </span>
+            <span style={badge}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+              English
+            </span>
+            <span style={badge}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              {uni.duration}
+            </span>
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#1A1A1A' }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-          Starts {uni.start}
-        </div>
-        <div style={{ display: 'flex', gap: 6, marginTop: 16, flexWrap: 'wrap' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 11px', borderRadius: 999, fontSize: 12.5, fontWeight: 400, background: '#F2F2F2', color: '#1A1A1A' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-2.5-2.5h-1a2.5 2.5 0 0 0 0 5h1a2.5 2.5 0 0 1 0 5h-1A2.5 2.5 0 0 1 9 14.5"/></svg>
-            {uni.tuition}
-          </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 11px', borderRadius: 999, fontSize: 12.5, fontWeight: 400, background: '#F2F2F2', color: '#1A1A1A' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
-            English
-          </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 11px', borderRadius: 999, fontSize: 12.5, fontWeight: 400, background: '#F2F2F2', color: '#1A1A1A' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            {uni.duration}
-          </span>
-        </div>
-        <button
-          style={{ marginTop: 'auto', width: '100%', padding: '13px', background: '#0162E3', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 500, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' }}
-        >
+
+        {/* Ask AI — radius 12, py12 px16, 14px */}
+        <button style={{
+          marginTop: 'auto', width: '100%', padding: '12px 16px', background: '#0162e3', color: '#fff',
+          border: 'none', borderRadius: 12, fontWeight: 500, fontSize: 14, letterSpacing: '-0.28px',
+          cursor: 'pointer', fontFamily: 'inherit',
+        }}>
           Ask AI
         </button>
       </div>
@@ -178,21 +203,22 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
   }
 
   return (
-    <section style={{ background: '#F2F2F2', padding: '80px 0' }}>
+    <section style={{ background: '#f2f2f2', padding: '80px 0' }}>
       <div style={{ maxWidth: 1448, margin: '0 auto', paddingLeft: 64 }}>
-        <h2 style={{ fontSize: 'clamp(30px,3.4vw,42px)', fontWeight: 600, color: '#1A1A1A', margin: '0 0 34px', fontFamily: 'Geist, sans-serif', letterSpacing: '-0.02em' }}>{heading}</h2>
+        {/* Heading — 40px Geist Medium, tracking -0.4 */}
+        <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', margin: '0 0 16px', fontFamily: 'Geist, sans-serif', letterSpacing: '-0.4px', lineHeight: 'normal' }}>{heading}</h2>
 
-        {/* Field tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #DCDCDC', marginBottom: 28, paddingRight: 64 }}>
+        {/* Field tabs — p16, 18px, 3px active underline */}
+        <div style={{ display: 'flex', borderBottom: '1px solid #dfe0e4', marginBottom: 24, paddingRight: 64 }}>
           {tabs.map(t => (
             <button
               key={t}
               onClick={() => onFieldChange(t)}
               style={{
-                padding: '10px 16px', marginBottom: -1, fontSize: 16, fontWeight: 500,
-                color: t === field ? '#0162E3' : '#1A1A1A', background: 'none', border: 'none',
-                borderBottom: t === field ? '2px solid #0162E3' : '2px solid transparent',
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+                padding: 16, marginBottom: -1, fontSize: 18, fontWeight: 500,
+                color: t === field ? '#0162e3' : '#000', background: 'none', border: 'none',
+                borderBottom: t === field ? '3px solid #0162e3' : '3px solid transparent',
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s', whiteSpace: 'nowrap',
               }}
             >
               {t}
@@ -212,7 +238,7 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
         <style jsx>{`.uni-cards-row::-webkit-scrollbar { display: none; } .uni-cards-row { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
 
         {/* Pagination + arrows */}
-        <div style={{ display: 'flex', alignItems: 'center', marginTop: 28, paddingRight: 64, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: 24, paddingRight: 64, position: 'relative' }}>
           {/* Centered dots */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 auto' }}>
             {unis.map((_, i) => (
@@ -228,11 +254,11 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
           </div>
           {/* Arrows pinned right */}
           <div style={{ display: 'flex', gap: 12, position: 'absolute', right: 64 }}>
-            <button onClick={() => scroll(-1)} style={{ width: 46, height: 46, borderRadius: '50%', border: '1px solid #1A1A1A', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <button onClick={() => scroll(-1)} style={{ width: 45, height: 45, borderRadius: 200, border: '1px solid #000', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
-            <button onClick={() => scroll(1)} style={{ width: 46, height: 46, borderRadius: '50%', border: '1px solid #1A1A1A', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            <button onClick={() => scroll(1)} style={{ width: 45, height: 45, borderRadius: 200, border: '1px solid #000', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </button>
           </div>
         </div>
@@ -573,7 +599,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
 
       {/* ── MASTER PROGRAMS ── */}
       <CardsSection
-        heading={<>Popular fields. Top <span style={{ color: '#0162E3' }}>master</span> programs.</>}
+        heading={<>Popular fields. Top <span style={{ color: '#05203c', fontWeight: 600 }}>master</span> programs.</>}
         data={MASTER_UNIS}
         tabs={MASTER_TABS}
         field={masterField}
@@ -624,7 +650,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
 
       {/* ── BACHELOR PROGRAMS ── */}
       <CardsSection
-        heading={<>Popular fields. Top <span style={{ color: '#0162E3' }}>bachelor</span> programs.</>}
+        heading={<>Popular fields. Top <span style={{ color: '#05203c', fontWeight: 600 }}>bachelor</span> programs.</>}
         data={BACHELOR_UNIS}
         tabs={BACHELOR_TABS}
         field={bachelorField}
