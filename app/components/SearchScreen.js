@@ -23,9 +23,9 @@ const MASTER_UNIS = {
   ],
   'Business & MBA': [
     { name: 'HEC Paris', program: 'MIM (Master in Management)', loc: 'Paris, France', start: 'Sep 2026', tuition: '€41,500 total', duration: '2 years', img: '/unis/m/biz/hec.jpg' },
-    { name: 'Bocconi University', program: 'MSc International Management (MISB)', loc: 'Milan, Italy', start: 'Sep 2026', tuition: '€17,116/yr', duration: '2 years', img: '/unis/m/biz/bocconi.jpg' },
-    { name: 'Erasmus University Rotterdam (RSM)', program: 'MSc International Management / CEMS', loc: 'Rotterdam, Netherlands', start: 'Sep 2026', tuition: '€2,530/yr (EU)', duration: '1 year', img: '/unis/m/biz/rsm.jpg' },
-    { name: 'Copenhagen Business School', program: 'MSc Economics & Business Administration', loc: 'Copenhagen, Denmark', start: 'Sep 2026', tuition: 'Free tuition (EU)', duration: '2 years', img: '/unis/m/biz/cbs.jpg' },
+    { name: 'Bocconi University', program: 'MSc International Management', loc: 'Milan, Italy', start: 'Sep 2026', tuition: '€17,116/yr', duration: '2 years', img: '/unis/m/biz/bocconi.jpg' },
+    { name: 'Erasmus University Rotterdam (RSM)', program: 'MSc International Management', loc: 'Rotterdam, Netherlands', start: 'Sep 2026', tuition: '€2,530/yr (EU)', duration: '1 year', img: '/unis/m/biz/rsm.jpg' },
+    { name: 'Copenhagen Business School', program: 'MSc Economics & Business', loc: 'Copenhagen, Denmark', start: 'Sep 2026', tuition: 'Free tuition (EU)', duration: '2 years', img: '/unis/m/biz/cbs.jpg' },
     { name: 'London Business School', program: 'MBA', loc: 'London, United Kingdom', start: 'Aug 2026', tuition: '£119,900 total', duration: '15–21 months', img: '/unis/m/biz/lbs.jpg' },
     { name: 'Harvard Business School', program: 'MBA', loc: 'Boston, USA', start: 'Sep 2026', tuition: '$76,410/yr', duration: '2 years', img: '/unis/m/biz/hbs.jpg' },
     { name: 'Stanford Graduate School of Business', program: 'MBA', loc: 'Stanford, USA', start: 'Sep 2026', tuition: '$84,168/yr', duration: '2 years', img: '/unis/m/biz/gsb.webp' },
@@ -42,9 +42,9 @@ const MASTER_UNIS = {
     { name: 'National University of Singapore (NUS)', program: 'MSc Mechanical Engineering', loc: 'Singapore', start: 'Aug 2026', tuition: 'SGD 19,250/yr', duration: '1.5 years', img: '/unis/m/eng/nus.jpg' },
   ],
   'Law': [
-    { name: 'Leiden University', program: 'LLM Advanced Studies in International Law', loc: 'Leiden, Netherlands', start: 'Sep 2026', tuition: '€21,800/yr', duration: '1 year', img: '/unis/m/law/leiden.webp' },
+    { name: 'Leiden University', program: 'LLM Advanced International Law', loc: 'Leiden, Netherlands', start: 'Sep 2026', tuition: '€21,800/yr', duration: '1 year', img: '/unis/m/law/leiden.webp' },
     { name: 'University of Amsterdam', program: 'LLM International & European Law', loc: 'Amsterdam, Netherlands', start: 'Sep 2026', tuition: '€17,500/yr (non-EU)', duration: '1 year', img: '/unis/m/law/uva.jpg' },
-    { name: 'Sciences Po Law School', program: 'LLM Transnational Arbitration & Dispute Settlement', loc: 'Paris, France', start: 'Sep 2026', tuition: '€21,950/yr', duration: '1 year', img: '/unis/m/law/sciencespo.jpg' },
+    { name: 'Sciences Po Law School', program: 'LLM Transnational Arbitration', loc: 'Paris, France', start: 'Sep 2026', tuition: '€21,950/yr', duration: '1 year', img: '/unis/m/law/sciencespo.jpg' },
     { name: 'Humboldt University of Berlin', program: 'LLM International Dispute Resolution', loc: 'Berlin, Germany', start: 'Oct 2026', tuition: '€13,400 total', duration: '1 year', img: null },
     { name: 'University of Oxford', program: 'BCL / MJur (Master of Law)', loc: 'Oxford, United Kingdom', start: 'Oct 2026', tuition: '£42,840/yr', duration: '1 year', img: '/unis/m/law/oxford.webp' },
     { name: 'Harvard Law School', program: 'LLM (Master of Laws)', loc: 'Cambridge, USA', start: 'Sep 2026', tuition: '$78,000/yr', duration: '1 year', img: '/unis/m/law/harvard.webp' },
@@ -56,9 +56,9 @@ const MASTER_UNIS = {
 const BACHELOR_UNIS = {
   'Business & MBA': [
     { name: 'Bocconi University', program: 'BSc Economics and Management', loc: 'Milan, Italy', start: 'Sep 2026', tuition: '€13,986/yr', duration: '3 years', img: '/unis/b/biz/bocconi.jpg' },
-    { name: 'Erasmus University Rotterdam (RSM)', program: 'BSc International Business Administration', loc: 'Rotterdam, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/biz/rsm.jpg' },
+    { name: 'Erasmus University Rotterdam (RSM)', program: 'BSc International Business', loc: 'Rotterdam, Netherlands', start: 'Sep 2026', tuition: '€2,314/yr', duration: '3 years', img: '/unis/b/biz/rsm.jpg' },
     { name: 'University of St. Gallen (HSG)', program: 'BSc Business Administration', loc: 'St. Gallen, Switzerland', start: 'Sep 2026', tuition: 'CHF 720/yr', duration: '3 years', img: '/unis/b/biz/hsg.jpg' },
-    { name: 'Copenhagen Business School', program: 'BSc Business Administration & Information Systems', loc: 'Copenhagen, Denmark', start: 'Sep 2026', tuition: 'Free tuition (EU)', duration: '3 years', img: '/unis/b/biz/cbs.jpg' },
+    { name: 'Copenhagen Business School', program: 'BSc Business & Information Systems', loc: 'Copenhagen, Denmark', start: 'Sep 2026', tuition: 'Free tuition (EU)', duration: '3 years', img: '/unis/b/biz/cbs.jpg' },
     { name: 'London School of Economics', program: 'BSc Management', loc: 'London, United Kingdom', start: 'Sep 2026', tuition: '£9,250/yr', duration: '4 years', img: null },
     { name: 'University of Pennsylvania (Wharton)', program: 'BSc in Economics', loc: 'Philadelphia, USA', start: 'Sep 2026', tuition: '$59,928/yr', duration: '4 years', img: '/unis/b/biz/wharton.jpg' },
     { name: 'New York University (Stern)', program: 'BS in Business', loc: 'New York, USA', start: 'Sep 2026', tuition: '$54,630/yr', duration: '4 years', img: null },
