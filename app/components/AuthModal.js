@@ -42,6 +42,50 @@ const pillButton = {
   gap: 8,
 }
 
+/* Defined at module scope on purpose: a component declared inside AuthModal
+   would be a new type on every render, remounting the inputs and wiping
+   whatever the user had typed. */
+function Shell({ onClose, label, children }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={label}
+        style={{
+          width: 388,
+          maxWidth: 'calc(100vw - 32px)',
+          maxHeight: 'calc(100vh - 32px)',
+          overflowY: 'auto',
+          background: '#fff',
+          borderRadius: 24,
+          boxShadow: '0px 8px 12px 0px rgba(0,0,0,0.08), 0px 0px 1px 0px rgba(0,0,0,0.62)',
+          animation: 'slideUp 0.25s ease',
+          fontFamily: 'Geist, -apple-system, sans-serif',
+        }}
+      >
+        {/* Header — close button, right aligned */}
+        <div style={{ minHeight: 52, padding: '10px 10px 6px', display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: INK }}
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
+              <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div style={{ padding: '0 24px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -94,47 +138,9 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     }
   }
 
-  const Shell = ({ children }) => (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        onClick={e => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-label={isLogin ? 'Log in' : 'Sign up'}
-        style={{
-          width: 388,
-          maxWidth: 'calc(100vw - 32px)',
-          maxHeight: 'calc(100vh - 32px)',
-          overflowY: 'auto',
-          background: '#fff',
-          borderRadius: 24,
-          boxShadow: '0px 8px 12px 0px rgba(0,0,0,0.08), 0px 0px 1px 0px rgba(0,0,0,0.62)',
-          animation: 'slideUp 0.25s ease',
-          fontFamily: 'Geist, -apple-system, sans-serif',
-        }}
-      >
-        {/* Header — close button, right aligned */}
-        <div style={{ minHeight: 52, padding: '10px 10px 6px', display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: INK }}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
-              <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
-        <div style={{ padding: '0 24px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {children}
-        </div>
-      </div>
-    </div>
-  )
-
   if (confirmation) {
     return (
-      <Shell>
+      <Shell onClose={onClose} label="Check your inbox">
         <h2 style={{ margin: 0, fontSize: 30, fontWeight: 400, lineHeight: '36px', letterSpacing: '0.42px', color: INK, textAlign: 'center' }}>
           Check your inbox
         </h2>
@@ -147,7 +153,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   }
 
   return (
-    <Shell>
+    <Shell onClose={onClose} label={isLogin ? 'Log in' : 'Sign up'}>
       {/* Title + subtitle */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h2 style={{ margin: 0, fontSize: 30, fontWeight: 400, lineHeight: '36px', letterSpacing: '0.42px', color: INK, textAlign: 'center' }}>

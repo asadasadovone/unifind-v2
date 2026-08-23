@@ -24,6 +24,21 @@ const FIELDS = [
   { name: 'Social Sciences', icon: 'people' },
 ]
 
+/* Module scope on purpose: declared inside the screen it would be a new
+   component type each render, remounting its children — which include the
+   field search box and the tuition inputs — and dropping focus mid-typing. */
+function Section({ id, title, open, setOpen, children }) {
+  return (
+    <div className="sidebar-section">
+      <button className="sidebar-section-head" onClick={() => setOpen(o => ({ ...o, [id]: !o[id] }))}>
+        <span>{title}</span>
+        <Icon name={open[id] ? 'chevronUp' : 'chevron'} size={14} />
+      </button>
+      {open[id] && <div className="sidebar-section-body">{children}</div>}
+    </div>
+  )
+}
+
 function FieldIcon({ name, size = 16 }) {
   const props = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' }
   switch (name) {
@@ -331,18 +346,6 @@ function FilterSidebar({ filters, setFilters, onSearch }) {
     !filters.field || f.name.toLowerCase().includes(filters.field.toLowerCase())
   )
 
-  function Section({ id, title, children }) {
-    return (
-      <div className="sidebar-section">
-        <button className="sidebar-section-head" onClick={() => setOpen(o => ({ ...o, [id]: !o[id] }))}>
-          <span>{title}</span>
-          <Icon name={open[id] ? 'chevronUp' : 'chevron'} size={14} />
-        </button>
-        {open[id] && <div className="sidebar-section-body">{children}</div>}
-      </div>
-    )
-  }
-
   return (
     <div>
       <div className="sidebar-header">
@@ -362,7 +365,7 @@ function FilterSidebar({ filters, setFilters, onSearch }) {
         </button>
       </div>
 
-      <Section id="field" title="Field of study">
+      <Section id="field" title="Field of study" open={open} setOpen={setOpen}>
         <div className="sidebar-field-wrap" ref={fieldRef}>
           <input
             className="input"
@@ -396,7 +399,7 @@ function FilterSidebar({ filters, setFilters, onSearch }) {
         </div>
       </Section>
 
-      <Section id="country" title="Country">
+      <Section id="country" title="Country" open={open} setOpen={setOpen}>
         <div style={{ position: 'relative' }}>
           <select
             className="select"
@@ -417,25 +420,25 @@ function FilterSidebar({ filters, setFilters, onSearch }) {
         </div>
       </Section>
 
-      <Section id="tuition" title="Tuition fee (USD/yr)">
+      <Section id="tuition" title="Tuition fee (USD/yr)" open={open} setOpen={setOpen}>
         <div style={{ padding: '0 10px' }}>
           <RangeSlider min={0} max={100000} step={100} value={filters.tuition} onChange={(v) => update('tuition', v)} />
         </div>
       </Section>
 
-      <Section id="format" title="Format">
+      <Section id="format" title="Format" open={open} setOpen={setOpen}>
         <ChipGroup options={['Full-time', 'Part-time']} value={filters.format} onChange={(v) => update('format', v)} />
       </Section>
 
-      <Section id="attendance" title="Attendance">
+      <Section id="attendance" title="Attendance" open={open} setOpen={setOpen}>
         <ChipGroup options={['On-campus', 'Online', 'Blended']} value={filters.attendance} onChange={(v) => update('attendance', v)} />
       </Section>
 
-      <Section id="degree" title="Degree type">
+      <Section id="degree" title="Degree type" open={open} setOpen={setOpen}>
         <ChipGroup options={['Bachelor', 'Master', 'PhD']} value={filters.degree} onChange={(v) => update('degree', v)} />
       </Section>
 
-      <Section id="date" title="Start date">
+      <Section id="date" title="Start date" open={open} setOpen={setOpen}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {['Any intake', 'Fall 2026', 'Spring 2027', 'Fall 2027'].map(opt => {
             const val = opt === 'Any intake' ? '' : opt
