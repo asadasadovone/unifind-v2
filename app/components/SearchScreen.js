@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect, useLayoutEffect } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, Fragment } from 'react'
 import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
 import UserDropdown from './UserDropdown'
 import MobileMenuDrawer from './MobileMenuDrawer'
@@ -103,14 +103,38 @@ const STORIES = [
 ]
 
 const FAQS = [
-  { q: "Is UniAsk really free? What's the catch?", a: 'While you would spend weeks Googling, our AI scans thousands of programs in seconds — and ranks them by fit. The core search is always free.' },
-  { q: 'How is this different from just Googling or using StudyPortals?', a: 'UniAsk uses AI to understand your goals, budget, and preferences — then finds and ranks programs that actually match, saving you weeks of manual research.' },
-  { q: 'How accurate is the information? Can I rely on it for my application?', a: 'Our data is updated weekly from official university sources. Always verify final details directly with the university before applying.' },
-  { q: "I don't know what I want to study yet. Can UniAsk still help me?", a: 'Absolutely. Describe your interests, budget, and target countries — our AI will suggest fields and programs that match your profile.' },
-  { q: 'My situation is complicated. Will the AI actually understand me?', a: 'Yes. The AI is trained to handle complex situations — dual nationality, gap years, non-traditional backgrounds, specific visa requirements.' },
-  { q: 'Does UniAsk cover visa requirements and cost of living?', a: 'Yes. The AI advisor on each program page can answer questions about visas, cost of living, housing, and life in that city.' },
-  { q: 'What programs and countries does UniAsk cover?', a: 'UniAsk covers thousands of programs across 50+ countries, with a focus on English-taught and European programs.' },
-  { q: 'Can I save my research and come back later?', a: 'Yes — create a free account to save programs, continue AI chats, and track your shortlist across devices.' },
+  {
+    q: "Is UniAsk really free? What's the catch?",
+    a: "There's no catch. UniAsk is completely free for students — no credit card, no trial period, no hidden upgrade wall. You can search thousands of programs, chat with AI about any of them, and save your favorites without spending a cent. We believe the best university discovery tool should be accessible to every student, regardless of budget.",
+  },
+  {
+    q: 'How is this different from just Googling or using StudyPortals?',
+    a: "Google and directory sites show you lists — you still have to visit each university website, read PDFs, email admissions offices, and piece the answers together yourself. That process takes weeks. UniAsk replaces it entirely: your results are already ranked by how well they fit your profile, and you can ask specific questions and get direct answers without leaving the page. The difference is searching a library versus asking a librarian who's already read everything.",
+  },
+  {
+    q: 'How accurate is the information? Can I rely on it for my application?',
+    a: "Our data comes directly from official university sources — admissions pages, program handbooks, and scholarship databases — and we verify it weekly. That said, we always recommend confirming final details (especially deadlines and required documents) on the university's official website before submitting anything. Use UniAsk to discover, research, and shortlist confidently — then do one final check before you apply. The AI will remind you of this too.",
+  },
+  {
+    q: "I don't know what I want to study yet. Can UniAsk still help me?",
+    a: 'This is actually where UniAsk is most useful. You don\u2019t need a specific program in mind. Tell us your interests, career goals, or even something as broad as "I enjoy problem-solving and want to study in Europe on a tight budget" — the AI will guide you through options and surface directions you might not have considered. Many of our most satisfied users arrived with a vague idea and left with a clear shortlist.',
+  },
+  {
+    q: 'My situation is complicated. Will the AI actually understand me?',
+    a: "UniAsk is built for real students — not textbook cases. Whether you're switching fields, have a non-traditional academic background, need programs compatible with a work visa, or have budget constraints most databases don't filter for — explain your situation in plain language and the AI will work with it. If something is outside what it can answer with confidence, it will tell you directly rather than guess.",
+  },
+  {
+    q: 'Does UniAsk cover visa requirements and cost of living?',
+    a: "Yes — every program's AI chat covers far more than admission criteria. Ask about visa requirements for your specific nationality, average living costs in that city, part-time work regulations, housing options, health insurance, and more. We include this information specifically so you can make a fully-informed decision: not just choose a program, but actually be prepared to go.",
+  },
+  {
+    q: 'What programs and countries does UniAsk cover?',
+    a: "UniAsk currently indexes 40,000+ programs across 85+ countries, with the strongest coverage in Europe, North America, and Oceania — including hundreds of fully-funded programs that most students never find on their own. We cover virtually all major academic fields, from Computer Science and Medicine to Architecture and Education. If a search area isn't well-covered yet, the AI will tell you honestly rather than return weak results.",
+  },
+  {
+    q: 'Can I save my research and come back later?',
+    a: "Create a free account — it takes under 30 seconds — and everything stays with you: saved programs, AI conversations, and your full search history. Pick up any chat exactly where you left off, on any device, whenever you're ready. No time pressure, no expiry date on your research.",
+  },
 ]
 
 // ── sub-components ────────────────────────────────────────────────────────────
@@ -495,16 +519,51 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
   )
 }
 
-function FaqItem({ q, a }) {
-  const [open, setOpen] = useState(false)
+function FaqSection() {
+  const [open, setOpen] = useState(0) // Figma shows the first item expanded
+
   return (
-    <div style={{ borderBottom: '1px solid #E8E8E8', padding: '20px 0' }}>
-      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', padding: 0 }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: '#111', paddingRight: 24 }}>{q}</span>
-        <span style={{ fontSize: 22, color: '#555', lineHeight: 1, flexShrink: 0, fontWeight: 300 }}>{open ? '−' : '+'}</span>
-      </button>
-      {open && <p style={{ margin: '12px 0 0', fontSize: 15, color: '#555', lineHeight: 1.7 }}>{a}</p>}
-    </div>
+    <section style={{ background: '#f2f2f2', padding: '80px 64px', display: 'flex', flexDirection: 'column', gap: 56, alignItems: 'center' }}>
+      <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', margin: 0, width: '100%', fontFamily: 'Geist, sans-serif' }}>
+        More questions?
+      </h2>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center', width: '100%', maxWidth: 984 }}>
+        {FAQS.map((f, i) => {
+          const isOpen = open === i
+          return (
+            <Fragment key={i}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start', padding: '6px 0', width: '100%' }}>
+                <button
+                  onClick={() => setOpen(isOpen ? -1 : i)}
+                  aria-expanded={isOpen}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, width: '100%', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}
+                >
+                  <span style={{ flex: '1 0 0', minWidth: 1, fontSize: 24, fontWeight: 600, color: '#000', lineHeight: 'normal', wordBreak: 'break-word' }}>{f.q}</span>
+                  {/* Minus is #05203C and 2px; plus is black and 1.33px — per Figma */}
+                  <span style={{ flexShrink: 0, width: 20.418, height: 20.418, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {isOpen ? (
+                      <svg width="20.418" height="20.418" viewBox="0 0 20.418 20.418" fill="none" aria-hidden>
+                        <path d="M4.55 10.209H15.87" stroke="#05203C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      <svg width="20.418" height="20.418" viewBox="0 0 20.418 20.418" fill="none" aria-hidden>
+                        <path d="M10.209 4.209V16.209" stroke="black" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M4.209 10.209H16.209" stroke="black" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                </button>
+                {isOpen && (
+                  <p style={{ margin: 0, fontSize: 20, fontWeight: 400, color: '#000', lineHeight: 'normal', width: '100%' }}>{f.a}</p>
+                )}
+              </div>
+              {i < FAQS.length - 1 && <div style={{ width: '100%', height: 1, background: '#CDCDCD', flexShrink: 0 }} />}
+            </Fragment>
+          )
+        })}
+      </div>
+    </section>
   )
 }
 
@@ -845,14 +904,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
 
       <TimeSection />
 
-      {/* ── FAQ ── */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', margin: '0 0 8px', fontFamily: 'Geist, sans-serif', textAlign: 'center' }}>More questions?</h2>
-          <p style={{ textAlign: 'center', color: '#888', marginBottom: 40, fontSize: 15 }}>Everything you need to know about UniAsk.</p>
-          {FAQS.map((f, i) => <FaqItem key={i} {...f} />)}
-        </div>
-      </section>
+      <FaqSection />
 
       {/* ── FOOTER ── */}
       <footer style={{ background: '#05203C', padding: '80px 48px 32px', color: '#fff', overflow: 'hidden' }}>
