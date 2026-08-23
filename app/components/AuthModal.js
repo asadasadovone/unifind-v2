@@ -6,6 +6,27 @@ import { signIn, signUp, signInWithGoogle } from '../lib/supabase'
 const BORDER = 'rgba(0,0,0,0.15)'
 const INK = '#0d0d0d'
 const BLUE = '#0162e3'
+const RED = '#ea4335'
+
+/* Figma 83:496 — inline error: red field border, then a 14px info glyph
+   and a 13px message beneath. */
+function FieldError({ children }) {
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} role="alert">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }} aria-hidden>
+        <path
+          d="M7 4.66667H7.00467M7 9.33333V6.41667M12.8333 7C12.8333 10.2217 10.2217 12.8333 7 12.8333C3.77825 12.8333 1.16667 10.2217 1.16667 7C1.16667 3.77825 3.77825 1.16667 7 1.16667C10.2217 1.16667 12.8333 3.77825 12.8333 7Z"
+          stroke={RED} strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"
+        />
+      </svg>
+      <span style={{ fontSize: 13, fontWeight: 500, color: RED, letterSpacing: '-0.078px', lineHeight: '19.5px' }}>
+        {children}
+      </span>
+    </div>
+  )
+}
+
+const errored = base => ({ ...base, border: `1px solid ${RED}` })
 
 const pillInput = {
   width: '100%',
@@ -40,6 +61,18 @@ const pillButton = {
   alignItems: 'center',
   justifyContent: 'center',
   gap: 8,
+}
+
+/* Supabase returns one flat message; put it on the field it concerns so the
+   error renders where Figma shows it. */
+function toFieldErrors(msg = '') {
+  const m = msg.toLowerCase()
+  if (m.includes('already registered') || m.includes('already exists')) return { email: 'That email is already registered.' }
+  if (m.includes('invalid login credentials')) return { password: 'Email or password is incorrect.' }
+  if (m.includes('email not confirmed')) return { email: 'Please confirm your email first.' }
+  if (m.includes('password')) return { password: msg }
+  if (m.includes('email')) return { email: msg }
+  return { general: msg }
 }
 
 /* Defined at module scope on purpose: a component declared inside AuthModal
@@ -92,7 +125,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [errors, setErrors] = useState({})
   const [confirmation, setConfirmation] = useState(false)
 
   const isLogin = mode === 'login'
@@ -103,21 +136,29 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     : 'Save your favorite programs and continue your AI conversations anytime.'
 
   const handleGoogle = async () => {
-    setError(null)
+    setErrors({})
     setGoogleLoading(true)
     try {
       const { error } = await signInWithGoogle()
       if (error) throw error
       // Redirect happens automatically — Supabase takes over
     } catch (err) {
-      setError(err.message)
+      setErrors({ general: err.message })
       setGoogleLoading(false)
     }
   }
 
   const submit = async (e) => {
     e?.preventDefault()
-    setError(null)
+
+    // Validate before hitting the network so the message lands on the field.
+    const next = {}
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = 'Email is not valid.'
+    if (password.length < 6) next.password = 'Password must be at least 6 characters.'
+    if (!isLogin && !name.trim()) next.name = 'Please enter your name.'
+    if (Object.keys(next).length) { setErrors(next); return }
+
+    setErrors({})
     setLoading(true)
     try {
       if (isLogin) {
@@ -132,7 +173,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
         else setConfirmation(true)
       }
     } catch (err) {
-      setError(err.message)
+      setErrors(toFieldErrors(err.message))
     } finally {
       setLoading(false)
     }
@@ -190,49 +231,47 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
         <div style={{ flex: 1, height: 1, background: 'rgba(13,13,13,0.15)' }} />
       </div>
 
-      {error && (
-        <div style={{ padding: '10px 16px', background: '#fff0f0', border: '1px solid #fca5a5', borderRadius: 12, fontSize: 14, color: '#b91c1c' }}>
-          {error}
-        </div>
-      )}
-
       {/* Form */}
-      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* noValidate: we render Figma's inline messages ourselves, otherwise the
+          browser's native bubble fires first and blocks submit. */}
+      <form noValidate onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {!isLogin && (
-            <div style={{ padding: '4px 0' }}>
+            <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
               <input
-                style={pillInput}
+                style={errors.name ? errored(pillInput) : pillInput}
                 placeholder="Full Name"
                 value={name}
-                onChange={e => setName(e.target.value)}
-                required
+                onChange={e => { setName(e.target.value); if (errors.name) setErrors(p => ({ ...p, name: null })) }}
+                aria-invalid={!!errors.name}
                 autoComplete="name"
               />
+              {errors.name && <FieldError>{errors.name}</FieldError>}
             </div>
           )}
-          <div style={{ padding: '4px 0' }}>
+          <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
             <input
-              style={pillInput}
+              style={errors.email ? errored(pillInput) : pillInput}
               type="email"
               placeholder="Email address"
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
+              onChange={e => { setEmail(e.target.value); if (errors.email) setErrors(p => ({ ...p, email: null })) }}
+              aria-invalid={!!errors.email}
               autoComplete="email"
             />
+            {errors.email && <FieldError>{errors.email}</FieldError>}
           </div>
-          <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column', gap: errors.password ? 6 : 8 }}>
             <input
-              style={pillInput}
+              style={errors.password ? errored(pillInput) : pillInput}
               type="password"
               placeholder="Password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              minLength={6}
+              onChange={e => { setPassword(e.target.value); if (errors.password) setErrors(p => ({ ...p, password: null })) }}
+              aria-invalid={!!errors.password}
               autoComplete={isLogin ? 'current-password' : 'new-password'}
             />
+            {errors.password && <FieldError>{errors.password}</FieldError>}
             {isLogin && (
               <a
                 href="#"
@@ -245,6 +284,8 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
           </div>
         </div>
 
+        {errors.general && <FieldError>{errors.general}</FieldError>}
+
         <button type="submit" style={{ ...pillButton, opacity: loading ? 0.7 : 1 }} disabled={loading}>
           {loading ? <><Spinner /> {isLogin ? 'Logging in…' : 'Creating account…'}</> : (isLogin ? 'Log in' : 'Sign up free')}
         </button>
@@ -256,7 +297,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
           Already have an account?{' '}
           <a
             href="#"
-            onClick={e => { e.preventDefault(); setError(null); onMode('login') }}
+            onClick={e => { e.preventDefault(); setErrors({}); onMode('login') }}
             style={{ color: BLUE, fontWeight: 500, textDecoration: 'underline' }}
           >
             Log in
