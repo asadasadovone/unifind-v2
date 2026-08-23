@@ -213,12 +213,27 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
 
   const CARD_STEP = 330 // card width 314 + gap 16
 
+  // Figma shows five indicators for eight cards: the dots track scroll
+  // positions, not cards — cards - fully visible cards + 1.
+  const [visible, setVisible] = useState(4)
+  useLayoutEffect(() => {
+    const el = rowRef.current
+    if (!el) return
+    const calc = () => setVisible(Math.max(1, Math.floor((el.clientWidth + 16) / CARD_STEP)))
+    calc()
+    const ro = new ResizeObserver(calc)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const pages = Math.max(1, unis.length - visible + 1)
+
   const scroll = (dir) => {
     if (rowRef.current) rowRef.current.scrollBy({ left: dir * CARD_STEP, behavior: 'smooth' })
   }
   const onScroll = () => {
     if (!rowRef.current) return
-    setActive(Math.round(rowRef.current.scrollLeft / CARD_STEP))
+    const i = Math.round(rowRef.current.scrollLeft / CARD_STEP)
+    setActive(Math.min(Math.max(i, 0), pages - 1))
   }
 
   return (
@@ -264,20 +279,20 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
         {/* Pagination + arrows */}
         <div style={{ display: 'flex', alignItems: 'center', marginTop: 24, paddingRight: 64, position: 'relative' }}>
           {/* Centered dots */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 auto' }}>
-            {unis.map((_, i) => (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, margin: '0 auto' }}>
+            {Array.from({ length: pages }, (_, i) => (
               <span
                 key={i}
                 style={{
-                  width: i === active ? 30 : 7, height: i === active ? 4 : 7,
-                  borderRadius: 999, background: i === active ? '#1A1A1A' : '#C4C4C4',
-                  transition: 'all 0.2s',
+                  width: i === active ? 45 : 9, height: 9,
+                  borderRadius: 4.5, background: i === active ? '#14140E' : '#B8B8B7',
+                  transition: 'width 0.2s, background 0.2s', flexShrink: 0,
                 }}
               />
             ))}
           </div>
           {/* Arrows pinned right */}
-          <div style={{ display: 'flex', gap: 12, position: 'absolute', right: 64 }}>
+          <div style={{ display: 'flex', gap: 17, position: 'absolute', right: 64 }}>
             <button onClick={() => scroll(-1)} style={{ width: 45, height: 45, borderRadius: 200, border: '1px solid #000', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
