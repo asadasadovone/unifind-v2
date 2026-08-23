@@ -45,3 +45,10 @@ export async function signInWithGoogle() {
   })
   return { data, error }
 }
+
+export async function sendPasswordReset(email) {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+  })
+  return { data, error }
+}

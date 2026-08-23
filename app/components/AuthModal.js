@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { signIn, signUp, signInWithGoogle } from '../lib/supabase'
+import { signIn, signUp, signInWithGoogle, sendPasswordReset } from '../lib/supabase'
 
 /* Figma 619:1263 (Log in) and 444:768 (Sign Up) */
 const BORDER = 'rgba(0,0,0,0.15)'
@@ -127,6 +127,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const [confirmation, setConfirmation] = useState(false)
+  const [view, setView] = useState('form') // 'form' | 'forgot' | 'reset-sent'
 
   const isLogin = mode === 'login'
   const subtitle = isLogin
@@ -145,6 +146,25 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     } catch (err) {
       setErrors({ general: err.message })
       setGoogleLoading(false)
+    }
+  }
+
+  const sendReset = async (e) => {
+    e?.preventDefault()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setErrors({ email: 'Email is not valid.' })
+      return
+    }
+    setErrors({})
+    setLoading(true)
+    try {
+      const { error } = await sendPasswordReset(email.trim())
+      if (error) throw error
+      setView('reset-sent')
+    } catch (err) {
+      setErrors(toFieldErrors(err.message))
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -177,6 +197,59 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  /* Figma 83:320 — Forgot password?
+     Shell, input and button reuse the values measured on the sibling dialogs
+     (83:496 / 619:1263); this frame's own spec could not be pulled because the
+     Figma MCP hit its plan rate limit. */
+  if (view === 'forgot' || view === 'reset-sent') {
+    const sent = view === 'reset-sent'
+    return (
+      <Shell onClose={onClose} label="Forgot password">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <h2 style={{ margin: 0, fontSize: 30, fontWeight: 400, lineHeight: '36px', letterSpacing: '0.42px', color: INK, textAlign: 'center' }}>
+            {sent ? 'Check your inbox' : 'Forgot password?'}
+          </h2>
+          <p style={{ margin: 0, padding: '0 16px', fontSize: 16, fontWeight: 400, lineHeight: '24px', letterSpacing: '-0.32px', color: INK, textAlign: 'center' }}>
+            {sent
+              ? <>We sent a password reset link to <strong style={{ fontWeight: 500 }}>{email}</strong>. Follow it to choose a new password.</>
+              : "Enter your email and we'll send you a link to reset your password."}
+          </p>
+        </div>
+
+        {sent ? (
+          <button type="button" style={pillButton} onClick={() => { setView('form'); onMode('login') }}>
+            Back to log in
+          </button>
+        ) : (
+          <form noValidate onSubmit={sendReset} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ padding: '4px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <input
+                style={errors.email ? errored(pillInput) : pillInput}
+                type="email"
+                placeholder="Email address"
+                value={email}
+                onChange={e => { setEmail(e.target.value); if (errors.email) setErrors(p => ({ ...p, email: null })) }}
+                aria-invalid={!!errors.email}
+                autoComplete="email"
+                autoFocus
+              />
+              {errors.email && <FieldError>{errors.email}</FieldError>}
+            </div>
+            {errors.general && <FieldError>{errors.general}</FieldError>}
+            <button type="submit" style={{ ...pillButton, opacity: loading ? 0.7 : 1 }} disabled={loading}>
+              {loading ? <><Spinner /> Sending…</> : 'Send reset link'}
+            </button>
+          </form>
+        )}
+
+        <p style={{ margin: 0, textAlign: 'center', fontSize: 16, letterSpacing: '-0.32px', lineHeight: '24px', color: INK }}>
+          Need help? Go to the{' '}
+          <a href="#" onClick={e => e.preventDefault()} style={{ color: INK, textDecoration: 'underline' }}>Help Centre.</a>
+        </p>
+      </Shell>
+    )
   }
 
   if (confirmation) {
@@ -275,7 +348,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
             {isLogin && (
               <a
                 href="#"
-                onClick={e => e.preventDefault()}
+                onClick={e => { e.preventDefault(); setErrors({}); setView('forgot') }}
                 style={{ fontSize: 13, fontWeight: 500, letterSpacing: '-0.078px', lineHeight: '19.5px', color: BLUE, textDecoration: 'underline' }}
               >
                 Forgot password?
