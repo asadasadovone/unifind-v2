@@ -52,23 +52,35 @@ export default function App() {
       setUser(session?.user ?? null)
     })
 
-    // Arriving from the "Reset Password" email: supabase-js picks the recovery
-    // token out of the URL and fires PASSWORD_RECOVERY. Open the set-a-new-
-    // password dialog and drop the marker from the address bar.
-    const openReset = () => {
-      setAuthMode('reset')
+    // Arriving from the "Reset Password" email. Supabase may hand the token
+    // back either as ?code= (PKCE) or as a #access_token=...&type=recovery
+    // fragment (implicit), so detect both.
+    const cleanUrl = () => {
       if (typeof window !== 'undefined') {
         window.history.replaceState({}, '', window.location.pathname)
       }
     }
-    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('reset') === '1') {
-      openReset()
+    const openReset = ({ clean }) => {
+      setAuthMode('reset')
+      // Only tidy the address bar once the token has been consumed — wiping
+      // the fragment too early would take it away before supabase-js reads it.
+      if (clean) cleanUrl()
+    }
+
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash || ''
+      const isRecoveryHash = hash.includes('type=recovery')
+      if (new URLSearchParams(window.location.search).get('reset') === '1') {
+        openReset({ clean: !isRecoveryHash && !hash })
+      } else if (isRecoveryHash) {
+        openReset({ clean: false })
+      }
     }
 
     // Listen for sign-in / sign-out events
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
-      if (event === 'PASSWORD_RECOVERY') openReset()
+      if (event === 'PASSWORD_RECOVERY') openReset({ clean: true })
     })
 
     return () => subscription.unsubscribe()
