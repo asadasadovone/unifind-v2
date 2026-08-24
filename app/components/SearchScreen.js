@@ -137,6 +137,24 @@ const FAQS = [
   },
 ]
 
+/* This screen styles almost everything inline, and inline styles beat media
+   queries, so the mobile layout branches in JS instead. 768px matches the
+   nav's existing desktop/mobile break. */
+function useIsMobile(query = '(max-width: 768px)') {
+  const [is, setIs] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const on = () => setIs(mq.matches)
+    on()
+    // Both signals: the media query itself, plus resize as a fallback for
+    // environments where the change event does not fire.
+    mq.addEventListener('change', on)
+    window.addEventListener('resize', on)
+    return () => { mq.removeEventListener('change', on); window.removeEventListener('resize', on) }
+  }, [query])
+  return is
+}
+
 // ── sub-components ────────────────────────────────────────────────────────────
 
 function UniCard({ uni, progMinH }) {
@@ -228,6 +246,7 @@ const UNIASK_MAX = 60     // slider at 100 — an hour of UniAsk vs a full day b
 const MANUAL_FACTOR = 24
 
 function TimeSection() {
+  const isMobile = useIsMobile()
   const [pos, setPos] = useState(0) // 0-100
 
   const uniask = Math.round(UNIASK_MIN + (pos / 100) * (UNIASK_MAX - UNIASK_MIN))
@@ -237,15 +256,15 @@ function TimeSection() {
   // Thumb is 18px, so its centre travels between 9px and (100% - 9px).
   const centre = `calc(9px + (100% - 18px) * ${pos / 100})`
 
-  const statLabel = { fontSize: 16, fontWeight: 600, textTransform: 'uppercase', lineHeight: 'normal', margin: 0 }
-  const statNum = { fontSize: 64, fontWeight: 600, lineHeight: 'normal', margin: 0 }
-  const statFoot = { fontSize: 20, fontWeight: 400, color: '#1f1f1f', lineHeight: 'normal', margin: 0 }
+  const statLabel = { fontSize: isMobile ? 12 : 16, fontWeight: 600, textTransform: 'uppercase', lineHeight: 'normal', margin: 0 }
+  const statNum = { fontSize: isMobile ? 40 : 64, fontWeight: 600, lineHeight: 'normal', margin: 0 }
+  const statFoot = { fontSize: isMobile ? 14 : 20, fontWeight: 400, color: '#1f1f1f', lineHeight: 'normal', margin: 0 }
 
   return (
-    <section style={{ background: '#fff', padding: '80px 64px', display: 'flex', flexDirection: 'column', gap: 56, alignItems: 'center' }}>
+    <section style={{ background: '#fff', padding: isMobile ? '40px 16px' : '80px 64px', display: 'flex', flexDirection: 'column', gap: isMobile ? 40 : 56, alignItems: 'center' }}>
       {/* Heading */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', width: '100%', maxWidth: 1084 }}>
-        <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', margin: 0, width: '100%', fontFamily: 'Geist, sans-serif' }}>
+        <h2 style={{ fontSize: isMobile ? 32 : 40, fontWeight: 500, color: '#000', textAlign: 'center', letterSpacing: isMobile ? '-0.32px' : '-0.4px', lineHeight: 'normal', margin: 0, width: '100%', fontFamily: 'Geist, sans-serif' }}>
           Students waste months on research<br />that should take minutes.
         </h2>
         <p style={{ fontSize: 16, fontWeight: 400, color: '#31464b', textAlign: 'center', lineHeight: 'normal', margin: 0, maxWidth: 590 }}>
@@ -255,7 +274,7 @@ function TimeSection() {
 
       {/* Slider + stats */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center', width: '100%', maxWidth: 856 }}>
-        <p style={{ fontSize: 20, fontWeight: 400, color: '#31464b', textAlign: 'center', lineHeight: 'normal', margin: 0, maxWidth: 590 }}>
+        <p style={{ fontSize: isMobile ? 16 : 20, fontWeight: 400, color: '#31464b', textAlign: 'center', lineHeight: 'normal', margin: 0, maxWidth: 590 }}>
           I&apos;ve been researching universities for
         </p>
 
@@ -280,7 +299,7 @@ function TimeSection() {
 
           {/* Stats */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%', textAlign: 'center', gap: 24, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', width: 272 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', width: isMobile ? 'auto' : 272 }}>
               <p style={{ ...statLabel, color: '#73767b' }}>Your research so far</p>
               <p style={{ ...statNum, color: '#ec4244' }}>{fmt(manual)}</p>
               <p style={statFoot}><span style={{ fontWeight: 600 }}>minutes</span> spent researching</p>
@@ -298,6 +317,7 @@ function TimeSection() {
 }
 
 function StoriesSection() {
+  const isMobile = useIsMobile()
   const rowRef = useRef(null)
   const [tagFS, setTagFS] = useState(12)
 
@@ -343,8 +363,8 @@ function StoriesSection() {
   }, [])
 
   return (
-    <section style={{ background: '#fff', padding: '80px 64px', display: 'flex', flexDirection: 'column', gap: 40, alignItems: 'center' }}>
-      <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', margin: 0, fontFamily: 'Geist, sans-serif', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', width: '100%' }}>
+    <section style={{ background: '#fff', padding: isMobile ? '40px 16px' : '80px 64px', display: 'flex', flexDirection: 'column', gap: isMobile ? 24 : 40, alignItems: 'center' }}>
+      <h2 style={{ fontSize: isMobile ? 24 : 40, fontWeight: 500, color: '#000', margin: 0, fontFamily: 'Geist, sans-serif', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', width: '100%' }}>
         Students getting accepted.
       </h2>
 
@@ -370,8 +390,8 @@ function StoriesSection() {
                 <img src={s.img} alt={s.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: wide ? 122 : 155, background: 'linear-gradient(180deg, rgba(65,65,65,0) 0%, #031930 100%)' }} />
                 <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start', color: '#fff', width: '100%' }}>
-                  <div style={{ fontSize: 40, fontWeight: 500, lineHeight: 'normal' }}>{s.stat}</div>
-                  <div style={{ fontSize: 20, fontWeight: 400, lineHeight: 'normal' }}>{s.label}</div>
+                  <div style={{ fontSize: isMobile ? 32 : 40, fontWeight: 500, lineHeight: 'normal' }}>{s.stat}</div>
+                  <div style={{ fontSize: isMobile ? 16 : 20, fontWeight: 400, lineHeight: 'normal' }}>{s.label}</div>
                 </div>
               </div>
               </div>
@@ -383,7 +403,7 @@ function StoriesSection() {
                     <span key={t} style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 10px', borderRadius: 10, background: '#f7f7f7', fontSize: tagFS, fontWeight: 500, color: '#3a3a35', lineHeight: '18px', whiteSpace: 'nowrap' }}>{t}</span>
                   ))}
                 </div>
-                <p style={{ margin: 0, fontSize: 20, fontWeight: 500, color: '#000', lineHeight: 'normal' }}>{s.desc}</p>
+                <p style={{ margin: 0, fontSize: isMobile ? 16 : 20, fontWeight: 500, color: '#000', lineHeight: 'normal' }}>{s.desc}</p>
               </div>
             </div>
           )
@@ -402,6 +422,7 @@ function StoriesSection() {
 }
 
 function CardsSection({ heading, data, tabs, field, onFieldChange }) {
+  const isMobile = useIsMobile()
   const rowRef = useRef(null)
   const [active, setActive] = useState(0)
   const [progMinH, setProgMinH] = useState(0)
@@ -450,22 +471,22 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
   }
 
   return (
-    <section style={{ background: '#f2f2f2', padding: '80px 0' }}>
-      <div style={{ maxWidth: 1448, margin: '0 auto', paddingLeft: 64 }}>
+    <section style={{ background: '#f2f2f2', padding: isMobile ? '40px 0' : '80px 0' }}>
+      <div style={{ maxWidth: 1448, margin: '0 auto', paddingLeft: isMobile ? 16 : 64 }}>
         {/* Heading — 40px Geist Medium, tracking -0.4 */}
-        <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', margin: '0 0 16px', fontFamily: 'Geist, sans-serif', letterSpacing: '-0.4px', lineHeight: 'normal' }}>{heading}</h2>
+        <h2 style={{ fontSize: isMobile ? 32 : 40, fontWeight: 500, color: '#000', margin: '0 0 16px', paddingRight: isMobile ? 16 : 0, fontFamily: 'Geist, sans-serif', letterSpacing: isMobile ? '-0.32px' : '-0.4px', lineHeight: 'normal' }}>{heading}</h2>
 
         {/* Field tabs — p16, 18px, 3px active underline */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #dfe0e4', marginBottom: 24, paddingRight: 64 }}>
+        <div className="uni-tabs" style={{ display: 'flex', borderBottom: '1px solid #dfe0e4', marginBottom: 24, paddingRight: isMobile ? 16 : 64, overflowX: isMobile ? 'auto' : 'visible' }}>
           {tabs.map(t => (
             <button
               key={t}
               onClick={() => onFieldChange(t)}
               style={{
-                padding: 16, marginBottom: -1, fontSize: 18, fontWeight: 500,
+                padding: isMobile ? '16px 8px' : 16, marginBottom: -1, fontSize: isMobile ? 14 : 18, fontWeight: 500, flexShrink: 0,
                 color: t === field ? '#0162e3' : '#000', background: 'none', border: 'none',
                 borderBottom: t === field ? '3px solid #0162e3' : '3px solid transparent',
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s', whiteSpace: 'nowrap',
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.15s, border-color 0.15s', whiteSpace: 'nowrap',
               }}
             >
               {t}
@@ -485,12 +506,12 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
               64px the first card is inset from the left. 48px + the row's 16px
               flex gap = 64. A spacer is used rather than padding-right, which
               flex scroll containers drop at the end of the scroll range. */}
-          <div aria-hidden style={{ flex: '0 0 48px', alignSelf: 'stretch' }} />
+          <div aria-hidden style={{ flex: isMobile ? '0 0 0px' : '0 0 48px', alignSelf: 'stretch' }} />
         </div>
-        <style jsx>{`.uni-cards-row::-webkit-scrollbar { display: none; } .uni-cards-row { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
+        <style jsx>{`.uni-cards-row::-webkit-scrollbar { display: none; } .uni-cards-row { scrollbar-width: none; -ms-overflow-style: none; } .uni-tabs::-webkit-scrollbar { display: none; } .uni-tabs { scrollbar-width: none; }`}</style>
 
         {/* Pagination + arrows */}
-        <div style={{ display: 'flex', alignItems: 'center', marginTop: 24, paddingRight: 64, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: 24, paddingRight: isMobile ? 16 : 64, position: 'relative' }}>
           {/* Centered dots */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 9, margin: '0 auto' }}>
             {Array.from({ length: pages }, (_, i) => (
@@ -505,7 +526,7 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
             ))}
           </div>
           {/* Arrows pinned right */}
-          <div style={{ display: 'flex', gap: 17, position: 'absolute', right: 64 }}>
+          <div style={{ display: 'flex', gap: 17, position: 'absolute', right: isMobile ? 16 : 64 }}>
             <button onClick={() => scroll(-1)} style={{ width: 45, height: 45, borderRadius: 200, border: '1px solid #000', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
@@ -520,11 +541,12 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
 }
 
 function FaqSection() {
+  const isMobile = useIsMobile()
   const [open, setOpen] = useState(0) // Figma shows the first item expanded
 
   return (
-    <section style={{ background: '#f2f2f2', padding: '80px 64px', display: 'flex', flexDirection: 'column', gap: 56, alignItems: 'center' }}>
-      <h2 style={{ fontSize: 40, fontWeight: 500, color: '#000', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', margin: 0, width: '100%', fontFamily: 'Geist, sans-serif' }}>
+    <section style={{ background: '#f2f2f2', padding: isMobile ? '40px 16px' : '80px 64px', display: 'flex', flexDirection: 'column', gap: isMobile ? 32 : 56, alignItems: 'center' }}>
+      <h2 style={{ fontSize: isMobile ? 32 : 40, fontWeight: 500, color: '#000', textAlign: 'center', letterSpacing: '-0.4px', lineHeight: 'normal', margin: 0, width: '100%', fontFamily: 'Geist, sans-serif' }}>
         More questions?
       </h2>
 
@@ -533,13 +555,13 @@ function FaqSection() {
           const isOpen = open === i
           return (
             <Fragment key={i}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start', padding: '6px 0', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 12 : 20, alignItems: 'flex-start', padding: '6px 0', width: '100%' }}>
                 <button
                   onClick={() => setOpen(isOpen ? -1 : i)}
                   aria-expanded={isOpen}
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, width: '100%', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}
                 >
-                  <span style={{ flex: '1 0 0', minWidth: 1, fontSize: 24, fontWeight: 600, color: '#000', lineHeight: 'normal', wordBreak: 'break-word' }}>{f.q}</span>
+                  <span style={{ flex: '1 0 0', minWidth: 1, fontSize: isMobile ? 16 : 24, fontWeight: 600, color: '#000', lineHeight: 'normal', wordBreak: 'break-word' }}>{f.q}</span>
                   {/* Minus is #05203C and 2px; plus is black and 1.33px — per Figma */}
                   <span style={{ flexShrink: 0, width: 20.418, height: 20.418, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {isOpen ? (
@@ -555,7 +577,7 @@ function FaqSection() {
                   </span>
                 </button>
                 {isOpen && (
-                  <p style={{ margin: 0, fontSize: 20, fontWeight: 400, color: '#000', lineHeight: 'normal', width: '100%' }}>{f.a}</p>
+                  <p style={{ margin: 0, fontSize: isMobile ? 14 : 20, fontWeight: 400, color: '#000', lineHeight: isMobile ? '20px' : 'normal', width: '100%' }}>{f.a}</p>
                 )}
               </div>
               {i < FAQS.length - 1 && <div style={{ width: '100%', height: 1, background: '#CDCDCD', flexShrink: 0 }} />}
@@ -646,6 +668,7 @@ function TuitionCard({ value, onChange }) {
 // ── main export ───────────────────────────────────────────────────────────────
 
 export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
+  const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
   const [showTuition, setShowTuition] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
@@ -670,18 +693,35 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
 
   const setDegree = d => setFilters(f => ({ ...f, degree: [d] }))
 
+  // Desktop: one horizontal white pill. Mobile (Figma 535:1857): four
+  // stacked #f7f7f7 cards, 10px apart.
+  const cell = {
+    padding: isMobile ? '15px 21px' : '16px 24px',
+    borderRight: isMobile ? 'none' : '1px solid #EEE',
+    display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0,
+    ...(isMobile ? { background: '#f7f7f7', borderRadius: 16, justifyContent: 'center' } : null),
+  }
+  const cellLabel = isMobile
+    ? { fontSize: 13, fontWeight: 700, color: '#747474', textTransform: 'uppercase', letterSpacing: '0.66px', lineHeight: '16.5px' }
+    : { fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }
+  const cellValue = isMobile
+    ? { fontSize: 18, fontWeight: 500, color: '#1a1a17' }
+    : { fontSize: 15, color: '#111' }
+
   // ── render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ fontFamily: 'Geist, -apple-system, sans-serif', background: '#fff', minHeight: '100vh' }}>
 
       {/* ── NAV ── */}
       <header style={{ background: '#05203C', borderBottom: '1px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-          {/* Left — logo + center nav */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: isMobile ? '16px 30px' : '0 32px', height: isMobile ? 'auto' : 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+          {/* Left — logo (the burger sits on the right on mobile, per Figma) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-            <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu" style={{ color: '#fff' }}>
-              <Icon name="menu" size={22} />
-            </button>
+            {!isMobile && (
+              <button className="mobile-burger-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu" style={{ color: '#fff' }}>
+                <Icon name="menu" size={22} />
+              </button>
+            )}
             <Logo size="sm" />
           </div>
 
@@ -708,7 +748,17 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
 
           {/* Right */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {user ? (
+            {isMobile ? (
+              <button
+                onClick={() => setMenuOpen(true)}
+                aria-label="Open menu"
+                style={{ width: 24, height: 24, padding: 0, border: 'none', background: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
+              </button>
+            ) : user ? (
               <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} dark />
             ) : (
               <>
@@ -722,12 +772,12 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
       </header>
 
       {/* ── HERO ── */}
-      <section style={{ background: '#05203C', padding: '56px 48px 72px', textAlign: 'center' }}>
-        <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.02em', color: '#fff', textTransform: 'uppercase', marginBottom: 20 }}>YOUR GOALS. YOUR BUDGET. ANY UNIVERSITY.</p>
-        <h1 style={{ fontSize: 'clamp(40px,5.5vw,68px)', fontWeight: 700, color: '#fff', margin: '0 0 36px', lineHeight: 1.1, fontFamily: 'Geist, sans-serif', letterSpacing: '-0.02em' }}>Find your next university</h1>
+      <section style={{ background: '#05203C', padding: isMobile ? '40px 16px' : '56px 48px 72px', textAlign: 'center' }}>
+        <p style={{ fontSize: isMobile ? 12 : 13, fontWeight: isMobile ? 400 : 500, letterSpacing: isMobile ? '-0.24px' : '0.02em', color: '#fff', textTransform: 'uppercase', marginBottom: isMobile ? 2 : 20 }}>YOUR GOALS. YOUR BUDGET. ANY UNIVERSITY.</p>
+        <h1 style={{ fontSize: isMobile ? 32 : 'clamp(40px,5.5vw,68px)', fontWeight: isMobile ? 500 : 700, color: '#fff', margin: isMobile ? '0 0 27px' : '0 0 36px', lineHeight: isMobile ? 'normal' : 1.1, fontFamily: 'Geist, sans-serif', letterSpacing: isMobile ? 0 : '-0.02em' }}>Find your next university</h1>
 
         {/* Degree pills — white container, navy filled active */}
-        <div style={{ display: 'inline-flex', gap: 0, background: '#fff', borderRadius: 999, padding: 4, marginBottom: 32 }}>
+        <div style={{ display: 'inline-flex', gap: isMobile ? 0 : 0, justifyContent: isMobile ? 'space-between' : undefined, width: isMobile ? 333 : undefined, maxWidth: '100%', background: isMobile ? '#f7f7f7' : '#fff', border: isMobile ? '1px solid rgba(228,228,228,0.38)' : 'none', boxShadow: isMobile ? '0px 4px 13.95px rgba(0,0,0,0.04)' : 'none', borderRadius: isMobile ? 100 : 999, padding: 4, marginBottom: isMobile ? 27 : 32 }}>
           {['Bachelor', 'Master', 'PhD'].map(d => {
             const active = degree === d
             return (
@@ -735,16 +785,17 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
                 key={d}
                 onClick={() => setDegree(d)}
                 style={{
-                  padding: '10px 32px',
-                  borderRadius: 999,
-                  border: active ? '2px solid #fff' : 'none',
+                  padding: isMobile ? '10px 18px' : '10px 32px',
+                  borderRadius: isMobile ? 1000 : 999,
+                  border: active && !isMobile ? '2px solid #fff' : 'none',
                   background: active ? '#05203C' : 'transparent',
                   color: active ? '#fff' : '#05203C',
                   fontWeight: 500,
-                  fontSize: 15,
+                  fontSize: isMobile ? 16 : 15,
+                  letterSpacing: isMobile ? '-0.32px' : undefined,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  transition: 'all 0.15s',
+                  transition: 'background 0.15s, color 0.15s',
                 }}
               >
                 {d}
@@ -754,59 +805,59 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         </div>
 
         {/* Search bar */}
-        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', alignItems: 'stretch', gap: 12, textAlign: 'left' }}>
-          <div style={{ flex: 1, background: '#fff', borderRadius: 16, display: 'flex', alignItems: 'stretch', overflow: 'visible', boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }}>
+        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', gap: isMobile ? 8 : 12, textAlign: 'left' }}>
+          <div style={{ flex: 1, background: isMobile ? 'transparent' : '#fff', borderRadius: 16, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 0, alignItems: 'stretch', overflow: 'visible', boxShadow: isMobile ? 'none' : '0 4px 24px rgba(0,0,0,0.15)' }}>
             {/* Field of study */}
-            <div style={{ flex: '1 1 240px', padding: '16px 24px', borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Field of Study</label>
+            <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 240px' }}>
+              <label style={cellLabel}>Field of Study</label>
               <input
                 value={filters.field || ''}
                 onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
                 placeholder="e.g. Computer Science"
-                style={{ border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', padding: 0 }}
+                style={{ ...cellValue, border: 'none', outline: 'none', fontFamily: 'inherit', background: 'transparent', padding: 0, fontWeight: isMobile ? 400 : undefined }}
               />
             </div>
             {/* Country */}
-            <div style={{ flex: '1 1 180px', padding: '16px 24px', borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0, position: 'relative' }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Country</label>
+            <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 180px', position: 'relative' }}>
+              <label style={cellLabel}>Country</label>
               <div style={{ position: 'relative' }}>
                 <select
                   value={filters.country || ''}
                   onChange={e => setFilters(f => ({ ...f, country: e.target.value }))}
-                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: '0 22px 0 0' }}
+                  style={{ ...cellValue, width: '100%', border: 'none', outline: 'none', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: '0 22px 0 0' }}
                 >
                   <option value="">Any country</option>
                   {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
                   <option disabled>──────────</option>
                   {ALL_COUNTRIES.filter(c => !POPULAR_COUNTRIES.includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
+                <svg width={isMobile ? 18 : 14} height={isMobile ? 18 : 14} viewBox="0 0 24 24" fill="none" stroke={isMobile ? "#3a3a35" : "#666"} strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
               </div>
             </div>
             {/* Start date */}
-            <div style={{ flex: '1 1 160px', padding: '16px 24px', borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Start Date</label>
+            <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 160px' }}>
+              <label style={cellLabel}>Start Date</label>
               <div style={{ position: 'relative' }}>
                 <select
                   value={filters.startDate || ''}
                   onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))}
-                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: 15, color: '#111', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: '0 22px 0 0' }}
+                  style={{ ...cellValue, width: '100%', border: 'none', outline: 'none', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: '0 22px 0 0' }}
                 >
                   <option value="">Any start date</option>
                   {['Jan 2025','Feb 2025','Mar 2025','Apr 2025','May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
+                <svg width={isMobile ? 18 : 14} height={isMobile ? 18 : 14} viewBox="0 0 24 24" fill="none" stroke={isMobile ? "#3a3a35" : "#666"} strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
               </div>
             </div>
             {/* Tuition */}
-            <div ref={tuitionRef} style={{ flex: '1 1 180px', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0, position: 'relative', cursor: 'pointer' }} onClick={() => setShowTuition(s => !s)}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', pointerEvents: 'none' }}>Tuition (USD/yr)</label>
+            <div ref={tuitionRef} style={{ ...cell, flex: isMobile ? 'none' : '1 1 180px', borderRight: 'none', position: 'relative', cursor: 'pointer' }} onClick={() => setShowTuition(s => !s)}>
+              <label style={{ ...cellLabel, pointerEvents: 'none' }}>Tuition (USD/yr)</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ fontSize: 15, color: '#111', userSelect: 'none', display: 'block', padding: '0 22px 0 0' }}>{tuitionLabel}</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
+                <span style={{ ...cellValue, userSelect: 'none', display: 'block', padding: '0 22px 0 0' }}>{tuitionLabel}</span>
+                <svg width={isMobile ? 18 : 14} height={isMobile ? 18 : 14} viewBox="0 0 24 24" fill="none" stroke={isMobile ? "#3a3a35" : "#666"} strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
               </div>
               {showTuition && (
-                <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: 300, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
+                <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, left: isMobile ? 0 : 'auto', minWidth: isMobile ? 0 : 300, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
                   <TuitionCard value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
                 </div>
               )}
@@ -815,17 +866,17 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           {/* Search button — separate rounded */}
           <button
             onClick={onSearch}
-            style={{ flexShrink: 0, padding: '0 40px', background: '#0162E3', color: '#fff', border: 'none', fontSize: 16, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', borderRadius: 16, minWidth: 120 }}
+            style={{ flexShrink: 0, width: isMobile ? '100%' : undefined, height: isMobile ? 64 : undefined, padding: isMobile ? 0 : '0 40px', background: '#0162E3', color: '#fff', border: 'none', fontSize: isMobile ? 20 : 16, fontWeight: isMobile ? 500 : 600, cursor: 'pointer', fontFamily: 'inherit', borderRadius: 16, minWidth: isMobile ? 0 : 120 }}
           >
             Search
           </button>
         </div>
 
         {/* Format + Attendance chips */}
-        <div style={{ display: 'flex', gap: 40, justifyContent: 'flex-start', maxWidth: 1240, margin: '20px auto 0', paddingLeft: 4, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Format</span>
-            <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 40, justifyContent: 'flex-start', maxWidth: 1240, margin: isMobile ? '24px auto 0' : '20px auto 0', paddingLeft: isMobile ? 0 : 4, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: isMobile ? 12 : 10 }}>
+            <span style={{ fontSize: 12, fontWeight: isMobile ? 700 : 600, color: isMobile ? '#f7f7f7' : '#fff', textTransform: 'uppercase', letterSpacing: isMobile ? '0.66px' : '0.05em', lineHeight: isMobile ? '16.5px' : undefined }}>Format</span>
+            <div style={{ display: 'flex', gap: isMobile ? 6 : 8, flexWrap: 'wrap' }}>
               {['Full-time', 'Part-time'].map(v => {
                 const active = (filters.format || []).includes(v)
                 return (
@@ -833,13 +884,13 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
                     key={v}
                     onClick={() => setFilters(f => ({ ...f, format: active ? (f.format || []).filter(x => x !== v) : [...(f.format || []), v] }))}
                     style={{
-                      padding: '8px 20px',
+                      padding: isMobile ? (active ? '8px 14px' : '9px 15px') : '8px 20px',
                       borderRadius: 999,
-                      border: `1px solid ${active ? '#0162E3' : 'rgba(255,255,255,0.35)'}`,
+                      border: active ? `1px solid ${isMobile ? '#0162E3' : '#0162E3'}` : `1px solid rgba(255,255,255,${isMobile ? '0.4' : '0.35'})`,
                       background: active ? '#0162E3' : 'transparent',
-                      color: '#fff',
-                      fontSize: 14,
-                      fontWeight: 500,
+                      color: active && isMobile ? '#f7f7f7' : '#fff',
+                      fontSize: isMobile ? 16 : 14,
+                      fontWeight: isMobile ? 400 : 500,
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       transition: 'all 0.15s',
@@ -851,9 +902,9 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
               })}
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Attendance</span>
-            <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: isMobile ? 12 : 10 }}>
+            <span style={{ fontSize: 12, fontWeight: isMobile ? 700 : 600, color: isMobile ? '#f7f7f7' : '#fff', textTransform: 'uppercase', letterSpacing: isMobile ? '0.66px' : '0.05em', lineHeight: isMobile ? '16.5px' : undefined }}>Attendance</span>
+            <div style={{ display: 'flex', gap: isMobile ? 6 : 8, flexWrap: 'wrap' }}>
               {['On-campus', 'Online', 'Blended'].map(v => {
                 const active = (filters.attendance || []).includes(v)
                 return (
@@ -861,13 +912,13 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
                     key={v}
                     onClick={() => setFilters(f => ({ ...f, attendance: active ? (f.attendance || []).filter(x => x !== v) : [...(f.attendance || []), v] }))}
                     style={{
-                      padding: '8px 20px',
+                      padding: isMobile ? (active ? '8px 14px' : '9px 15px') : '8px 20px',
                       borderRadius: 999,
-                      border: `1px solid ${active ? '#0162E3' : 'rgba(255,255,255,0.35)'}`,
+                      border: active ? `1px solid ${isMobile ? '#0162E3' : '#0162E3'}` : `1px solid rgba(255,255,255,${isMobile ? '0.4' : '0.35'})`,
                       background: active ? '#0162E3' : 'transparent',
-                      color: '#fff',
-                      fontSize: 14,
-                      fontWeight: 500,
+                      color: active && isMobile ? '#f7f7f7' : '#fff',
+                      fontSize: isMobile ? 16 : 14,
+                      fontWeight: isMobile ? 400 : 500,
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       transition: 'all 0.15s',
@@ -907,28 +958,28 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
       <FaqSection />
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: '#05203C', padding: '80px 48px 32px', color: '#fff', overflow: 'hidden' }}>
+      <footer style={{ background: '#05203C', padding: isMobile ? '40px 16px 24px' : '80px 48px 32px', color: '#fff', overflow: 'hidden' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           {/* Top row: description (left) + nav+social (right) */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 40, marginBottom: 24, flexWrap: 'wrap' }}>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: 0, maxWidth: 520 }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: isMobile ? 24 : 40, marginBottom: isMobile ? 16 : 24, flexWrap: 'wrap' }}>
+            <p style={{ fontSize: isMobile ? 16 : 14, color: isMobile ? 'rgba(233,240,243,0.8)' : 'rgba(255,255,255,0.55)', lineHeight: isMobile ? '24px' : 1.7, margin: 0, maxWidth: isMobile ? '100%' : 520 }}>
               University research is broken. Students spend weeks across dozens of tabs — and still miss the best options. UniAsk fixes that. Describe your goals, and our AI finds, ranks, and explains the right programs for you. Free for every student. Always.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 24 }}>
-              <nav style={{ display: 'flex', gap: 40 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'flex-start' : 'flex-end', gap: 24, width: isMobile ? '100%' : 'auto' }}>
+              <nav style={{ display: 'flex', gap: isMobile ? 24 : 40, flexWrap: 'wrap' }}>
                 <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Home</button>
                 <button onClick={onMyPrograms} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>My Programs</button>
                 <button onClick={onMyChats} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>My Chats</button>
                 <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Contact Us</button>
               </nav>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: isMobile ? 6 : 8, flexWrap: 'wrap' }}>
                 {[
                   { label: 'Instagram', d: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z' },
                   { label: 'Facebook', d: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' },
                   { label: 'TikTok', d: 'M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34l-.03-8.49a8.18 8.18 0 0 0 4.79 1.52V5.01a4.85 4.85 0 0 1-1-.32z' },
                   { label: 'X', d: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.745l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z' },
                 ].map(({ label, d }) => (
-                  <div key={label} title={label} style={{ width: 32, height: 32, borderRadius: '50%', background: '#0162E3', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                  <div key={label} title={label} style={{ width: 32, height: 32, borderRadius: '50%', background: '#0162E3', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d={d} /></svg>
                   </div>
                 ))}
@@ -937,17 +988,19 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           </div>
 
           {/* Watermark — gradient silver text */}
-          <div style={{ position: 'relative', margin: '20px 0 32px', textAlign: 'center', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', margin: isMobile ? '16px 0 24px' : '20px 0 32px', textAlign: isMobile ? 'left' : 'center', overflow: 'hidden' }}>
             <div
               style={{
-                fontSize: 'clamp(90px, 17vw, 260px)',
-                fontWeight: 800,
-                lineHeight: 0.95,
-                letterSpacing: '-0.04em',
+                fontSize: isMobile ? 90 : 'clamp(90px, 17vw, 260px)',
+                fontWeight: isMobile ? 500 : 800,
+                lineHeight: isMobile ? 'normal' : 0.95,
+                letterSpacing: isMobile ? 0 : '-0.04em',
                 fontFamily: 'Geist, sans-serif',
                 whiteSpace: 'nowrap',
                 userSelect: 'none',
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.32) 30%, rgba(5,32,60,0.85) 85%, rgba(5,32,60,1) 100%)',
+                background: isMobile
+                  ? 'linear-gradient(180deg, #f0f0f0 0%, #041a30 80%)'
+                  : 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.32) 30%, rgba(5,32,60,0.85) 85%, rgba(5,32,60,1) 100%)',
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
