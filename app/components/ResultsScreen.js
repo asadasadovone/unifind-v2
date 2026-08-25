@@ -10,8 +10,11 @@ import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
    here as drawn. */
 const INK = '#1a1a17'
 const CARD_BORDER = '#e6e2d6'
-const NAME = '#143229'
-const FIELD = '#2a6b54'
+/* The newer mobile frame (550:6469) uses navy for both; the older desktop
+   frame still carries the retired green tokens. Navy is used throughout so the
+   card does not change colour across the breakpoint. */
+const NAME = '#05203c'
+const FIELD = '#05203c'
 const BLUE = '#116ce4'
 
 const DURATIONS = ['1 year', '1.5 years', '2 years', '3+ years']
@@ -144,7 +147,7 @@ function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
   return (
     <article style={{ background: '#fff', border: `1px solid ${CARD_BORDER}`, borderRadius: 20, padding: isMobile ? 18 : 25 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'flex-start', justifyContent: 'space-between', gap: isMobile ? 14 : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 0 }}>
           <div style={{ flex: '1 0 0', minWidth: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
             <button
               onClick={onOpen}
@@ -166,6 +169,7 @@ function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
             </div>
           </div>
 
+          {!isMobile && (
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexShrink: 0 }}>
             <button
               onClick={onSave}
@@ -196,6 +200,7 @@ function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
               Ask AI
             </button>
           </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -206,6 +211,38 @@ function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
           <Badge icon={<IconClock />}>{uni.duration}</Badge>
           {uni.scholarship && <Badge icon={<IconHat />}>Scholarship</Badge>}
         </div>
+
+        {/* Mobile (Figma 550:6491): the actions move below the badges, half width each */}
+        {isMobile && (
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', width: '100%' }}>
+            <button
+              onClick={onSave}
+              aria-pressed={saved}
+              style={{
+                flex: '1 0 0', minWidth: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                padding: '12px 16px', borderRadius: 12, border: '1px solid rgba(2,29,38,0.2)',
+                background: saved ? 'rgba(2,29,38,0.06)' : '#fff', color: '#021d26',
+                fontSize: 14, fontWeight: 500, letterSpacing: '-0.28px', cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={saved ? '#021d26' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8Z" />
+              </svg>
+              {saved ? 'Saved' : 'Save'}
+            </button>
+            <button
+              onClick={onOpen}
+              style={{
+                flex: '1 0 0', minWidth: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                padding: '12px 16px', borderRadius: 12, border: 'none', background: BLUE, color: '#fff',
+                fontSize: 14, fontWeight: 500, letterSpacing: '-0.28px', cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              <IconSparkle />
+              Ask AI
+            </button>
+          </div>
+        )}
       </div>
     </article>
   )
@@ -223,6 +260,7 @@ export default function ResultsScreen({
   const [menuOpen, setMenuOpen] = useState(false)
   const [showTuition, setShowTuition] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
   const tuitionRef = useRef(null)
 
   // Sidebar refinements — applied client-side on top of the AI's results.
@@ -310,6 +348,65 @@ export default function ResultsScreen({
     </svg>
   )
 
+  // Stacked search controls, used inside the mobile "Edit search" sheet.
+  const searchForm = (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ ...cell, borderRadius: 16 }}>
+        <label style={cellLabel}>Field of study</label>
+        <input
+          value={filters.field || ''}
+          onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
+          placeholder="e.g. Computer Science"
+          style={{ ...cellValue, fontWeight: 400 }}
+        />
+      </div>
+      <div style={{ ...cell, borderRadius: 16 }}>
+        <label style={cellLabel}>Country</label>
+        <div style={{ position: 'relative' }}>
+          <select value={filters.country || ''} onChange={e => setFilters(f => ({ ...f, country: e.target.value }))} style={{ ...cellValue, appearance: 'none', cursor: 'pointer', paddingRight: 26 }}>
+            <option value="">Any country</option>
+            {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+            <option disabled>──────────</option>
+            {ALL_COUNTRIES.filter(c => !POPULAR_COUNTRIES.includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          {caret}
+        </div>
+      </div>
+      <div style={{ ...cell, borderRadius: 16 }}>
+        <label style={cellLabel}>Start date</label>
+        <div style={{ position: 'relative' }}>
+          <select value={filters.startDate || ''} onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))} style={{ ...cellValue, appearance: 'none', cursor: 'pointer', paddingRight: 26 }}>
+            <option value="">Any start date</option>
+            {['Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+          {caret}
+        </div>
+      </div>
+      <div style={{ ...cell, borderRadius: 16 }}>
+        <label style={cellLabel}>Tuition (USD/yr)</label>
+        <TuitionRange value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 6 }}>
+        {[
+          { label: 'Degree', key: 'degree', opts: ['Bachelor', 'Master', 'PhD'], single: true },
+          { label: 'Format', key: 'format', opts: ['Full-time', 'Part-time'] },
+          { label: 'Attendance', key: 'attendance', opts: ['On-campus', 'Online', 'Blended'] },
+        ].map(({ label, key, opts, single }) => (
+          <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#f7f7f7', textTransform: 'uppercase', letterSpacing: '0.66px', lineHeight: '16.5px' }}>{label}</span>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {opts.map(o => {
+                const active = single ? filters.degree?.[0] === o : (filters[key] || []).includes(o)
+                return <Chip key={o} active={active} onClick={() => (single ? setDegree(o) : toggleMulti(key, o))}>{o}</Chip>
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
   const sidebar = (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 15, borderBottom: `1px solid ${CARD_BORDER}` }}>
@@ -360,87 +457,158 @@ export default function ResultsScreen({
         onOpenMenu={() => setMenuOpen(true)}
       />
 
-      {/* ── Search strip ── */}
-      <section style={{ background: '#05203C', padding: isMobile ? '24px 16px 32px' : '24px 120px 40px' }}>
-        <div style={{ maxWidth: 1272, margin: '0 auto' }}>
-          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 8, alignItems: 'stretch' }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 4, borderRadius: 16, overflow: isMobile ? 'visible' : 'hidden' }}>
-              <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 383px' }}>
-                <label style={cellLabel}>Field of study</label>
-                <input
-                  value={filters.field || ''}
-                  onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
-                  placeholder="e.g. Computer Science"
-                  style={{ ...cellValue, fontWeight: 400 }}
-                />
+      {/* ── Search: full form on desktop, a summary pill on mobile (Figma 550:5777) ── */}
+      {isMobile ? (
+        <>
+          <div style={{ background: '#05203C', padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ background: '#153852', display: 'flex', gap: 12, alignItems: 'center', padding: 13, borderRadius: 16, width: '100%' }}>
+              <button
+                onClick={onSearch}
+                aria-label="Search again"
+                style={{ width: 48, height: 48, flexShrink: 0, borderRadius: 12, background: '#0162e3', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                  <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+                </svg>
+              </button>
+              <div style={{ flex: '1 0 0', minWidth: 1, display: 'flex', flexDirection: 'column', gap: 6, color: '#fff' }}>
+                <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '0.66px', lineHeight: '16.5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {filters.field?.trim() || 'Any field'}
+                </span>
+                <span style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {[filters.country?.trim() || 'Any country', filters.degree?.[0], filters.format?.[0]]
+                    .filter(Boolean)
+                    .map((part, i, arr) => (
+                      <span key={part + i} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <span style={{ fontSize: 14 }}>{part}</span>
+                        {i < arr.length - 1 && <span style={{ fontSize: 18 }}>•</span>}
+                      </span>
+                    ))}
+                </span>
               </div>
-
-              <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 256px' }}>
-                <label style={cellLabel}>Country</label>
-                <div style={{ position: 'relative' }}>
-                  <select value={filters.country || ''} onChange={e => setFilters(f => ({ ...f, country: e.target.value }))} style={{ ...cellValue, appearance: 'none', cursor: 'pointer', paddingRight: 26 }}>
-                    <option value="">Any country</option>
-                    {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                    <option disabled>──────────</option>
-                    {ALL_COUNTRIES.filter(c => !POPULAR_COUNTRIES.includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  {caret}
-                </div>
-              </div>
-
-              <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 221px' }}>
-                <label style={cellLabel}>Start date</label>
-                <div style={{ position: 'relative' }}>
-                  <select value={filters.startDate || ''} onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))} style={{ ...cellValue, appearance: 'none', cursor: 'pointer', paddingRight: 26 }}>
-                    <option value="">Any start date</option>
-                    {['Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
-                  {caret}
-                </div>
-              </div>
-
-              <div ref={tuitionRef} onClick={() => setShowTuition(s => !s)} style={{ ...cell, flex: isMobile ? 'none' : '1 1 254px', position: 'relative', cursor: 'pointer' }}>
-                <label style={{ ...cellLabel, pointerEvents: 'none' }}>Tuition (USD/yr)</label>
-                <div style={{ position: 'relative' }}>
-                  <span style={{ ...cellValue, display: 'block', userSelect: 'none', paddingRight: 26 }}>{tuitionLabel}</span>
-                  {caret}
-                </div>
-                {showTuition && (
-                  <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, left: isMobile ? 0 : 'auto', minWidth: isMobile ? 0 : 300, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
-                    <TuitionRange value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={() => setEditOpen(true)}
+                aria-label="Edit search"
+                style={{ width: 48, height: 48, flexShrink: 0, borderRadius: 12, background: 'none', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              </button>
             </div>
-
-            <button
-              onClick={onSearch}
-              style={{ flexShrink: 0, width: isMobile ? '100%' : 138, height: isMobile ? 64 : 'auto', background: '#0162E3', color: '#fff', border: 'none', borderRadius: 16, fontSize: 20, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}
-            >
-              Search
-            </button>
           </div>
 
-          {/* Degree / Format / Attendance */}
-          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 48, marginTop: 24 }}>
-            {[
-              { label: 'Degree', key: 'degree', opts: ['Bachelor', 'Master', 'PhD'], single: true },
-              { label: 'Format', key: 'format', opts: ['Full-time', 'Part-time'] },
-              { label: 'Attendance', key: 'attendance', opts: ['On-campus', 'Online', 'Blended'] },
-            ].map(({ label, key, opts, single }) => (
-              <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#f7f7f7', textTransform: 'uppercase', letterSpacing: '0.66px', lineHeight: '16.5px' }}>{label}</span>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {opts.map(o => {
-                    const active = single ? filters.degree?.[0] === o : (filters[key] || []).includes(o)
-                    return <Chip key={o} active={active} onClick={() => (single ? setDegree(o) : toggleMulti(key, o))}>{o}</Chip>
-                  })}
-                </div>
+          {/* Filters + sort (Figma 550:7185) */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 16 }}>
+            <button
+              onClick={() => setFiltersOpen(true)}
+              style={{ width: 133, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '12px 14px', borderRadius: 12, background: '#fff', border: '1px solid #ced3d9', cursor: 'pointer', fontFamily: 'inherit', fontSize: 16, fontWeight: 500, color: INK, lineHeight: '21px' }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M4 6h16M7 12h10M10 18h4" />
+              </svg>
+              Filters
+            </button>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M7 4v16M7 20l-3-3M7 4l3 3M17 20V4M17 4l3 3M17 20l-3-3" />
+              </svg>
+              <select
+                value={sort}
+                onChange={e => setSort(e.target.value)}
+                aria-label="Sort results"
+                style={{ width: 133, appearance: 'none', background: '#fff', border: '1px solid #ced3d9', borderRadius: 12, padding: '12px 34px 12px 14px', fontSize: 13, fontFamily: 'inherit', color: INK, cursor: 'pointer' }}
+              >
+                <option>Best match</option>
+                <option>Tuition: low to high</option>
+                <option>Tuition: high to low</option>
+                <option>Start date</option>
+              </select>
+            </span>
+          </div>
+        </>
+      ) : (
+        <section style={{ background: '#05203C', padding: '24px 120px 40px' }}>
+          <div style={{ maxWidth: 1272, margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 8, alignItems: 'stretch' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 4, borderRadius: 16, overflow: isMobile ? 'visible' : 'hidden' }}>
+          <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 383px' }}>
+            <label style={cellLabel}>Field of study</label>
+            <input
+              value={filters.field || ''}
+              onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
+              placeholder="e.g. Computer Science"
+              style={{ ...cellValue, fontWeight: 400 }}
+            />
+          </div>
+
+          <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 256px' }}>
+            <label style={cellLabel}>Country</label>
+            <div style={{ position: 'relative' }}>
+              <select value={filters.country || ''} onChange={e => setFilters(f => ({ ...f, country: e.target.value }))} style={{ ...cellValue, appearance: 'none', cursor: 'pointer', paddingRight: 26 }}>
+                <option value="">Any country</option>
+                {POPULAR_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <option disabled>──────────</option>
+                {ALL_COUNTRIES.filter(c => !POPULAR_COUNTRIES.includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {caret}
+            </div>
+          </div>
+
+          <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 221px' }}>
+            <label style={cellLabel}>Start date</label>
+            <div style={{ position: 'relative' }}>
+              <select value={filters.startDate || ''} onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))} style={{ ...cellValue, appearance: 'none', cursor: 'pointer', paddingRight: 26 }}>
+                <option value="">Any start date</option>
+                {['Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+              {caret}
+            </div>
+          </div>
+
+          <div ref={tuitionRef} onClick={() => setShowTuition(s => !s)} style={{ ...cell, flex: isMobile ? 'none' : '1 1 254px', position: 'relative', cursor: 'pointer' }}>
+            <label style={{ ...cellLabel, pointerEvents: 'none' }}>Tuition (USD/yr)</label>
+            <div style={{ position: 'relative' }}>
+              <span style={{ ...cellValue, display: 'block', userSelect: 'none', paddingRight: 26 }}>{tuitionLabel}</span>
+              {caret}
+            </div>
+            {showTuition && (
+              <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, left: isMobile ? 0 : 'auto', minWidth: isMobile ? 0 : 300, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
+                <TuitionRange value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
               </div>
-            ))}
+            )}
           </div>
         </div>
-      </section>
+
+        <button
+          onClick={onSearch}
+          style={{ flexShrink: 0, width: isMobile ? '100%' : 138, height: isMobile ? 64 : 'auto', background: '#0162E3', color: '#fff', border: 'none', borderRadius: 16, fontSize: 20, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          Search
+        </button>
+      </div>
+
+      {/* Degree / Format / Attendance */}
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 48, marginTop: 24 }}>
+        {[
+          { label: 'Degree', key: 'degree', opts: ['Bachelor', 'Master', 'PhD'], single: true },
+          { label: 'Format', key: 'format', opts: ['Full-time', 'Part-time'] },
+          { label: 'Attendance', key: 'attendance', opts: ['On-campus', 'Online', 'Blended'] },
+        ].map(({ label, key, opts, single }) => (
+          <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#f7f7f7', textTransform: 'uppercase', letterSpacing: '0.66px', lineHeight: '16.5px' }}>{label}</span>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {opts.map(o => {
+                const active = single ? filters.degree?.[0] === o : (filters[key] || []).includes(o)
+                return <Chip key={o} active={active} onClick={() => (single ? setDegree(o) : toggleMulti(key, o))}>{o}</Chip>
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Body ── */}
       <div style={{ padding: isMobile ? '24px 16px 40px' : '32px 120px 56px' }}>
@@ -456,13 +624,8 @@ export default function ResultsScreen({
               <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 26, fontWeight: 500, color: INK, letterSpacing: '-0.3px' }}>
                 AI handpicked the best programs
               </h2>
+              {!isMobile && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                {isMobile && (
-                  <button onClick={() => setFiltersOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 12, border: `1px solid ${CARD_BORDER}`, background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, color: INK }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden><path d="M4 6h16M7 12h10M10 18h4" /></svg>
-                    Filters
-                  </button>
-                )}
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                     <path d="M7 4v16M7 20l-3-3M7 4l3 3M17 20V4M17 4l3 3M17 20l-3-3" />
@@ -480,6 +643,7 @@ export default function ResultsScreen({
                   </select>
                 </span>
               </div>
+              )}
             </div>
 
             {isLoading ? (
@@ -581,6 +745,27 @@ export default function ResultsScreen({
         onTerms={onTerms}
         onPrivacy={onPrivacy}
       />
+
+      {/* Mobile: edit the search without leaving the results */}
+      {isMobile && editOpen && (
+        <div onClick={() => setEditOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 300, display: 'flex', alignItems: 'flex-end' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#05203C', width: '100%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '24px 24px 0 0', padding: '20px 16px 28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <span style={{ color: '#fff', fontSize: 18, fontWeight: 500 }}>Edit search</span>
+              <button onClick={() => setEditOpen(false)} aria-label="Close" style={{ width: 36, height: 36, borderRadius: '50%', background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+              </button>
+            </div>
+            {searchForm}
+            <button
+              onClick={() => { setEditOpen(false); onSearch() }}
+              style={{ marginTop: 20, width: '100%', height: 56, borderRadius: 16, background: '#0162E3', color: '#fff', border: 'none', fontSize: 18, fontWeight: 500, fontFamily: 'inherit', cursor: 'pointer' }}
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile filter sheet */}
       {isMobile && filtersOpen && (
