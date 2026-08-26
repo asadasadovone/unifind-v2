@@ -10,6 +10,7 @@ import FeedbackScreen from './components/FeedbackScreen'
 import TermsScreen from './components/TermsScreen'
 import PrivacyScreen from './components/PrivacyScreen'
 import AuthModal from './components/AuthModal'
+import ChatScreen from './components/ChatScreen'
 import { supabase, signOut } from './lib/supabase'
 
 const DEFAULT_FILTERS = {
@@ -29,6 +30,7 @@ export default function App() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [authMode, setAuthMode] = useState(null)
   const [activeUni, setActiveUni] = useState(null)
+  const [chatUni, setChatUni] = useState(null)
   const [initialChatPrompt, setInitialChatPrompt] = useState(null)
   const [isPremium, setIsPremium] = useState(false)
   const [savedPrograms, setSavedPrograms] = useState([])
@@ -237,6 +239,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           filters={filters}
           setFilters={setFilters}
           onOpenUni={openUni}
+          onAskAI={uni => { setChatUni(uni); setScreen('chat') }}
           onBack={() => setScreen('search')}
           isPremium={isPremium}
           isLoading={isLoading}
@@ -259,6 +262,23 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')
           }}
+        />
+      )}
+
+      {screen === 'chat' && chatUni && (
+        <ChatScreen
+          uni={chatUni}
+          user={user}
+          onHome={() => setScreen('search')}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onSaveToggle={handleSaveToggle}
+          onOpenAuth={setAuthMode}
+          onSignOut={handleSignOut}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+          savedIds={new Set(savedPrograms.map(p => p.name))}
         />
       )}
 

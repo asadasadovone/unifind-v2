@@ -142,7 +142,7 @@ function PromoCard({ children }) {
 
 // ── result card ───────────────────────────────────────────────────────────────
 
-function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
+function ResultCard({ uni, onOpen, onAskAI, saved, onSave, isMobile }) {
   return (
     <article style={{ background: '#fff', border: `1px solid ${CARD_BORDER}`, borderRadius: 20, padding: isMobile ? 18 : 25 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -187,7 +187,7 @@ function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
               {saved ? 'Saved' : 'Save'}
             </button>
             <button
-              onClick={onOpen}
+              onClick={onAskAI}
               style={{
                 display: 'flex', alignItems: 'center', gap: 6, padding: '12px 16px',
                 borderRadius: 12, border: 'none', background: BLUE, color: '#fff',
@@ -230,7 +230,7 @@ function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
               {saved ? 'Saved' : 'Save'}
             </button>
             <button
-              onClick={onOpen}
+              onClick={onAskAI}
               style={{
                 flex: '1 0 0', minWidth: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 padding: '12px 16px', borderRadius: 12, border: 'none', background: BLUE, color: '#fff',
@@ -250,7 +250,7 @@ function ResultCard({ uni, onOpen, saved, onSave, isMobile }) {
 // ── screen ────────────────────────────────────────────────────────────────────
 
 export default function ResultsScreen({
-  filters, setFilters, onOpenUni, onBack, isLoading, isFindingMore, apiResults,
+  filters, setFilters, onOpenUni, onAskAI, onBack, isLoading, isFindingMore, apiResults,
   user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, onProfile,
   onFeedback, onTerms, onPrivacy, savedIds = new Set(), onSaveToggle, onSignOut,
 }) {
@@ -670,6 +670,7 @@ export default function ResultsScreen({
                       uni={uni}
                       isMobile={isMobile}
                       onOpen={() => onOpenUni(uni.raw ?? uni)}
+                      onAskAI={() => onAskAI?.(uni.raw ?? uni)}
                       saved={savedIds.has(uni.name)}
                       onSave={e => { e.stopPropagation(); onSaveToggle?.(uni.raw ?? uni) }}
                     />
