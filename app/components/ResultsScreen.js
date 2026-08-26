@@ -68,9 +68,8 @@ const IconClock = () => <svg {...ic}><circle cx="12" cy="12" r="10" /><polyline 
 const IconPin = () => <svg {...ic}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
 const IconCal = () => <svg {...ic}><rect width="18" height="18" x="3" y="4" rx="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
 const IconSparkle = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" />
-    <circle cx="12" cy="12" r="3.2" />
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden>
+    <path d="M10 12.6667C10.8 10.2147 11.684 9.33 14 8.66667C11.684 8.00333 10.8 7.11867 10 4.66667C9.2 7.11867 8.316 8.00333 6 8.66667C8.316 9.33 9.2 10.2147 10 12.6667ZM4.66667 6.66667C5.06667 5.44 5.50867 4.998 6.66667 4.66667C5.50867 4.33533 5.06667 3.89333 4.66667 2.66667C4.26667 3.89333 3.82467 4.33533 2.66667 4.66667C3.82467 4.998 4.26667 5.44 4.66667 6.66667ZM5.66667 13.3333C5.86667 12.72 6.08733 12.4993 6.66667 12.3333C6.08733 12.1673 5.86667 11.9467 5.66667 11.3333C5.46667 11.9467 5.246 12.1673 4.66667 12.3333C5.246 12.4993 5.46667 12.72 5.66667 13.3333Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
   </svg>
 )
 const IconExternal = () => (
