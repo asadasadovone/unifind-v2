@@ -1,52 +1,37 @@
 'use client'
 import { useState, useEffect } from 'react'
-import DetailScreen from '../components/DetailScreen'
+import ChatScreen from '../components/ChatScreen'
+import AuthModal from '../components/AuthModal'
 import { supabase } from '../lib/supabase'
 
-const STORAGE_KEY = 'unifind_saved_chats'
+const SAVED_PROGRAMS_KEY = 'unifind_saved_programs'
 
-function loadSavedChats() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch { return [] }
+function loadSavedPrograms() {
+  try { return JSON.parse(localStorage.getItem(SAVED_PROGRAMS_KEY) || '[]') } catch { return [] }
 }
-
-function persistSavedChats(chats) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chats)) } catch {}
+function persistSavedPrograms(list) {
+  try { localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(list)) } catch {}
 }
 
 export default function ProgramPage() {
   const [uni, setUni] = useState(null)
-  const [initialMessages, setInitialMessages] = useState(null)
   const [user, setUser] = useState(null)
-  const [savedChats, setSavedChats] = useState([])
+  const [savedPrograms, setSavedPrograms] = useState([])
+  const [authMode, setAuthMode] = useState(null)
   const [toast, setToast] = useState(null)
 
   useEffect(() => {
-    // Load uni data from localStorage
     try {
       const stored = localStorage.getItem('unifind_active_uni')
       if (stored) setUni(JSON.parse(stored))
     } catch {}
 
-    // Load restored messages (if opened from My Chats)
-    try {
-      const msgs = localStorage.getItem('unifind_active_messages')
-      if (msgs) {
-        setInitialMessages(JSON.parse(msgs))
-        localStorage.removeItem('unifind_active_messages') // consume once
-      }
-    } catch {}
+    setSavedPrograms(loadSavedPrograms())
 
-    // Load saved chats from localStorage
-    setSavedChats(loadSavedChats())
-
-    // Load current user session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null)
     })
     return () => subscription.unsubscribe()
@@ -57,58 +42,55 @@ export default function ProgramPage() {
     setTimeout(() => setToast(null), 2400)
   }
 
-  const handleSaveChat = ({ uni, messages }) => {
-    const current = loadSavedChats()
-    const exists = current.find(c => c.uni.name === uni.name)
-    if (exists) return
-    const updated = [...current, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
-    persistSavedChats(updated)
-    setSavedChats(updated)
-    showToast('✓ Chat saved to My Chats')
-  }
-
-  const handleUnsaveChat = ({ uni }) => {
-    const current = loadSavedChats()
-    const updated = current.filter(c => c.uni.name !== uni.name)
-    persistSavedChats(updated)
-    setSavedChats(updated)
-    showToast('Chat removed')
+  const handleSaveToggle = (u) => {
+    if (!user) { setAuthMode('login'); return }
+    const current = loadSavedPrograms()
+    const exists = current.some(p => p.name === u.name)
+    const updated = exists ? current.filter(p => p.name !== u.name) : [...current, u]
+    persistSavedPrograms(updated)
+    setSavedPrograms(updated)
+    showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
   }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    window.close()
+    window.location.href = '/'
   }
+
+  const handleAuthSuccess = () => setAuthMode(null)
 
   if (!uni) {
     return (
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100vh', background: 'var(--cream-200)', color: 'var(--ink-500)',
-        fontSize: 15, fontFamily: 'inherit'
-      }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'white', color: '#888', fontSize: 15, fontFamily: 'Geist, sans-serif' }}>
         Loading…
       </div>
     )
   }
 
-  const isChatSaved = savedChats.some(c => c.uni.name === uni.name)
-
   return (
     <>
-      <DetailScreen
+      <ChatScreen
         uni={uni}
-        onBack={() => window.close()}
-        initialMessages={initialMessages}
         user={user}
+        onHome={() => { window.location.href = '/' }}
+        onMyPrograms={() => { window.location.href = '/' }}
+        onMyChats={() => { window.location.href = '/' }}
+        onSaveToggle={handleSaveToggle}
+        onOpenAuth={setAuthMode}
         onSignOut={handleSignOut}
-        onOpenAuth={() => {}}
-        onMyPrograms={() => window.open('/', '_self')}
-        onMyChats={() => window.open('/', '_self')}
-        onSaveChat={handleSaveChat}
-        onUnsaveChat={handleUnsaveChat}
-        isChatSaved={isChatSaved}
+        onFeedback={() => {}}
+        onTerms={() => { window.open('/terms', '_blank') }}
+        onPrivacy={() => { window.open('/privacy', '_blank') }}
+        savedIds={new Set(savedPrograms.map(p => p.name))}
       />
+      {authMode && (
+        <AuthModal
+          mode={authMode}
+          onClose={() => setAuthMode(null)}
+          onMode={setAuthMode}
+          onSubmit={handleAuthSuccess}
+        />
+      )}
       {toast && <div className="toast">{toast}</div>}
     </>
   )
