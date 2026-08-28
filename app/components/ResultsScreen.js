@@ -791,6 +791,7 @@ export default function ResultsScreen({
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onHome={() => { setMenuOpen(false); onBack?.() }}
         />
       )}
     </div>

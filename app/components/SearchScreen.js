@@ -915,6 +915,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onHome={() => { setMenuOpen(false) }}
         />
       )}
     </div>

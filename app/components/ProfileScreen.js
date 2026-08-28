@@ -352,6 +352,7 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
           onProfile={() => { setMenuOpen(false) }}
+          onHome={() => { setMenuOpen(false); onBack?.() }}
         />
       )}
     </div>
