@@ -43,10 +43,14 @@ export default function App() {
 
   // ── Supabase auth listener ──────────────────────────────────
   useEffect(() => {
-    // Load saved chats from localStorage on mount
+    // Load saved chats and programs from localStorage on mount
     try {
       const raw = localStorage.getItem('unifind_saved_chats')
       if (raw) setSavedChats(JSON.parse(raw))
+    } catch {}
+    try {
+      const raw = localStorage.getItem('unifind_saved_programs')
+      if (raw) setSavedPrograms(JSON.parse(raw))
     } catch {}
 
     // Check existing session on mount
@@ -161,12 +165,16 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('Signed out')
   }
 
-  // Sync savedChats from localStorage when tab regains focus (program tab may have saved)
+  // Sync saved chats and programs from localStorage when tab regains focus
   useEffect(() => {
     const sync = () => {
       try {
         const raw = localStorage.getItem('unifind_saved_chats')
         if (raw) setSavedChats(JSON.parse(raw))
+      } catch {}
+      try {
+        const raw = localStorage.getItem('unifind_saved_programs')
+        if (raw) setSavedPrograms(JSON.parse(raw))
       } catch {}
     }
     window.addEventListener('focus', sync)
@@ -200,13 +208,10 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     }
     setSavedPrograms(prev => {
       const exists = prev.some(p => p.name === uni.name)
-      if (exists) {
-        showToast('Removed from My Programs')
-        return prev.filter(p => p.name !== uni.name)
-      } else {
-        showToast('✓ Saved to My Programs')
-        return [...prev, uni]
-      }
+      const updated = exists ? prev.filter(p => p.name !== uni.name) : [...prev, uni]
+      try { localStorage.setItem('unifind_saved_programs', JSON.stringify(updated)) } catch {}
+      showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
+      return updated
     })
   }
 
