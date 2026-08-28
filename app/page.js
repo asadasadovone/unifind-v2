@@ -308,6 +308,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           savedPrograms={savedPrograms}
           onBack={() => setScreen('search')}
           onOpenUni={openUni}
+          onAskAI={uni => { setChatUni(uni); setScreen('chat') }}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
           onProfile={() => setScreen('profile')}
