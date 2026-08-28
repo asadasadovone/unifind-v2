@@ -332,6 +332,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
             } catch {}
             window.open('/program', '_blank')
           }}
+          onUnsaveChat={handleUnsaveChat}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
           onProfile={() => setScreen('profile')}
