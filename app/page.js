@@ -272,6 +272,26 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onFeedback={() => setScreen('feedback')}
           onTerms={() => setScreen('terms')}
           onPrivacy={() => setScreen('privacy')}
+          onAskAI={(u) => {
+            // Popular-fields cards have a lightweight shape — normalise to what ChatScreen expects.
+            const [city, country] = String(u.loc || '').split(',').map(s => s.trim())
+            const normalized = {
+              name: u.name,
+              field: u.field || u.program || '',
+              program: u.program || '',
+              city: city || '',
+              country: country || '',
+              tuition: u.tuition,
+              duration: u.duration,
+              startDate: u.start || u.startDate,
+              language: u.language || 'English',
+              url: u.url,
+              img: u.img,
+            }
+            try { localStorage.setItem('unifind_active_chat_uni', JSON.stringify(normalized)) } catch {}
+            setChatUni(normalized)
+            setScreen('chat')
+          }}
           onUpgrade={() => {
             setIsPremium(true)
             showToast('✓ Pro unlocked — all universities visible')

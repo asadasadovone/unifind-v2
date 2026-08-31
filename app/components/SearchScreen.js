@@ -140,7 +140,7 @@ const FAQS = [
 
 // ── sub-components ────────────────────────────────────────────────────────────
 
-function UniCard({ uni, progMinH }) {
+function UniCard({ uni, progMinH, onAskAI }) {
   // Figma 506:1028 — Article
   const iconRow = { display: 'flex', alignItems: 'center', gap: 5 }
   const iconTxt = { fontSize: 14, fontWeight: 400, color: '#000', lineHeight: '19.5px' }
@@ -211,11 +211,14 @@ function UniCard({ uni, progMinH }) {
         </div>
 
         {/* Ask AI — radius 12, py12 px16, 14px */}
-        <button style={{
-          marginTop: 'auto', width: '100%', padding: '12px 16px', background: '#0162e3', color: '#fff',
-          border: 'none', borderRadius: 12, fontWeight: 500, fontSize: 14, letterSpacing: '-0.28px',
-          cursor: 'pointer', fontFamily: 'inherit',
-        }}>
+        <button
+          onClick={() => onAskAI?.(uni)}
+          style={{
+            marginTop: 'auto', width: '100%', padding: '12px 16px', background: '#0162e3', color: '#fff',
+            border: 'none', borderRadius: 12, fontWeight: 500, fontSize: 14, letterSpacing: '-0.28px',
+            cursor: 'pointer', fontFamily: 'inherit',
+          }}
+        >
           Ask AI
         </button>
       </div>
@@ -404,7 +407,7 @@ function StoriesSection() {
   )
 }
 
-function CardsSection({ heading, data, tabs, field, onFieldChange }) {
+function CardsSection({ heading, data, tabs, field, onFieldChange, onAskAI }) {
   const isMobile = useIsMobile()
   const rowRef = useRef(null)
   const [active, setActive] = useState(0)
@@ -484,7 +487,7 @@ function CardsSection({ heading, data, tabs, field, onFieldChange }) {
           className="uni-cards-row"
           style={{ display: 'flex', gap: 16, overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: 4 }}
         >
-          {unis.map((u, i) => <UniCard key={i} uni={u} progMinH={progMinH} />)}
+          {unis.map((u, i) => <UniCard key={i} uni={u} progMinH={progMinH} onAskAI={onAskAI} />)}
           {/* Trailing spacer so the last card clears the right edge by the same
               64px the first card is inset from the left. 48px + the row's 16px
               flex gap = 64. A spacer is used rather than padding-right, which
@@ -650,7 +653,7 @@ function TuitionCard({ value, onChange }) {
 
 // ── main export ───────────────────────────────────────────────────────────────
 
-export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
+export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onAskAI }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
   const [showTuition, setShowTuition] = useState(false)
@@ -878,6 +881,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         tabs={MASTER_TABS}
         field={masterField}
         onFieldChange={setMasterField}
+        onAskAI={onAskAI}
       />
 
       <StoriesSection />
@@ -889,6 +893,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         tabs={BACHELOR_TABS}
         field={bachelorField}
         onFieldChange={setBachelorField}
+        onAskAI={onAskAI}
       />
 
       <TimeSection />
