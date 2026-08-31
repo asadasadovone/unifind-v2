@@ -283,6 +283,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onFeedback={() => setScreen('feedback')}
           onTerms={() => setScreen('terms')}
           onPrivacy={() => setScreen('privacy')}
+          onProfile={() => setScreen('profile')}
           savedIds={new Set(savedPrograms.map(p => p.name))}
         />
       )}

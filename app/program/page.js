@@ -81,6 +81,7 @@ export default function ProgramPage() {
         onFeedback={() => {}}
         onTerms={() => { window.open('/terms', '_blank') }}
         onPrivacy={() => { window.open('/privacy', '_blank') }}
+        onProfile={() => { window.location.href = '/?screen=profile' }}
         savedIds={new Set(savedPrograms.map(p => p.name))}
       />
       {authMode && (

@@ -258,6 +258,7 @@ export default function ChatScreen({
   onFeedback,
   onTerms,
   onPrivacy,
+  onProfile,
   savedIds,
 }) {
   const isMobile = useIsMobile()
@@ -565,8 +566,7 @@ export default function ChatScreen({
       <div style={{ width: 360, flexShrink: 0, display: 'flex', flexDirection: 'column', borderRight: '1px solid #e8e8e8', height: '100vh', overflow: 'hidden' }}>
         <div style={{ padding: 24, borderBottom: '1px solid #e8e8e8', flexShrink: 0 }}>
           <button onClick={onHome} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <Logo color="#05203c" size={28} />
-            <span style={{ fontSize: 28, fontWeight: 500, color: '#05203c', letterSpacing: '-0.05em', lineHeight: 1, fontFamily: 'Geist, sans-serif' }}>UniAsk</span>
+            <Logo color="#05203c" size="sm" />
           </button>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -583,7 +583,7 @@ export default function ChatScreen({
                 {label}
               </button>
             ))}
-            <button onClick={() => setHelpOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 48, padding: '10px 12px', background: '#f5f5f5', border: 'none', borderRadius: 12, cursor: 'pointer', color: '#404040', fontSize: 16, fontWeight: 500, fontFamily: 'inherit', width: '100%' }}>
+            <button onClick={() => setHelpOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 48, padding: '10px 12px', background: 'none', border: 'none', borderRadius: 12, cursor: 'pointer', color: '#404040', fontSize: 16, fontWeight: 500, fontFamily: 'inherit', width: '100%' }}>
               Help<IcoChevron up={helpOpen} />
             </button>
             {helpOpen && (
@@ -643,12 +643,12 @@ export default function ChatScreen({
         {/* Desktop bottom */}
         <div style={{ padding: 24, borderTop: '1px solid #e8e8e8', background: 'white', flexShrink: 0 }}>
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}>
+            <button onClick={onProfile} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', fontFamily: 'inherit', borderRadius: 12 }}>
               <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#143229', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
                 {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
               </div>
               <span style={{ fontSize: 15, fontWeight: 500, color: '#1a1a17' }}>{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
-            </div>
+            </button>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
