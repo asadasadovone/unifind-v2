@@ -59,7 +59,7 @@ export default function PrivacyScreen({ user, onBack, onSignOut, onMyPrograms, o
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F5F5', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column', fontFamily: 'Geist, sans-serif' }}>
       <SiteNav
         isMobile={isMobile}
         user={user}
@@ -78,29 +78,27 @@ export default function PrivacyScreen({ user, onBack, onSignOut, onMyPrograms, o
       <div style={{ flex: 1 }}>
         <div style={{ maxWidth: 800, margin: '0 auto', padding: isMobile ? '24px 16px 48px' : '56px 32px 80px' }}>
 
-          <h1 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 700, color: '#0D2C54', lineHeight: 1.15, marginBottom: 8, letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: isMobile ? 32 : 44, fontWeight: 500, color: '#000', lineHeight: 'normal', marginBottom: 8, letterSpacing: '-0.44px' }}>
             Privacy Policy
           </h1>
-          <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: isMobile ? 24 : 36 }}>
+          <p style={{ fontSize: 14, lineHeight: '22px', color: '#6B7280', marginBottom: isMobile ? 32 : 48 }}>
             Last updated: 15 January 2026
           </p>
 
-          <div style={{ background: '#fff', border: '1px solid #E8E8E8', borderRadius: isMobile ? 16 : 20, padding: isMobile ? '20px 18px' : '40px 44px' }}>
-            <p style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.65, marginBottom: 28 }}>
-              At UniAsk we believe that great products treat people's data with care. This Privacy Policy explains what information we collect when you use <span style={{ color: '#1668E3', fontWeight: 500 }}>uniask.ai</span>, why we collect it, and how you can control it.
-            </p>
+          <p style={{ fontSize: 18, lineHeight: '26px', color: '#000', marginBottom: 40 }}>
+            At UniAsk we believe that great products treat people's data with care. This Privacy Policy explains what information we collect when you use <span style={{ color: '#0162E3' }}>uniask.ai</span>, why we collect it, and how you can control it.
+          </p>
 
-            {SECTIONS.map((s) => (
-              <section key={s.h} style={{ marginBottom: 24 }}>
-                <h2 style={{ fontSize: isMobile ? 16 : 17, fontWeight: 700, color: '#0D2C54', marginBottom: 8 }}>
-                  {s.h}
-                </h2>
-                <p style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.65, margin: 0 }}>
-                  {s.p}
-                </p>
-              </section>
-            ))}
-          </div>
+          {SECTIONS.map((s) => (
+            <section key={s.h} style={{ marginBottom: 32 }}>
+              <h2 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 500, color: '#000', lineHeight: 'normal', letterSpacing: '-0.22px', marginBottom: 12 }}>
+                {s.h}
+              </h2>
+              <p style={{ fontSize: 16, lineHeight: '24px', color: '#3A3A35', margin: 0 }}>
+                {s.p}
+              </p>
+            </section>
+          ))}
         </div>
       </div>
 
