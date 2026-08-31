@@ -1,93 +1,131 @@
 'use client'
 import { useState } from 'react'
-import { Icon, Logo } from './Icons'
-import UserDropdown from './UserDropdown'
+import { SiteNav, SiteFooter, useIsMobile } from './SiteChrome'
 import MobileMenuDrawer from './MobileMenuDrawer'
 
-export default function PrivacyScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats,  onProfile, onFeedback, onTerms, onPrivacy }) {
+const SECTIONS = [
+  {
+    h: '1. Information We Collect',
+    p: `We collect information you provide directly — such as your name, email address, and profile details when you sign up — along with information that is generated as you use UniAsk, including saved programs, saved chats, search filters, and messages you send to the AI. We also collect technical data (device type, browser, approximate location derived from IP, and pages visited) to keep the Service secure and to understand how it is used.`,
+  },
+  {
+    h: '2. How We Use Your Information',
+    p: `Your information is used to (a) run and personalize the Service, (b) match programs to your goals and profile, (c) improve our AI and search quality, (d) communicate with you about your account and product updates, (e) prevent fraud and abuse, and (f) comply with legal obligations. We do not sell your personal data.`,
+  },
+  {
+    h: '3. AI Interactions',
+    p: `When you use the "Ask AI" chat, your messages and the associated program context are processed by our AI provider (Anthropic) to generate a response. We do not use your chat content to train third-party foundation models. Aggregated, de-identified usage patterns may be used to improve our own prompts and product quality.`,
+  },
+  {
+    h: '4. Cookies & Local Storage',
+    p: `UniAsk uses cookies and browser local storage to keep you signed in, remember your filters, and cache your saved programs and chats. Essential storage cannot be disabled without breaking parts of the Service. Analytics cookies are only set when you accept them in the cookie banner.`,
+  },
+  {
+    h: '5. Sharing of Information',
+    p: `We share information with (a) service providers that host our infrastructure, database, authentication, and email delivery, (b) AI providers strictly for generating responses to your queries, and (c) authorities where required by law. All providers are contractually bound to protect your data. We never share your data with advertisers.`,
+  },
+  {
+    h: '6. Data Retention',
+    p: `We retain your account data for as long as your account is active and for a reasonable period afterward for legal and operational reasons. Saved programs, saved chats, and profile information are deleted when you delete your account. Anonymized analytics may be retained indefinitely.`,
+  },
+  {
+    h: '7. Your Rights',
+    p: `Depending on your location, you may have the right to access, correct, export, or delete your personal data, and to object to or restrict certain processing. To exercise any of these rights, contact hello@uniask.ai. We will respond within 30 days.`,
+  },
+  {
+    h: '8. Security',
+    p: `We use industry-standard measures — encryption in transit, access controls, and regular security reviews — to protect your data. No system is perfectly secure, but if we ever detect a breach that affects you, we will notify you as required by applicable law.`,
+  },
+  {
+    h: "9. Children's Privacy",
+    p: `UniAsk is not directed at children under 16. If you believe a minor has provided us with personal information without appropriate consent, please contact us and we will delete the data.`,
+  },
+  {
+    h: '10. International Users',
+    p: `UniAsk is operated from the European Union. If you access the Service from another region, you consent to the transfer and processing of your information in the EU under appropriate safeguards.`,
+  },
+  {
+    h: '11. Changes to This Policy',
+    p: `We may update this Privacy Policy as the Service evolves. When we make material changes, we will notify you via the platform or by email. The "last updated" date at the top of this page will always reflect the most recent version.`,
+  },
+  {
+    h: '12. Contact',
+    p: `Privacy questions or requests can be sent to hello@uniask.ai. We aim to respond within five business days.`,
+  },
+]
+
+export default function PrivacyScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
+  const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <div className="results-screen">
-      <header className="results-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Logo size="sm" onClick={onBack} color="#05203C" />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="zap-nav-link nav-desktop-only" onClick={onMyPrograms}>
-            <Icon name="heart" size={14} /> My Programs
-          </button>
-          <button className="zap-nav-link nav-desktop-only" onClick={onMyChats}>
-            <Icon name="sparkle" size={14} /> My Chats
-          </button>
-          <UserDropdown user={user} onSignOut={onSignOut} onProfile={onProfile} onFeedback={onFeedback} onTerms={onTerms} onPrivacy={onPrivacy} />
-          <button
-            className="mobile-menu-burger"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <Icon name="menu" size={22} />
-          </button>
-        </div>
-      </header>
+    <div style={{ minHeight: '100vh', background: '#F5F5F5', display: 'flex', flexDirection: 'column' }}>
+      <SiteNav
+        isMobile={isMobile}
+        user={user}
+        onOpenAuth={() => {}}
+        onSignOut={onSignOut}
+        onHome={onBack}
+        onMyPrograms={onMyPrograms}
+        onMyChats={onMyChats}
+        onProfile={onProfile}
+        onFeedback={onFeedback}
+        onTerms={onTerms}
+        onPrivacy={onPrivacy}
+        onOpenMenu={() => setMenuOpen(true)}
+      />
 
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 32px' }}>
-        <h2 className="serif" style={{ fontSize: 36, color: 'var(--green-900)', lineHeight: 1.1 }}>
-          Privacy <span className="serif-italic">Policy</span>
-        </h2>
-        <p className="muted" style={{ marginTop: 8, fontSize: 13 }}>Last updated: May 2025</p>
+      <div style={{ flex: 1 }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: isMobile ? '24px 16px 48px' : '56px 32px 80px' }}>
 
-        <div className="legal-content" style={{ marginTop: 40 }}>
-          <h3>1. Information We Collect</h3>
-          <p>
-            When you create an account, we collect basic account information such as your name and email address. As you use UniFind, we collect the search queries you submit, the university programmes you save or compare, and the AI chat conversations you choose to store. We also collect standard usage data including pages visited, features used, and session duration, which helps us understand how the platform is used and where improvements can be made.
+          <h1 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 700, color: '#0D2C54', lineHeight: 1.15, marginBottom: 8, letterSpacing: '-0.5px' }}>
+            Privacy Policy
+          </h1>
+          <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: isMobile ? 24 : 36 }}>
+            Last updated: 15 January 2026
           </p>
 
-          <h3>2. How We Use Your Information</h3>
-          <p>
-            We use the information we collect to operate and improve the Service, to personalise your experience — for example by surfacing programmes that match your stated interests — and to train and refine the AI models that power UniFind's recommendations. We may use your email address to send you product updates, important notices about your account, or occasional communications about new features. You may opt out of non-essential communications at any time through your account settings.
-          </p>
+          <div style={{ background: '#fff', border: '1px solid #E8E8E8', borderRadius: isMobile ? 16 : 20, padding: isMobile ? '20px 18px' : '40px 44px' }}>
+            <p style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.65, marginBottom: 28 }}>
+              At UniAsk we believe that great products treat people's data with care. This Privacy Policy explains what information we collect when you use <span style={{ color: '#1668E3', fontWeight: 500 }}>uniask.ai</span>, why we collect it, and how you can control it.
+            </p>
 
-          <h3>3. Data Storage & Security</h3>
-          <p>
-            Account data, saved programmes, and chat histories are stored securely using Supabase, a managed database platform with encryption at rest and in transit. Certain preferences and session state may also be stored in your browser's localStorage for performance reasons. While we take reasonable technical and organisational precautions to protect your data, no system is completely secure, and we cannot guarantee the absolute security of information you transmit to us.
-          </p>
-
-          <h3>4. Cookies & Analytics</h3>
-          <p>
-            UniFind uses essential cookies to maintain your session and keep you logged in across page loads. We may also use lightweight analytics tools to collect aggregated, anonymised data about how users interact with the platform. These analytics do not track you across third-party websites. You can disable cookies in your browser settings, though doing so may affect the functionality of the Service.
-          </p>
-
-          <h3>5. Third-Party Services</h3>
-          <p>
-            UniFind integrates with third-party services in order to deliver core functionality. AI-generated programme descriptions and chat responses are produced using Anthropic's Claude API; queries you submit may be processed by Anthropic's infrastructure in accordance with their own privacy and data handling policies. Database and authentication services are provided by Supabase. We do not sell your personal information to any third party.
-          </p>
-
-          <h3>6. Your Rights</h3>
-          <p>
-            Depending on your jurisdiction, you may have rights to access the personal information we hold about you, to request correction of inaccurate data, or to request deletion of your account and associated data. To exercise any of these rights, please contact us at support@unifind.app. We will respond to all verified requests within thirty days. In some circumstances, we may be required to retain certain information even after an account deletion request.
-          </p>
-
-          <h3>7. Children's Privacy</h3>
-          <p>
-            UniFind is not directed at children under the age of 13, and we do not knowingly collect personal information from anyone under 13. If we become aware that we have inadvertently collected such information, we will take steps to delete it promptly. Users between 13 and 18 should ensure they have parental or guardian consent before using the Service.
-          </p>
-
-          <h3>8. Contact</h3>
-          <p>
-            If you have questions, concerns, or requests relating to this Privacy Policy or our handling of your personal data, please reach out to us at support@unifind.app. We take privacy seriously and will do our best to address your enquiry as quickly as possible.
-          </p>
+            {SECTIONS.map((s) => (
+              <section key={s.h} style={{ marginBottom: 24 }}>
+                <h2 style={{ fontSize: isMobile ? 16 : 17, fontWeight: 700, color: '#0D2C54', marginBottom: 8 }}>
+                  {s.h}
+                </h2>
+                <p style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.65, margin: 0 }}>
+                  {s.p}
+                </p>
+              </section>
+            ))}
+          </div>
         </div>
       </div>
+
+      <SiteFooter
+        isMobile={isMobile}
+        onHome={onBack}
+        onMyPrograms={onMyPrograms}
+        onMyChats={onMyChats}
+        onTerms={onTerms}
+        onPrivacy={onPrivacy}
+      />
 
       {menuOpen && (
         <MobileMenuDrawer
           user={user}
           onClose={() => setMenuOpen(false)}
-          onSignOut={onSignOut}
-          onMyPrograms={onMyPrograms}
-          onMyChats={onMyChats}
-          onProfile={onProfile}
+          onOpenAuth={() => {}}
+          onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
+          onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
+          onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
+          onProfile={() => { setMenuOpen(false); onProfile?.() }}
+          onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
+          onTerms={() => { setMenuOpen(false); onTerms?.() }}
+          onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onHome={() => { setMenuOpen(false); onBack?.() }}
         />
       )}
     </div>
