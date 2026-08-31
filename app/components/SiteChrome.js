@@ -49,7 +49,7 @@ export function SiteNav({
           <Icon name="menu" size={22} />
         </button>
       )}
-      <Logo size="sm" />
+      <Logo size="sm" onClick={onHome} />
     </div>
 
     {/* Center nav */}
