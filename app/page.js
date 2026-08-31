@@ -25,8 +25,20 @@ const DEFAULT_FILTERS = {
   english: true
 }
 
+const PERSISTED_SCREENS = new Set(['search', 'results', 'chat', 'my-programs', 'my-chats', 'profile', 'feedback', 'terms', 'privacy'])
+
 export default function App() {
-  const [screen, setScreen] = useState('search')
+  const [screen, setScreenRaw] = useState('search')
+  const setScreen = (s) => {
+    setScreenRaw(s)
+    if (typeof window !== 'undefined' && PERSISTED_SCREENS.has(s)) {
+      const params = new URLSearchParams(window.location.search)
+      if (s === 'search') params.delete('screen')
+      else params.set('screen', s)
+      const qs = params.toString()
+      window.history.pushState({}, '', qs ? `/?${qs}` : '/')
+    }
+  }
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [authMode, setAuthMode] = useState(null)
   const [activeUni, setActiveUni] = useState(null)
@@ -52,6 +64,31 @@ export default function App() {
       const raw = localStorage.getItem('unifind_saved_programs')
       if (raw) setSavedPrograms(JSON.parse(raw))
     } catch {}
+
+    // Restore screen from URL (?screen=…) so refresh keeps the current page
+    if (typeof window !== 'undefined') {
+      const s = new URLSearchParams(window.location.search).get('screen')
+      if (s && PERSISTED_SCREENS.has(s) && s !== 'results' && s !== 'chat') {
+        setScreenRaw(s)
+      } else if (s === 'chat') {
+        try {
+          const savedUni = localStorage.getItem('unifind_active_chat_uni')
+          if (savedUni) {
+            setChatUni(JSON.parse(savedUni))
+            setScreenRaw('chat')
+          }
+        } catch {}
+      }
+    }
+
+    // Browser back/forward should switch screens instead of leaving the site
+    const onPop = () => {
+      if (typeof window === 'undefined') return
+      const s = new URLSearchParams(window.location.search).get('screen') || 'search'
+      if (PERSISTED_SCREENS.has(s)) setScreenRaw(s)
+      else setScreenRaw('search')
+    }
+    window.addEventListener('popstate', onPop)
 
     // Check existing session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -89,7 +126,10 @@ export default function App() {
       if (event === 'PASSWORD_RECOVERY') openReset({ clean: true })
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('popstate', onPop)
+    }
   }, [])
 
   const showToast = (msg) => {
@@ -244,7 +284,11 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           filters={filters}
           setFilters={setFilters}
           onOpenUni={openUni}
-          onAskAI={uni => { setChatUni(uni); setScreen('chat') }}
+          onAskAI={uni => {
+            try { localStorage.setItem('unifind_active_chat_uni', JSON.stringify(uni)) } catch {}
+            setChatUni(uni)
+            setScreen('chat')
+          }}
           onBack={() => setScreen('search')}
           isPremium={isPremium}
           isLoading={isLoading}
@@ -314,7 +358,11 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           savedPrograms={savedPrograms}
           onBack={() => setScreen('search')}
           onOpenUni={openUni}
-          onAskAI={uni => { setChatUni(uni); setScreen('chat') }}
+          onAskAI={uni => {
+            try { localStorage.setItem('unifind_active_chat_uni', JSON.stringify(uni)) } catch {}
+            setChatUni(uni)
+            setScreen('chat')
+          }}
           onUnsave={handleSaveToggle}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}

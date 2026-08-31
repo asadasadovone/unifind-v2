@@ -59,10 +59,22 @@ export default function ProgramPage() {
 
   const handleAuthSuccess = () => setAuthMode(null)
 
+  const [loadedOnce, setLoadedOnce] = useState(false)
+  useEffect(() => { const t = setTimeout(() => setLoadedOnce(true), 400); return () => clearTimeout(t) }, [])
+
   if (!uni) {
+    if (!loadedOnce) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'white', color: '#888', fontSize: 15, fontFamily: 'Geist, sans-serif' }}>
+          Loading…
+        </div>
+      )
+    }
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'white', color: '#888', fontSize: 15, fontFamily: 'Geist, sans-serif' }}>
-        Loading…
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#F5F5F5', color: '#1a1a1a', fontFamily: 'Geist, sans-serif', gap: 16, padding: 24, textAlign: 'center' }}>
+        <div style={{ fontSize: 24, fontWeight: 700, color: '#0D2C54' }}>No program selected</div>
+        <p style={{ fontSize: 14, color: '#6B7280', maxWidth: 340 }}>Pick a program from the homepage to start a conversation.</p>
+        <a href="/" style={{ padding: '12px 28px', background: '#1668E3', color: '#fff', borderRadius: 22, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Back to homepage</a>
       </div>
     )
   }
