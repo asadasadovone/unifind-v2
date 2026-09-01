@@ -373,8 +373,7 @@ export default function ChatScreen({
       {/* Logo + close */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexShrink: 0 }}>
         <button onClick={onHome} style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-          <Logo color="#0162e3" size={20} />
-          <span style={{ fontSize: 18, fontWeight: 600, color: '#1a1a1a', fontFamily: 'Geist, sans-serif' }}>UniAsk</span>
+          <Logo color="#05203c" size="sm" />
         </button>
         {onClose && (
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex' }}>
@@ -399,18 +398,20 @@ export default function ChatScreen({
           </button>
         ))}
 
-        {/* Help */}
-        <div style={{ background: '#f4f4f4', borderRadius: 10, padding: '4px 6px', margin: '6px 0 4px' }}>
-          <button onClick={() => setHelpOpen(o => !o)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '8px 4px', fontSize: 15, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#1a1a1a' }}>
-            Help
-            <IcoChevron up={helpOpen} />
-          </button>
-          {helpOpen && helpItems.map(({ icon, label, action }) => (
-            <button key={label} onClick={() => { onClose?.(); setHelpOpen(false); action?.() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '9px 8px', fontSize: 14, background: 'none', border: 'none', cursor: 'pointer', borderRadius: 8, fontFamily: 'inherit', color: '#1a1a1a', textAlign: 'left' }}>
-              {icon}{label}
-            </button>
-          ))}
-        </div>
+        {/* Help — same style as other nav items */}
+        <button onClick={() => setHelpOpen(o => !o)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '11px 4px', fontSize: 15, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#1a1a1a' }}>
+          Help
+          <IcoChevron up={helpOpen} />
+        </button>
+        {helpOpen && (
+          <div style={{ paddingLeft: 8 }}>
+            {helpItems.map(({ label, action }) => (
+              <button key={label} onClick={() => { onClose?.(); setHelpOpen(false); action?.() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 4px', fontSize: 14, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#4B5563' }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Program card */}
         {uni && (
@@ -447,12 +448,15 @@ export default function ChatScreen({
 
         {/* Bottom (user / login) */}
         {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderTop: '0.5px solid rgba(0,0,0,0.1)', paddingTop: 14 }}>
+          <button
+            onClick={() => { onClose?.(); onProfile?.() }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, borderTop: '0.5px solid rgba(0,0,0,0.1)', paddingTop: 14, background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', fontFamily: 'inherit' }}
+          >
             <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#0d2c54', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
               {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
             </div>
             <span style={{ fontSize: 14, fontWeight: 500 }}>{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
-          </div>
+          </button>
         ) : (
           <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.1)', paddingTop: 14 }}>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: '#0d0d0d' }}>Get responses tailored to you</div>
