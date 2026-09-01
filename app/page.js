@@ -234,13 +234,34 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     return () => window.removeEventListener('focus', sync)
   }, [user?.id])
 
+  // SPA navigation into a saved-items screen doesn't fire 'focus'; re-pull
+  // here too so switching to My Programs/My Chats always shows fresh cloud state.
+  useEffect(() => {
+    if (!user?.id) return
+    if (screen !== 'my-programs' && screen !== 'my-chats') return
+    ;(async () => {
+      if (screen === 'my-programs') {
+        const programs = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
+        if (Array.isArray(programs)) setSavedPrograms(programs)
+      } else {
+        const chats = await loadUserData(user.id, K.SAVED_CHATS, [])
+        if (Array.isArray(chats)) setSavedChats(chats)
+      }
+    })()
+  }, [screen, user?.id])
+
+  const onSyncError = (err) => {
+    const msg = err?.message || String(err)
+    showToast('Sync failed: ' + msg.slice(0, 80))
+  }
+
   const handleSaveChat = ({ uni, messages }) => {
     setSavedChats(prev => {
       const exists = prev.find(c => c.uni.name === uni.name)
       if (exists) return prev
       const updated = [...prev, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
       try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
-      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated)
+      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated, { onError: onSyncError })
       showToast('✓ Chat saved to My Chats')
       return updated
     })
@@ -250,7 +271,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     setSavedChats(prev => {
       const updated = prev.filter(c => c.uni.name !== uni.name)
       try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
-      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated)
+      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated, { onError: onSyncError })
       showToast('Chat removed')
       return updated
     })
@@ -265,7 +286,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
       const exists = prev.some(p => p.name === uni.name)
       const updated = exists ? prev.filter(p => p.name !== uni.name) : [...prev, uni]
       try { localStorage.setItem('unifind_saved_programs', JSON.stringify(updated)) } catch {}
-      saveUserData(user.id, K.SAVED_PROGRAMS, updated)
+      saveUserData(user.id, K.SAVED_PROGRAMS, updated, { onError: onSyncError })
       showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
       return updated
     })
