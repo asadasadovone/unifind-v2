@@ -3,16 +3,7 @@ import { useState, useEffect } from 'react'
 import ChatScreen from '../components/ChatScreen'
 import AuthModal from '../components/AuthModal'
 import { supabase } from '../lib/supabase'
-import { loadUserData, saveUserData, K } from '../lib/user-data'
-
-const SAVED_PROGRAMS_KEY = 'unifind_saved_programs'
-
-function loadSavedProgramsLocal() {
-  try { return JSON.parse(localStorage.getItem(SAVED_PROGRAMS_KEY) || '[]') } catch { return [] }
-}
-function persistSavedProgramsLocal(list) {
-  try { localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(list)) } catch {}
-}
+import { syncUserData, saveUserData, K } from '../lib/user-data'
 
 export default function ProgramPage() {
   const [uni, setUni] = useState(null)
@@ -27,8 +18,6 @@ export default function ProgramPage() {
       if (stored) setUni(JSON.parse(stored))
     } catch {}
 
-    setSavedPrograms(loadSavedProgramsLocal())
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
     })
@@ -39,10 +28,10 @@ export default function ProgramPage() {
   }, [])
 
   useEffect(() => {
-    if (!user?.id) return
+    if (!user?.id) { setSavedPrograms([]); return }
     let cancelled = false
     ;(async () => {
-      const list = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
+      const list = await syncUserData(K.SAVED_PROGRAMS, { userId: user.id, onError: (e) => showToast('Sync failed: ' + e.message) })
       if (!cancelled && Array.isArray(list)) setSavedPrograms(list)
     })()
     return () => { cancelled = true }
@@ -57,9 +46,8 @@ export default function ProgramPage() {
     if (!user) { setAuthMode('login'); return }
     const exists = savedPrograms.some(p => p.name === u.name)
     const updated = exists ? savedPrograms.filter(p => p.name !== u.name) : [...savedPrograms, u]
-    persistSavedProgramsLocal(updated)
     setSavedPrograms(updated)
-    saveUserData(user.id, K.SAVED_PROGRAMS, updated)
+    saveUserData(K.SAVED_PROGRAMS, updated, { userId: user.id, onError: (e) => showToast('Sync failed: ' + e.message) })
     showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
   }
 

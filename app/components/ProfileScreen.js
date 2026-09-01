@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { SiteNav, SiteFooter, useIsMobile } from './SiteChrome'
 import MobileMenuDrawer from './MobileMenuDrawer'
-import { loadUserData, saveUserData, K } from '../lib/user-data'
+import { syncUserData, saveUserData, K } from '../lib/user-data'
 
 const GENDERS = ['Male', 'Female', 'Non-binary', 'Prefer not to say']
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
@@ -131,6 +131,7 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
   const [tab, setTab] = useState('personal')
+  const [hydrated, setHydrated] = useState(false)
   const debounceRef = useRef(null)
 
   const email = user?.email || ''
@@ -155,28 +156,42 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
 
-  // Load this user's profile from cloud on mount / when user changes.
+  // Load this user's profile from the cloud before enabling auto-save.
   useEffect(() => {
     if (!user?.id) return
     let cancelled = false
+    setHydrated(false)
     ;(async () => {
-      const remote = await loadUserData(user.id, K.PROFILE, null)
-      if (!cancelled && remote && typeof remote === 'object') {
-        setForm(f => ({ ...f, ...remote }))
+      const remote = await syncUserData(K.PROFILE, { userId: user.id })
+      if (cancelled) return
+      if (remote && typeof remote === 'object') {
+        // Only overwrite fields the cloud actually has a value for, so a
+        // field being edited right now isn't blanked by an older record.
+        setForm(f => {
+          const next = { ...f }
+          for (const [k, v] of Object.entries(remote)) {
+            if (v !== '' && v !== null && v !== undefined) next[k] = v
+          }
+          return next
+        })
       }
+      setHydrated(true)
     })()
     return () => { cancelled = true }
   }, [user?.id])
 
-  // Auto-save 800ms after last change — writes to cloud AND local cache.
+  // Auto-save 800ms after the last change. Gated on `hydrated`: writing before
+  // the cloud copy has landed would push this device's empty defaults over a
+  // profile the user filled in elsewhere.
   useEffect(() => {
+    if (!hydrated) return
     clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(form)) } catch {}
-      if (user?.id) saveUserData(user.id, K.PROFILE, form)
+      saveUserData(K.PROFILE, form, { userId: user?.id })
     }, 800)
     return () => clearTimeout(debounceRef.current)
-  }, [form, user?.id])
+  }, [form, hydrated, user?.id])
 
   const currentYear = new Date().getFullYear()
   const years = Array.from({ length: 80 }, (_, i) => currentYear - 16 - i)

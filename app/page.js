@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import SearchScreen from './components/SearchScreen'
 import ResultsScreen from './components/ResultsScreen'
 import DetailScreen from './components/DetailScreen'
@@ -12,7 +12,7 @@ import PrivacyScreen from './components/PrivacyScreen'
 import AuthModal from './components/AuthModal'
 import ChatScreen from './components/ChatScreen'
 import { supabase, signOut } from './lib/supabase'
-import { loadUserData, saveUserData, K } from './lib/user-data'
+import { syncUserData, saveUserData, K } from './lib/user-data'
 
 const DEFAULT_FILTERS = {
   field: '',
@@ -56,16 +56,6 @@ export default function App() {
 
   // ── Supabase auth listener ──────────────────────────────────
   useEffect(() => {
-    // Local fallback while cloud loads
-    try {
-      const raw = localStorage.getItem('unifind_saved_chats')
-      if (raw) setSavedChats(JSON.parse(raw))
-    } catch {}
-    try {
-      const raw = localStorage.getItem('unifind_saved_programs')
-      if (raw) setSavedPrograms(JSON.parse(raw))
-    } catch {}
-
     // Restore screen from URL (?screen=…) so refresh keeps the current page
     if (typeof window !== 'undefined') {
       const s = new URLSearchParams(window.location.search).get('screen')
@@ -206,75 +196,63 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('Signed out')
   }
 
-  // Whenever the signed-in user changes, pull that user's saved programs and
-  // chats from Supabase so the same data appears on every device they use.
-  useEffect(() => {
-    if (!user?.id) return
-    let cancelled = false
-    ;(async () => {
-      const programs = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
-      const chats = await loadUserData(user.id, K.SAVED_CHATS, [])
-      if (cancelled) return
-      if (Array.isArray(programs)) setSavedPrograms(programs)
-      if (Array.isArray(chats)) setSavedChats(chats)
-    })()
-    return () => { cancelled = true }
-  }, [user?.id])
-
-  // Re-pull on tab focus so a save made on another device shows up.
-  useEffect(() => {
-    if (!user?.id) return
-    const sync = async () => {
-      const programs = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
-      const chats = await loadUserData(user.id, K.SAVED_CHATS, [])
-      if (Array.isArray(programs)) setSavedPrograms(programs)
-      if (Array.isArray(chats)) setSavedChats(chats)
-    }
-    window.addEventListener('focus', sync)
-    return () => window.removeEventListener('focus', sync)
-  }, [user?.id])
-
-  // SPA navigation into a saved-items screen doesn't fire 'focus'; re-pull
-  // here too so switching to My Programs/My Chats always shows fresh cloud state.
-  useEffect(() => {
-    if (!user?.id) return
-    if (screen !== 'my-programs' && screen !== 'my-chats') return
-    ;(async () => {
-      if (screen === 'my-programs') {
-        const programs = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
-        if (Array.isArray(programs)) setSavedPrograms(programs)
-      } else {
-        const chats = await loadUserData(user.id, K.SAVED_CHATS, [])
-        if (Array.isArray(chats)) setSavedChats(chats)
-      }
-    })()
-  }, [screen, user?.id])
-
   const onSyncError = (err) => {
     const msg = err?.message || String(err)
     showToast('Sync failed: ' + msg.slice(0, 80))
   }
 
+  // Pull this account's programs and chats from Supabase, merging in anything
+  // saved locally, so every device the user signs in on converges on the same
+  // data. Runs on sign-in, on tab focus, and when entering a saved-items
+  // screen — SPA navigation never fires 'focus', so that last one matters.
+  const pullUserData = useCallback(async (userId) => {
+    if (!userId) return
+    const [programs, chats] = await Promise.all([
+      syncUserData(K.SAVED_PROGRAMS, { userId, onError: onSyncError }),
+      syncUserData(K.SAVED_CHATS, { userId, onError: onSyncError }),
+    ])
+    if (Array.isArray(programs)) setSavedPrograms(programs)
+    if (Array.isArray(chats)) setSavedChats(chats)
+  }, [])
+
+  useEffect(() => {
+    if (!user?.id) {
+      // Signed out: never leave the previous account's data on screen.
+      setSavedPrograms([])
+      setSavedChats([])
+      return
+    }
+    pullUserData(user.id)
+  }, [user?.id, pullUserData])
+
+  useEffect(() => {
+    if (!user?.id) return
+    const sync = () => pullUserData(user.id)
+    window.addEventListener('focus', sync)
+    return () => window.removeEventListener('focus', sync)
+  }, [user?.id, pullUserData])
+
+  useEffect(() => {
+    if (!user?.id) return
+    if (screen !== 'my-programs' && screen !== 'my-chats') return
+    pullUserData(user.id)
+  }, [screen, user?.id, pullUserData])
+
+  // Persistence happens outside the state updater: React may invoke an updater
+  // more than once, and a save must fire exactly once per user action.
   const handleSaveChat = ({ uni, messages }) => {
-    setSavedChats(prev => {
-      const exists = prev.find(c => c.uni.name === uni.name)
-      if (exists) return prev
-      const updated = [...prev, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
-      try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
-      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated, { onError: onSyncError })
-      showToast('✓ Chat saved to My Chats')
-      return updated
-    })
+    if (savedChats.some(c => c.uni.name === uni.name)) return
+    const updated = [...savedChats, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
+    setSavedChats(updated)
+    saveUserData(K.SAVED_CHATS, updated, { userId: user?.id, onError: onSyncError })
+    showToast('✓ Chat saved to My Chats')
   }
 
   const handleUnsaveChat = ({ uni }) => {
-    setSavedChats(prev => {
-      const updated = prev.filter(c => c.uni.name !== uni.name)
-      try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
-      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated, { onError: onSyncError })
-      showToast('Chat removed')
-      return updated
-    })
+    const updated = savedChats.filter(c => c.uni.name !== uni.name)
+    setSavedChats(updated)
+    saveUserData(K.SAVED_CHATS, updated, { userId: user?.id, onError: onSyncError })
+    showToast('Chat removed')
   }
 
   const handleSaveToggle = (uni) => {
@@ -282,14 +260,11 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
       setAuthMode('save-programs')
       return
     }
-    setSavedPrograms(prev => {
-      const exists = prev.some(p => p.name === uni.name)
-      const updated = exists ? prev.filter(p => p.name !== uni.name) : [...prev, uni]
-      try { localStorage.setItem('unifind_saved_programs', JSON.stringify(updated)) } catch {}
-      saveUserData(user.id, K.SAVED_PROGRAMS, updated, { onError: onSyncError })
-      showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
-      return updated
-    })
+    const exists = savedPrograms.some(p => p.name === uni.name)
+    const updated = exists ? savedPrograms.filter(p => p.name !== uni.name) : [...savedPrograms, uni]
+    setSavedPrograms(updated)
+    saveUserData(K.SAVED_PROGRAMS, updated, { userId: user.id, onError: onSyncError })
+    showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
   }
 
   return (
@@ -421,7 +396,6 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
             setScreen('chat')
           }}
           onUnsave={handleSaveToggle}
-          onCloudLoad={(list) => setSavedPrograms(list)}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
           onProfile={() => setScreen('profile')}
