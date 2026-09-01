@@ -12,6 +12,7 @@ import PrivacyScreen from './components/PrivacyScreen'
 import AuthModal from './components/AuthModal'
 import ChatScreen from './components/ChatScreen'
 import { supabase, signOut } from './lib/supabase'
+import { loadUserData, saveUserData, K } from './lib/user-data'
 
 const DEFAULT_FILTERS = {
   field: '',
@@ -55,7 +56,7 @@ export default function App() {
 
   // ── Supabase auth listener ──────────────────────────────────
   useEffect(() => {
-    // Load saved chats and programs from localStorage on mount
+    // Local fallback while cloud loads
     try {
       const raw = localStorage.getItem('unifind_saved_chats')
       if (raw) setSavedChats(JSON.parse(raw))
@@ -205,21 +206,33 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('Signed out')
   }
 
-  // Sync saved chats and programs from localStorage when tab regains focus
+  // Whenever the signed-in user changes, pull that user's saved programs and
+  // chats from Supabase so the same data appears on every device they use.
   useEffect(() => {
-    const sync = () => {
-      try {
-        const raw = localStorage.getItem('unifind_saved_chats')
-        if (raw) setSavedChats(JSON.parse(raw))
-      } catch {}
-      try {
-        const raw = localStorage.getItem('unifind_saved_programs')
-        if (raw) setSavedPrograms(JSON.parse(raw))
-      } catch {}
+    if (!user?.id) return
+    let cancelled = false
+    ;(async () => {
+      const programs = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
+      const chats = await loadUserData(user.id, K.SAVED_CHATS, [])
+      if (cancelled) return
+      if (Array.isArray(programs)) setSavedPrograms(programs)
+      if (Array.isArray(chats)) setSavedChats(chats)
+    })()
+    return () => { cancelled = true }
+  }, [user?.id])
+
+  // Re-pull on tab focus so a save made on another device shows up.
+  useEffect(() => {
+    if (!user?.id) return
+    const sync = async () => {
+      const programs = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
+      const chats = await loadUserData(user.id, K.SAVED_CHATS, [])
+      if (Array.isArray(programs)) setSavedPrograms(programs)
+      if (Array.isArray(chats)) setSavedChats(chats)
     }
     window.addEventListener('focus', sync)
     return () => window.removeEventListener('focus', sync)
-  }, [])
+  }, [user?.id])
 
   const handleSaveChat = ({ uni, messages }) => {
     setSavedChats(prev => {
@@ -227,6 +240,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
       if (exists) return prev
       const updated = [...prev, { id: Date.now(), uni, messages, savedAt: new Date().toISOString() }]
       try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
+      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated)
       showToast('✓ Chat saved to My Chats')
       return updated
     })
@@ -236,6 +250,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     setSavedChats(prev => {
       const updated = prev.filter(c => c.uni.name !== uni.name)
       try { localStorage.setItem('unifind_saved_chats', JSON.stringify(updated)) } catch {}
+      if (user?.id) saveUserData(user.id, K.SAVED_CHATS, updated)
       showToast('Chat removed')
       return updated
     })
@@ -250,6 +265,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
       const exists = prev.some(p => p.name === uni.name)
       const updated = exists ? prev.filter(p => p.name !== uni.name) : [...prev, uni]
       try { localStorage.setItem('unifind_saved_programs', JSON.stringify(updated)) } catch {}
+      saveUserData(user.id, K.SAVED_PROGRAMS, updated)
       showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
       return updated
     })

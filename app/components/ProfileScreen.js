@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { SiteNav, SiteFooter, useIsMobile } from './SiteChrome'
 import MobileMenuDrawer from './MobileMenuDrawer'
+import { loadUserData, saveUserData, K } from '../lib/user-data'
 
 const GENDERS = ['Male', 'Female', 'Non-binary', 'Prefer not to say']
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
@@ -154,14 +155,28 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
 
-  // Auto-save 800ms after last change
+  // Load this user's profile from cloud on mount / when user changes.
+  useEffect(() => {
+    if (!user?.id) return
+    let cancelled = false
+    ;(async () => {
+      const remote = await loadUserData(user.id, K.PROFILE, null)
+      if (!cancelled && remote && typeof remote === 'object') {
+        setForm(f => ({ ...f, ...remote }))
+      }
+    })()
+    return () => { cancelled = true }
+  }, [user?.id])
+
+  // Auto-save 800ms after last change — writes to cloud AND local cache.
   useEffect(() => {
     clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(form)) } catch {}
+      if (user?.id) saveUserData(user.id, K.PROFILE, form)
     }, 800)
     return () => clearTimeout(debounceRef.current)
-  }, [form])
+  }, [form, user?.id])
 
   const currentYear = new Date().getFullYear()
   const years = Array.from({ length: 80 }, (_, i) => currentYear - 16 - i)

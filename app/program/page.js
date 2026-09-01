@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react'
 import ChatScreen from '../components/ChatScreen'
 import AuthModal from '../components/AuthModal'
 import { supabase } from '../lib/supabase'
+import { loadUserData, saveUserData, K } from '../lib/user-data'
 
 const SAVED_PROGRAMS_KEY = 'unifind_saved_programs'
 
-function loadSavedPrograms() {
+function loadSavedProgramsLocal() {
   try { return JSON.parse(localStorage.getItem(SAVED_PROGRAMS_KEY) || '[]') } catch { return [] }
 }
-function persistSavedPrograms(list) {
+function persistSavedProgramsLocal(list) {
   try { localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(list)) } catch {}
 }
 
@@ -26,7 +27,7 @@ export default function ProgramPage() {
       if (stored) setUni(JSON.parse(stored))
     } catch {}
 
-    setSavedPrograms(loadSavedPrograms())
+    setSavedPrograms(loadSavedProgramsLocal())
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -37,6 +38,16 @@ export default function ProgramPage() {
     return () => subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+    if (!user?.id) return
+    let cancelled = false
+    ;(async () => {
+      const list = await loadUserData(user.id, K.SAVED_PROGRAMS, [])
+      if (!cancelled && Array.isArray(list)) setSavedPrograms(list)
+    })()
+    return () => { cancelled = true }
+  }, [user?.id])
+
   const showToast = (msg) => {
     setToast(msg)
     setTimeout(() => setToast(null), 2400)
@@ -44,11 +55,11 @@ export default function ProgramPage() {
 
   const handleSaveToggle = (u) => {
     if (!user) { setAuthMode('login'); return }
-    const current = loadSavedPrograms()
-    const exists = current.some(p => p.name === u.name)
-    const updated = exists ? current.filter(p => p.name !== u.name) : [...current, u]
-    persistSavedPrograms(updated)
+    const exists = savedPrograms.some(p => p.name === u.name)
+    const updated = exists ? savedPrograms.filter(p => p.name !== u.name) : [...savedPrograms, u]
+    persistSavedProgramsLocal(updated)
     setSavedPrograms(updated)
+    saveUserData(user.id, K.SAVED_PROGRAMS, updated)
     showToast(exists ? 'Removed from My Programs' : '✓ Saved to My Programs')
   }
 
