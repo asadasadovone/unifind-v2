@@ -421,6 +421,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
             setScreen('chat')
           }}
           onUnsave={handleSaveToggle}
+          onCloudLoad={(list) => setSavedPrograms(list)}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
           onProfile={() => setScreen('profile')}

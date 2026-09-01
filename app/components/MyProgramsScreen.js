@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { SiteNav, SiteFooter, useIsMobile } from './SiteChrome'
 import MobileMenuDrawer from './MobileMenuDrawer'
+import { loadUserData, K } from '../lib/user-data'
 
 function Tag({ icon, label }) {
   return (
@@ -102,11 +103,30 @@ function ProgramCard({ uni, tuitionLabel, onOpen, onAskAI, onUnsave }) {
 }
 
 export default function MyProgramsScreen({
-  user, savedPrograms = [], onBack, onOpenUni, onAskAI, onUnsave,
+  user, savedPrograms = [], onBack, onOpenUni, onAskAI, onUnsave, onCloudLoad,
   onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSignOut
 }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [syncMsg, setSyncMsg] = useState(null)
+
+  const handleSync = async () => {
+    if (!user?.id) { setSyncMsg('Not signed in'); return }
+    setSyncMsg('Syncing…')
+    let diag = null
+    let error = null
+    const list = await loadUserData(user.id, K.SAVED_PROGRAMS, [], {
+      onDiag: (d) => { diag = d },
+      onError: (e) => { error = e },
+    })
+    if (error) {
+      setSyncMsg(`Sync failed: ${error.message}`)
+    } else {
+      setSyncMsg(`Source: ${diag?.source} · ${diag?.count ?? 0} program(s)`)
+      if (Array.isArray(list)) onCloudLoad?.(list)
+    }
+    setTimeout(() => setSyncMsg(null), 6000)
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#F5F5F5', display: 'flex', flexDirection: 'column' }}>
@@ -128,12 +148,30 @@ export default function MyProgramsScreen({
       <div style={{ flex: 1 }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: isMobile ? '24px 16px 48px' : '44px 32px 64px' }}>
 
-          <h1 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#0D2C54', lineHeight: 1.2, marginBottom: 8, letterSpacing: '-0.5px' }}>
-            My Programs
-          </h1>
-          <p style={{ fontSize: isMobile ? 14 : 15, color: '#6B7280', marginBottom: 4 }}>
-            Programs you've saved across all your searches.
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+            <div>
+              <h1 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#0D2C54', lineHeight: 1.2, marginBottom: 8, letterSpacing: '-0.5px' }}>
+                My Programs
+              </h1>
+              <p style={{ fontSize: isMobile ? 14 : 15, color: '#6B7280', marginBottom: 4 }}>
+                Programs you've saved across all your searches.
+              </p>
+            </div>
+            {user?.id && (
+              <button
+                onClick={handleSync}
+                style={{ padding: '10px 16px', background: '#fff', border: '1px solid #D5D9DE', borderRadius: 999, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#0D2C54', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/></svg>
+                Sync from cloud
+              </button>
+            )}
+          </div>
+          {syncMsg && (
+            <div style={{ marginTop: 8, marginBottom: 12, padding: '8px 12px', background: '#EBF2FE', color: '#0D2C54', borderRadius: 8, fontSize: 12, fontFamily: 'monospace' }}>
+              {syncMsg}
+            </div>
+          )}
           {savedPrograms.length > 0 && (
             <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: isMobile ? 20 : 28 }}>
               {savedPrograms.length} saved program{savedPrograms.length !== 1 ? 's' : ''}
