@@ -56,10 +56,11 @@ export async function loadUserData(userId, key, fallback) {
   return fallback
 }
 
-export async function saveUserData(userId, key, value) {
+// Callers can pass { onError } to surface sync failures in the UI.
+export async function saveUserData(userId, key, value, opts = {}) {
   if (!userId) {
     writeLocalRaw(LEGACY_KEYS[key], value)
-    return
+    return { ok: true, offline: true }
   }
   writeLocalRaw(cacheKey(userId, key), value)
   const { error } = await supabase
@@ -68,5 +69,10 @@ export async function saveUserData(userId, key, value) {
       { user_id: userId, key, value, updated_at: new Date().toISOString() },
       { onConflict: 'user_id,key' }
     )
-  if (error) console.warn('user_data upsert failed', error)
+  if (error) {
+    console.warn('user_data upsert failed', error)
+    opts.onError?.(error)
+    return { ok: false, error }
+  }
+  return { ok: true }
 }
