@@ -10,6 +10,12 @@ create table if not exists public.user_data (
   primary key (user_id, key)
 );
 
+-- Table privileges. RLS policies are only consulted *after* Postgres grants
+-- the role access to the table at all, so without these the API returns
+-- "permission denied for table user_data" and the policies never run.
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on table public.user_data to authenticated;
+
 alter table public.user_data enable row level security;
 
 drop policy if exists "user_data select own" on public.user_data;
