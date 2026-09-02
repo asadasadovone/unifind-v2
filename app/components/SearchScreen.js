@@ -635,16 +635,19 @@ function TuitionCard({ value, onChange }) {
           }
         `}</style>
       </div>
-      {/* Text inputs */}
+      {/* Text inputs. The wrappers need an explicit minWidth:0 — a flex item's
+          default min-width:auto refuses to shrink past the input's intrinsic
+          size, which pushed the whole popover wider than the screen on mobile.
+          16px text also stops iOS Safari zooming when the field is focused. */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px' }}>
-          <span style={{ fontSize: 12, color: '#888' }}>$</span>
-          <input value={loStr} onChange={e => setLoStr(e.target.value)} onBlur={e => applyLoTxt(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0, fontFamily: 'inherit' }} />
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px', boxSizing: 'border-box' }}>
+          <span style={{ fontSize: 12, color: '#888', flexShrink: 0 }}>$</span>
+          <input inputMode="numeric" value={loStr} onChange={e => setLoStr(e.target.value)} onBlur={e => applyLoTxt(e.target.value)} style={{ flex: 1, width: '100%', border: 'none', background: 'none', fontSize: 16, outline: 'none', minWidth: 0, fontFamily: 'inherit' }} />
         </div>
-        <span style={{ color: '#ccc' }}>—</span>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px' }}>
-          <span style={{ fontSize: 12, color: '#888' }}>$</span>
-          <input value={hiStr} onChange={e => setHiStr(e.target.value)} onBlur={e => applyHiTxt(e.target.value)} style={{ flex: 1, border: 'none', background: 'none', fontSize: 13, outline: 'none', minWidth: 0, fontFamily: 'inherit' }} />
+        <span style={{ color: '#ccc', flexShrink: 0 }}>—</span>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 4, background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: 8, padding: '8px 10px', boxSizing: 'border-box' }}>
+          <span style={{ fontSize: 12, color: '#888', flexShrink: 0 }}>$</span>
+          <input inputMode="numeric" value={hiStr} onChange={e => setHiStr(e.target.value)} onBlur={e => applyHiTxt(e.target.value)} style={{ flex: 1, width: '100%', border: 'none', background: 'none', fontSize: 16, outline: 'none', minWidth: 0, fontFamily: 'inherit' }} />
         </div>
       </div>
     </div>
@@ -798,7 +801,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
                 <svg width={isMobile ? 18 : 14} height={isMobile ? 18 : 14} viewBox="0 0 24 24" fill="none" stroke={isMobile ? "#3a3a35" : "#666"} strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
               </div>
               {showTuition && (
-                <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, left: isMobile ? 0 : 'auto', minWidth: isMobile ? 0 : 300, background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
+                <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, left: isMobile ? 0 : 'auto', minWidth: isMobile ? 0 : 300, maxWidth: isMobile ? 'calc(100vw - 32px)' : undefined, boxSizing: 'border-box', background: '#fff', border: '1px solid #E0E0E0', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', padding: 16, zIndex: 200 }}>
                   <TuitionCard value={filters.tuition || [0, 100000]} onChange={v => setFilters(f => ({ ...f, tuition: v }))} />
                 </div>
               )}

@@ -516,8 +516,10 @@ export default function ChatScreen({
           </button>
         </div>
 
-        {/* Messages */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column' }}>
+        {/* Messages — minHeight:0 is required: a flex child defaults to
+            min-height:auto, which keeps it as tall as its content so the
+            overflow never kicks in and the column scrolls as a whole. */}
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: 16, display: 'flex', flexDirection: 'column' }}>
           {messages.map((msg, i) =>
             msg.role === 'assistant'
               ? <AiBubbleMobile key={i} content={msg.content} />
@@ -553,7 +555,9 @@ export default function ChatScreen({
               onKeyDown={handleKeyDown}
               placeholder={`Ask about ${uni?.name || 'this program'}...`}
               rows={1}
-              style={{ width: '100%', border: 'none', outline: 'none', resize: 'none', fontSize: 14, lineHeight: 1.5, background: 'transparent', fontFamily: 'inherit', color: '#1a1a1a', minHeight: 22, boxSizing: 'border-box', marginBottom: 10 }}
+              // 16px is the floor: iOS Safari zooms the whole page in when a
+              // focused field's text is smaller than that.
+              style={{ width: '100%', border: 'none', outline: 'none', resize: 'none', fontSize: 16, lineHeight: 1.5, background: 'transparent', fontFamily: 'inherit', color: '#1a1a1a', minHeight: 24, boxSizing: 'border-box', marginBottom: 10 }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <button onClick={() => fileRef.current?.click()} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'white', border: '0.5px solid #cdd2d8', borderRadius: 16, padding: '6px 12px', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', color: '#1a1a1a' }}>
@@ -684,7 +688,7 @@ export default function ChatScreen({
 
       {/* Chat area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 80px 0', minWidth: 0 }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: '24px 80px 0', minWidth: 0 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 860, margin: '0 auto' }}>
             {messages.map((msg, i) => (
               msg.role === 'assistant' ? <AiBubble key={i} content={msg.content} /> : <UserBubble key={i} content={msg.content} />
