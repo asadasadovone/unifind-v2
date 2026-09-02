@@ -37,8 +37,10 @@ function timeAgo(iso) {
 }
 
 function ChatCard({ chat, onOpen, onUnsave }) {
+  // Messages are stored as { role, content }; older drafts of this card read
+  // `.text`, which silently fell back to the placeholder on every real chat.
   const lastUser = [...(chat.messages || [])].reverse().find(m => m.role === 'user')
-  const preview = lastUser?.text?.slice(0, 140) || 'Start a conversation…'
+  const preview = lastUser?.content?.slice(0, 140) || 'Start a conversation…'
   const msgCount = (chat.messages || []).length
   const when = timeAgo(chat.savedAt)
 

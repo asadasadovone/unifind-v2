@@ -50,6 +50,7 @@ export default function App() {
   const [activeUni, setActiveUni] = useState(null)
   const [chatUni, setChatUni] = useState(null)
   const [chatMessages, setChatMessages] = useState(null)
+  const [chatSession, setChatSession] = useState(0)
   const [initialChatPrompt, setInitialChatPrompt] = useState(null)
   const [isPremium, setIsPremium] = useState(false)
   const [savedPrograms, setSavedPrograms] = useState([])
@@ -282,9 +283,14 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
 
   // Opening a chat resumes the stored conversation for that university, so
   // clicking Ask AI twice continues one thread instead of starting over.
-  const openChatFor = (uni) => {
-    const existing = savedChatsRef.current.find(c => c.uni?.name === uni.name)
-    const msgs = existing?.messages ?? null
+  // Callers that already hold the transcript (a My Chats card) pass it in
+  // directly; everyone else falls back to looking it up by university.
+  const openChatFor = (uni, knownMessages) => {
+    const msgs =
+      (Array.isArray(knownMessages) && knownMessages.length ? knownMessages : null) ??
+      savedChats.find(c => c.uni?.name === uni.name)?.messages ??
+      savedChatsRef.current.find(c => c.uni?.name === uni.name)?.messages ??
+      null
     try {
       localStorage.setItem(ACTIVE_CHAT_UNI, JSON.stringify(uni))
       if (msgs) localStorage.setItem(ACTIVE_CHAT_MESSAGES, JSON.stringify(msgs))
@@ -292,6 +298,9 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     } catch {}
     setChatMessages(msgs)
     setChatUni(uni)
+    // ChatScreen seeds its transcript once at mount, so every open gets a new
+    // session id to force a fresh mount with the right starting messages.
+    setChatSession(n => n + 1)
     setScreen('chat')
   }
 
@@ -389,9 +398,9 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
 
       {screen === 'chat' && chatUni && (
         <ChatScreen
-          // Remount per university so the resumed transcript replaces the
-          // previous one — ChatScreen seeds its messages from state.
-          key={chatUni.name}
+          // A new id per open forces a fresh mount, so the resumed transcript
+          // always replaces whatever the previous session left behind.
+          key={`${chatUni.name}|${chatSession}`}
           uni={chatUni}
           initialMessages={chatMessages}
           onChatPersist={handleChatPersist}
@@ -453,7 +462,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           user={user}
           savedChats={savedChats}
           onBack={() => setScreen('search')}
-          onOpenChat={(chat) => openChatFor(chat.uni)}
+          onOpenChat={(chat) => openChatFor(chat.uni, chat.messages)}
           onUnsaveChat={handleUnsaveChat}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
