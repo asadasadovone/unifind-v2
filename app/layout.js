@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'UniFind — Find Your University',
-  description: 'Compare 12,400+ programs worldwide with AI-driven fit scores',
+  title: 'UniAsk — Find Your University',
+  description: 'Ask AI about any university program — admissions, scholarships, requirements, life abroad. Compare 12,400+ programs worldwide.',
 }
 
 export default function RootLayout({ children }) {
