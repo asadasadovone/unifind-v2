@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import SearchScreen from './components/SearchScreen'
 import ResultsScreen from './components/ResultsScreen'
 import DetailScreen from './components/DetailScreen'
@@ -28,6 +28,11 @@ const DEFAULT_FILTERS = {
 
 const PERSISTED_SCREENS = new Set(['search', 'results', 'chat', 'my-programs', 'my-chats', 'profile', 'feedback', 'terms', 'privacy'])
 
+// The chat currently on screen, mirrored locally so a refresh lands back in
+// the same conversation rather than an empty one.
+const ACTIVE_CHAT_UNI = 'unifind_active_chat_uni'
+const ACTIVE_CHAT_MESSAGES = 'unifind_active_chat_messages'
+
 export default function App() {
   const [screen, setScreenRaw] = useState('search')
   const setScreen = (s) => {
@@ -44,6 +49,7 @@ export default function App() {
   const [authMode, setAuthMode] = useState(null)
   const [activeUni, setActiveUni] = useState(null)
   const [chatUni, setChatUni] = useState(null)
+  const [chatMessages, setChatMessages] = useState(null)
   const [initialChatPrompt, setInitialChatPrompt] = useState(null)
   const [isPremium, setIsPremium] = useState(false)
   const [savedPrograms, setSavedPrograms] = useState([])
@@ -63,8 +69,10 @@ export default function App() {
         setScreenRaw(s)
       } else if (s === 'chat') {
         try {
-          const savedUni = localStorage.getItem('unifind_active_chat_uni')
+          const savedUni = localStorage.getItem(ACTIVE_CHAT_UNI)
           if (savedUni) {
+            const savedMsgs = localStorage.getItem(ACTIVE_CHAT_MESSAGES)
+            if (savedMsgs) setChatMessages(JSON.parse(savedMsgs))
             setChatUni(JSON.parse(savedUni))
             setScreenRaw('chat')
           }
@@ -248,6 +256,45 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('✓ Chat saved to My Chats')
   }
 
+  // ChatScreen calls this as the conversation progresses. It reads through a
+  // ref because the debounced calls can arrive faster than state settles, and
+  // a stale closure here would drop earlier turns.
+  const savedChatsRef = useRef(savedChats)
+  useEffect(() => { savedChatsRef.current = savedChats }, [savedChats])
+
+  const handleChatPersist = useCallback(({ uni, messages }) => {
+    const list = savedChatsRef.current
+    const i = list.findIndex(c => c.uni?.name === uni.name)
+    const entry = {
+      id: i >= 0 ? list[i].id : Date.now(),
+      uni,
+      messages,
+      savedAt: new Date().toISOString(),
+    }
+    const updated = i >= 0 ? list.map((c, j) => (j === i ? entry : c)) : [...list, entry]
+    savedChatsRef.current = updated
+    setSavedChats(updated)
+    // Mirrored locally so a page refresh restores the transcript immediately,
+    // without waiting on the cloud round-trip.
+    try { localStorage.setItem(ACTIVE_CHAT_MESSAGES, JSON.stringify(messages)) } catch {}
+    saveUserData(K.SAVED_CHATS, updated, { userId: user?.id })
+  }, [user?.id])
+
+  // Opening a chat resumes the stored conversation for that university, so
+  // clicking Ask AI twice continues one thread instead of starting over.
+  const openChatFor = (uni) => {
+    const existing = savedChatsRef.current.find(c => c.uni?.name === uni.name)
+    const msgs = existing?.messages ?? null
+    try {
+      localStorage.setItem(ACTIVE_CHAT_UNI, JSON.stringify(uni))
+      if (msgs) localStorage.setItem(ACTIVE_CHAT_MESSAGES, JSON.stringify(msgs))
+      else localStorage.removeItem(ACTIVE_CHAT_MESSAGES)
+    } catch {}
+    setChatMessages(msgs)
+    setChatUni(uni)
+    setScreen('chat')
+  }
+
   const handleUnsaveChat = ({ uni }) => {
     const updated = savedChats.filter(c => c.uni.name !== uni.name)
     setSavedChats(updated)
@@ -300,9 +347,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
               url: u.url,
               img: u.img,
             }
-            try { localStorage.setItem('unifind_active_chat_uni', JSON.stringify(normalized)) } catch {}
-            setChatUni(normalized)
-            setScreen('chat')
+            openChatFor(normalized)
           }}
           onUpgrade={() => {
             setIsPremium(true)
@@ -316,11 +361,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           filters={filters}
           setFilters={setFilters}
           onOpenUni={openUni}
-          onAskAI={uni => {
-            try { localStorage.setItem('unifind_active_chat_uni', JSON.stringify(uni)) } catch {}
-            setChatUni(uni)
-            setScreen('chat')
-          }}
+          onAskAI={openChatFor}
           onBack={() => setScreen('search')}
           isPremium={isPremium}
           isLoading={isLoading}
@@ -348,7 +389,12 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
 
       {screen === 'chat' && chatUni && (
         <ChatScreen
+          // Remount per university so the resumed transcript replaces the
+          // previous one — ChatScreen seeds its messages from state.
+          key={chatUni.name}
           uni={chatUni}
+          initialMessages={chatMessages}
+          onChatPersist={handleChatPersist}
           user={user}
           onHome={() => setScreen('search')}
           onMyPrograms={() => setScreen('my-programs')}
@@ -390,11 +436,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           savedPrograms={savedPrograms}
           onBack={() => setScreen('search')}
           onOpenUni={openUni}
-          onAskAI={uni => {
-            try { localStorage.setItem('unifind_active_chat_uni', JSON.stringify(uni)) } catch {}
-            setChatUni(uni)
-            setScreen('chat')
-          }}
+          onAskAI={openChatFor}
           onUnsave={handleSaveToggle}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
@@ -411,13 +453,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           user={user}
           savedChats={savedChats}
           onBack={() => setScreen('search')}
-          onOpenChat={(chat) => {
-            try {
-              localStorage.setItem('unifind_active_uni', JSON.stringify(chat.uni))
-              localStorage.setItem('unifind_active_messages', JSON.stringify(chat.messages))
-            } catch {}
-            window.open('/program', '_blank')
-          }}
+          onOpenChat={(chat) => openChatFor(chat.uni)}
           onUnsaveChat={handleUnsaveChat}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}

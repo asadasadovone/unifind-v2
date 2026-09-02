@@ -143,7 +143,7 @@ export default function MyChatsScreen({
                 No saved chats yet
               </div>
               <p style={{ fontSize: 14, color: '#6B7280', maxWidth: 340, lineHeight: 1.6 }}>
-                Open a program and save the AI conversation to keep it here.
+                Ask AI about any program and the conversation is kept here automatically, ready to pick up later.
               </p>
               <button
                 onClick={onBack}

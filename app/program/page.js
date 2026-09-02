@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import ChatScreen from '../components/ChatScreen'
 import AuthModal from '../components/AuthModal'
 import { supabase } from '../lib/supabase'
@@ -9,8 +9,11 @@ export default function ProgramPage() {
   const [uni, setUni] = useState(null)
   const [user, setUser] = useState(null)
   const [savedPrograms, setSavedPrograms] = useState([])
+  const [initialMessages, setInitialMessages] = useState(null)
+  const [ready, setReady] = useState(false)
   const [authMode, setAuthMode] = useState(null)
   const [toast, setToast] = useState(null)
+  const savedChatsRef = useRef([])
 
   useEffect(() => {
     try {
@@ -37,6 +40,32 @@ export default function ProgramPage() {
     return () => { cancelled = true }
   }, [user?.id])
 
+  // Resume this university's existing conversation, if the account has one.
+  // ChatScreen seeds its transcript once at mount, so it is held back until
+  // the stored chats have arrived.
+  useEffect(() => {
+    if (!uni?.name) return
+    let cancelled = false
+    ;(async () => {
+      const chats = user?.id ? await syncUserData(K.SAVED_CHATS, { userId: user.id }) : []
+      if (cancelled) return
+      savedChatsRef.current = Array.isArray(chats) ? chats : []
+      const existing = savedChatsRef.current.find(c => c.uni?.name === uni.name)
+      setInitialMessages(existing?.messages ?? null)
+      setReady(true)
+    })()
+    return () => { cancelled = true }
+  }, [uni?.name, user?.id])
+
+  const handleChatPersist = useCallback(({ uni: u, messages }) => {
+    const list = savedChatsRef.current
+    const i = list.findIndex(c => c.uni?.name === u.name)
+    const entry = { id: i >= 0 ? list[i].id : Date.now(), uni: u, messages, savedAt: new Date().toISOString() }
+    const updated = i >= 0 ? list.map((c, j) => (j === i ? entry : c)) : [...list, entry]
+    savedChatsRef.current = updated
+    saveUserData(K.SAVED_CHATS, updated, { userId: user?.id })
+  }, [user?.id])
+
   const showToast = (msg) => {
     setToast(msg)
     setTimeout(() => setToast(null), 2400)
@@ -61,6 +90,14 @@ export default function ProgramPage() {
   const [loadedOnce, setLoadedOnce] = useState(false)
   useEffect(() => { const t = setTimeout(() => setLoadedOnce(true), 400); return () => clearTimeout(t) }, [])
 
+  if (uni && !ready) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'white', color: '#888', fontSize: 15, fontFamily: 'Geist, sans-serif' }}>
+        Loading…
+      </div>
+    )
+  }
+
   if (!uni) {
     if (!loadedOnce) {
       return (
@@ -82,6 +119,8 @@ export default function ProgramPage() {
     <>
       <ChatScreen
         uni={uni}
+        initialMessages={initialMessages}
+        onChatPersist={handleChatPersist}
         user={user}
         onHome={() => { window.location.href = '/' }}
         onMyPrograms={() => { window.location.href = '/' }}

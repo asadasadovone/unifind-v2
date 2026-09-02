@@ -260,11 +260,15 @@ export default function ChatScreen({
   onPrivacy,
   onProfile,
   savedIds,
+  initialMessages,
+  onChatPersist,
 }) {
   const isMobile = useIsMobile()
   const greeting = `Ask me anything about **${uni?.name || 'this university'}** — admissions, scholarships, life in ${uni?.city || 'the city'}, requirements, visa, career prospects. What would you like to know? 🎓`
 
-  const [messages, setMessages] = useState([{ role: 'assistant', content: greeting }])
+  const [messages, setMessages] = useState(
+    initialMessages?.length ? initialMessages : [{ role: 'assistant', content: greeting }]
+  )
   const [input, setInput] = useState('')
   const [streaming, setStreaming] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
@@ -279,6 +283,18 @@ export default function ChatScreen({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, streaming])
+
+  // Keep the conversation in My Chats automatically, the way other AI apps do,
+  // so the user can come back and continue without having pressed Save. Only
+  // once they've actually said something — an untouched greeting isn't a chat —
+  // and only after streaming settles, so a half-written reply is never stored.
+  useEffect(() => {
+    if (streaming) return
+    if (!uni?.name) return
+    if (!messages.some(m => m.role === 'user')) return
+    const t = setTimeout(() => onChatPersist?.({ uni, messages }), 700)
+    return () => clearTimeout(t)
+  }, [messages, streaming, uni, onChatPersist])
 
   function resizeTextarea() {
     const el = textareaRef.current
