@@ -368,7 +368,6 @@ export default function ChatScreen({
   const canSend = (input.trim().length > 0 || images.length > 0) && !streaming
 
   const helpItems = [
-    { icon: <IcoFAQ />, label: 'FAQs', action: null },
     { icon: <IcoFeedback />, label: 'Send Feedback', action: onFeedback },
     { icon: <IcoDoc />, label: 'Terms of Service', action: onTerms },
     { icon: <IcoShield />, label: 'Privacy Policy', action: onPrivacy },
