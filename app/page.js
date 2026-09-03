@@ -9,6 +9,8 @@ import ProfileScreen from './components/ProfileScreen'
 import FeedbackScreen from './components/FeedbackScreen'
 import TermsScreen from './components/TermsScreen'
 import PrivacyScreen from './components/PrivacyScreen'
+import CookiesScreen from './components/CookiesScreen'
+import ContactScreen from './components/ContactScreen'
 import AuthModal from './components/AuthModal'
 import ChatScreen from './components/ChatScreen'
 import { supabase, signOut } from './lib/supabase'
@@ -26,7 +28,7 @@ const DEFAULT_FILTERS = {
   english: true
 }
 
-const PERSISTED_SCREENS = new Set(['search', 'results', 'chat', 'my-programs', 'my-chats', 'profile', 'feedback', 'terms', 'privacy'])
+const PERSISTED_SCREENS = new Set(['search', 'results', 'chat', 'my-programs', 'my-chats', 'profile', 'feedback', 'terms', 'privacy', 'cookies', 'contact'])
 
 // The chat currently on screen, mirrored locally so a refresh lands back in
 // the same conversation rather than an empty one.
@@ -527,6 +529,38 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onFeedback={() => setScreen('feedback')}
           onTerms={() => setScreen('terms')}
           onPrivacy={() => setScreen('privacy')}
+        />
+      )}
+
+      {screen === 'cookies' && (
+        <CookiesScreen
+          user={user}
+          onBack={() => setScreen('search')}
+          onSignOut={handleSignOut}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+          onCookies={() => setScreen('cookies')}
+          onContact={() => setScreen('contact')}
+        />
+      )}
+
+      {screen === 'contact' && (
+        <ContactScreen
+          user={user}
+          onBack={() => setScreen('search')}
+          onSignOut={handleSignOut}
+          onMyPrograms={() => setScreen('my-programs')}
+          onMyChats={() => setScreen('my-chats')}
+          onProfile={() => setScreen('profile')}
+          onFeedback={() => setScreen('feedback')}
+          onTerms={() => setScreen('terms')}
+          onPrivacy={() => setScreen('privacy')}
+          onCookies={() => setScreen('cookies')}
+          onContact={() => setScreen('contact')}
         />
       )}
 

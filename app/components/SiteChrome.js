@@ -101,7 +101,19 @@ export function SiteNav({
   )
 }
 
-export function SiteFooter({ isMobile, onHome, onMyPrograms, onMyChats, onTerms, onPrivacy }) {
+// Fallback: navigate through a query param when a caller hasn't wired in an
+// in-app handler. Keeps deep pages like Terms working without every screen
+// needing to plumb these through.
+const goViaQuery = (name) => () => {
+  if (typeof window === 'undefined') return
+  window.location.href = `/?screen=${name}`
+}
+
+export function SiteFooter({
+  isMobile, onHome, onMyPrograms, onMyChats, onTerms, onPrivacy,
+  onCookies = goViaQuery('cookies'),
+  onContact = goViaQuery('contact'),
+}) {
   return (
 <footer style={{ background: '#05203C', padding: isMobile ? '40px 16px 24px' : '80px 48px 32px', color: '#fff', overflow: 'hidden' }}>
   <div style={{ maxWidth: 1400, margin: '0 auto' }}>
@@ -115,7 +127,7 @@ export function SiteFooter({ isMobile, onHome, onMyPrograms, onMyChats, onTerms,
           <button onClick={onHome} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Home</button>
           <button onClick={onMyPrograms} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>My Programs</button>
           <button onClick={onMyChats} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>My Chats</button>
-          <button style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Contact Us</button>
+          <button onClick={onContact} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Contact Us</button>
         </nav>
         <div style={{ display: 'flex', gap: isMobile ? 6 : 8, flexWrap: 'wrap' }}>
           {[
@@ -164,7 +176,7 @@ export function SiteFooter({ isMobile, onHome, onMyPrograms, onMyChats, onTerms,
         <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.4)' }} />
         <button onClick={onTerms} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Terms</button>
         <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.4)' }} />
-        <button style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Cookies</button>
+        <button onClick={onCookies} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Cookies</button>
       </div>
       <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>© 2025 UniAsk · Built for students, by people who remember the struggle.</div>
     </div>
