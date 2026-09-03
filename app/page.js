@@ -372,7 +372,12 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           filters={filters}
           setFilters={setFilters}
           onOpenUni={openUni}
-          onAskAI={openChatFor}
+          onAskAI={(uni) => {
+            // From the results page, Ask AI opens the chat in a new tab so
+            // the user's list of search results stays exactly where it was.
+            try { localStorage.setItem('unifind_active_uni', JSON.stringify(uni)) } catch {}
+            window.open('/program', '_blank')
+          }}
           onBack={() => setScreen('search')}
           isPremium={isPremium}
           isLoading={isLoading}
