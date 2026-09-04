@@ -25,6 +25,21 @@ export async function signUp(email, password, fullName) {
   return { data, error }
 }
 
+// Ask Supabase to send the signup confirmation again — for a mail that got
+// lost, or was swallowed by the sender's hourly rate limit.
+export async function resendConfirmation(email) {
+  const { data, error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: {
+      emailRedirectTo: typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : undefined,
+    },
+  })
+  return { data, error }
+}
+
 export async function signIn(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,

@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { signIn, signUp, signInWithGoogle, sendPasswordReset, updatePassword } from '../lib/supabase'
+import { signIn, signUp, signInWithGoogle, sendPasswordReset, updatePassword, resendConfirmation } from '../lib/supabase'
 
 /* Figma 619:1263 (Log in) and 444:768 (Sign Up) */
 const BORDER = 'rgba(0,0,0,0.15)'
@@ -157,6 +157,8 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const [confirmation, setConfirmation] = useState(false)
+  const [resendState, setResendState] = useState('idle') // idle | sending | sent
+  const [resendError, setResendError] = useState(null)
   const [view, setView] = useState('form') // 'form' | 'forgot' | 'reset-sent'
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -243,6 +245,14 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
       } else {
         const { data, error } = await signUp(email, password, name)
         if (error) throw error
+        // When the address is already registered, Supabase returns a decoy
+        // user with no identities rather than an error — that's its defence
+        // against email enumeration. No mail is sent in that case, so saying
+        // "check your inbox" would leave the user waiting on nothing.
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+          setErrors({ email: 'This email already has an account. Log in instead, or reset your password.' })
+          return
+        }
         // Supabase sends a confirmation email; session is null until confirmed
         if (data.session) onSubmit(data.user)
         else setConfirmation(true)
@@ -252,6 +262,23 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handleResend() {
+    setResendError(null)
+    setResendState('sending')
+    const { error } = await resendConfirmation(email.trim())
+    if (error) {
+      // The most common failure here is the sender's hourly rate limit.
+      setResendError(
+        /rate|limit|seconds/i.test(error.message)
+          ? 'Too many emails sent just now — please wait a minute and try again.'
+          : error.message
+      )
+      setResendState('idle')
+      return
+    }
+    setResendState('sent')
   }
 
   /* Figma 90:580 — Reset your password */
@@ -384,6 +411,16 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
           We sent a confirmation link to <strong>{email}</strong>. Open it in this browser and you'll be signed in automatically — elsewhere, come back here and log in.
         </p>
         <button style={pillButton} onClick={() => { onMode('login'); setConfirmation(false) }}>Go to log in</button>
+        <button
+          onClick={handleResend}
+          disabled={resendState === 'sending' || resendState === 'sent'}
+          style={{ background: 'none', border: 'none', padding: 0, fontFamily: 'inherit', fontSize: 14, lineHeight: '22px', color: resendState === 'sent' ? '#3A3A35' : BLUE, cursor: resendState === 'sent' ? 'default' : 'pointer', textAlign: 'center' }}
+        >
+          {resendState === 'sending' ? 'Sending…'
+            : resendState === 'sent' ? 'Sent — check your inbox again in a minute'
+            : "Didn't get it? Resend email"}
+        </button>
+        {resendError && <FieldError>{resendError}</FieldError>}
       </Shell>
     )
   }
