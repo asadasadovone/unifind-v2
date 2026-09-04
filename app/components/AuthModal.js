@@ -100,6 +100,10 @@ function toFieldErrors(msg = '') {
   if (m.includes('already registered') || m.includes('already exists')) return { email: 'That email is already registered.' }
   if (m.includes('invalid login credentials')) return { password: 'Email or password is incorrect.' }
   if (m.includes('email not confirmed')) return { email: 'Please confirm your email first.' }
+  // Supabase enforces its own per-hour email cap on top of any SMTP provider,
+  // and 'email rate limit exceeded' alone leaves the user staring at a
+  // dead form with no idea what to do.
+  if (m.includes('rate limit') || m.includes('too many')) return { email: 'Too many signup attempts — please wait a minute and try again.' }
   if (m.includes('password')) return { password: msg }
   if (m.includes('email')) return { email: msg }
   return { general: msg }
