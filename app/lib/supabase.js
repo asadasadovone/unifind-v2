@@ -13,6 +13,13 @@ export async function signUp(email, password, fullName) {
     password,
     options: {
       data: { full_name: fullName },
+      // Without this the confirmation link falls back to the project's Site
+      // URL in the Supabase dashboard, which is easy to leave pointing at
+      // localhost. Anchoring it to the origin the user actually signed up
+      // from means the link always comes back to the right deployment.
+      emailRedirectTo: typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : undefined,
     },
   })
   return { data, error }

@@ -122,11 +122,36 @@ export default function App() {
       }
     }
 
+    // Arriving from the signup confirmation email. supabase-js consumes the
+    // token in the URL on its own; all this does is acknowledge it and tidy
+    // the address bar once the session has landed.
+    const confirmed =
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).get('confirmed') === '1'
+
     // Listen for sign-in / sign-out events
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
       if (event === 'PASSWORD_RECOVERY') openReset({ clean: true })
+      if (confirmed && event === 'SIGNED_IN') {
+        showToast('✓ Email confirmed — you are signed in')
+        cleanUrl()
+      }
     })
+
+    // Confirmation link opened where no session could be established (an
+    // expired link, or a different browser). Say so instead of silently
+    // leaving the user on the homepage wondering what happened.
+    if (confirmed) {
+      setTimeout(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (!session) {
+            showToast('Email confirmed — please log in')
+            cleanUrl()
+          }
+        })
+      }, 1500)
+    }
 
     return () => {
       subscription.unsubscribe()

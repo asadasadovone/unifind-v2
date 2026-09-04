@@ -381,7 +381,7 @@ export default function AuthModal({ mode, onClose, onMode, onSubmit }) {
           Check your inbox
         </h2>
         <p style={{ margin: 0, padding: '0 16px', fontSize: 16, lineHeight: '24px', letterSpacing: '-0.32px', color: INK, textAlign: 'center' }}>
-          We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account, then come back and log in.
+          We sent a confirmation link to <strong>{email}</strong>. Open it in this browser and you'll be signed in automatically — elsewhere, come back here and log in.
         </p>
         <button style={pillButton} onClick={() => { onMode('login'); setConfirmation(false) }}>Go to log in</button>
       </Shell>
