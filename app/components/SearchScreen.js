@@ -4,7 +4,187 @@ import { Icon, Logo, ChipGroup, RangeSlider } from './Icons'
 import UserDropdown from './UserDropdown'
 import { SiteNav, SiteFooter, useIsMobile } from './SiteChrome'
 import MobileMenuDrawer from './MobileMenuDrawer'
-import { POPULAR_COUNTRIES, ALL_COUNTRIES } from '../data'
+import { POPULAR_COUNTRIES, ALL_COUNTRIES, FIELD_GROUPS, ALL_FIELDS } from '../data'
+
+// ── field-of-study autocomplete ───────────────────────────────────────────────
+
+const FIELD_ICON_PATHS = {
+  leaf: <><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></>,
+  flask: <><path d="M10 2v7.31M14 9.3V1.99M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0M5.58 16.5h12.85"/></>,
+  palette: <><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></>,
+  briefcase: <><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>,
+  code: <><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></>,
+  cap: <><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></>,
+  gear: <><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></>,
+  globe: <><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10zM2 12h20"/></>,
+  trophy: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/></>,
+  book: <><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></>,
+  mic: <><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></>,
+  scale: <><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></>,
+  heart: <><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></>,
+  atom: <><circle cx="12" cy="12" r="1"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/></>,
+  users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
+  search: <><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></>,
+}
+
+function FieldIcon({ name, size = 18, color = '#0162E3' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden>
+      {FIELD_ICON_PATHS[name] || FIELD_ICON_PATHS.search}
+    </svg>
+  )
+}
+
+/**
+ * Field-of-study combobox. Empty input shows the full catalogue with each
+ * group collapsible; typing switches to a flat, ranked match list. The value
+ * is free text either way — the list is a shortcut, never a restriction.
+ */
+function FieldOfStudyInput({ value, onChange, isMobile, cellValue }) {
+  const [open, setOpen] = useState(false)
+  const [expanded, setExpanded] = useState(null)
+  const [active, setActive] = useState(-1)
+  const wrapRef = useRef(null)
+
+  useEffect(() => {
+    const close = e => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
+
+  const q = (value || '').trim().toLowerCase()
+
+  // Prefix matches first — typing "com" should reach Computer Science before
+  // "Telecommunications".
+  const matches = q
+    ? ALL_FIELDS
+        .filter(f => f.toLowerCase().includes(q))
+        .sort((a, b) => {
+          const ap = a.toLowerCase().startsWith(q) ? 0 : 1
+          const bp = b.toLowerCase().startsWith(q) ? 0 : 1
+          return ap - bp || a.localeCompare(b)
+        })
+        .slice(0, 12)
+    : []
+
+  const groupOf = (field) =>
+    FIELD_GROUPS.find(g => g.label === field || g.children.includes(field))
+
+  const pick = (field) => {
+    onChange(field)
+    setOpen(false)
+    setActive(-1)
+  }
+
+  const onKeyDown = (e) => {
+    if (!open) { if (e.key === 'ArrowDown') setOpen(true); return }
+    if (!q) return
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(i => Math.min(i + 1, matches.length - 1)) }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(i => Math.max(i - 1, 0)) }
+    else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); pick(matches[active]) }
+    else if (e.key === 'Escape') setOpen(false)
+  }
+
+  const rowBase = {
+    display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+    padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer',
+    textAlign: 'left', fontFamily: 'inherit', fontSize: 15, color: '#0D2C54',
+  }
+
+  return (
+    <div ref={wrapRef} style={{ position: 'relative' }}>
+      <input
+        value={value || ''}
+        onChange={e => { onChange(e.target.value); setOpen(true); setActive(-1) }}
+        onFocus={() => setOpen(true)}
+        onKeyDown={onKeyDown}
+        placeholder="e.g. Computer Science"
+        autoComplete="off"
+        style={{ ...cellValue, width: '100%', border: 'none', outline: 'none', fontFamily: 'inherit', background: 'transparent', padding: 0, fontWeight: isMobile ? 400 : undefined }}
+      />
+
+      {open && (
+        <div
+          style={{
+            position: 'absolute', top: 'calc(100% + 12px)', left: isMobile ? 0 : -12, right: isMobile ? 0 : 'auto',
+            width: isMobile ? '100%' : 380, maxWidth: isMobile ? 'calc(100vw - 32px)' : undefined,
+            maxHeight: 360, overflowY: 'auto', boxSizing: 'border-box',
+            background: '#fff', border: '1px solid #E8E8E8', borderRadius: 14,
+            boxShadow: '0 12px 32px rgba(0,0,0,0.14)', zIndex: 300, padding: '6px 0',
+          }}
+        >
+          {q ? (
+            matches.length ? (
+              matches.map((f, i) => {
+                const g = groupOf(f)
+                const isGroup = g?.label === f
+                return (
+                  <button
+                    key={f}
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => pick(f)}
+                    onMouseEnter={() => setActive(i)}
+                    style={{ ...rowBase, background: i === active ? '#F2F7FF' : 'none', fontWeight: isGroup ? 500 : 400 }}
+                  >
+                    <FieldIcon name={g?.icon} />
+                    <span style={{ flex: 1, minWidth: 0 }}>{f}</span>
+                    {!isGroup && g && (
+                      <span style={{ fontSize: 12, color: '#9CA3AF', flexShrink: 0 }}>{g.label}</span>
+                    )}
+                  </button>
+                )
+              })
+            ) : (
+              <div style={{ padding: '14px 16px', fontSize: 14, color: '#6B7280' }}>
+                No preset field matches — press Search to use “{value}” as written.
+              </div>
+            )
+          ) : (
+            <>
+              <div style={{ padding: '8px 14px 6px', fontSize: 12, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Suggested fields of study
+              </div>
+              {FIELD_GROUPS.map(g => (
+                <div key={g.label}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <button
+                      onMouseDown={e => e.preventDefault()}
+                      onClick={() => pick(g.label)}
+                      style={{ ...rowBase, flex: 1, fontWeight: 500 }}
+                    >
+                      <FieldIcon name={g.icon} />
+                      <span style={{ flex: 1, minWidth: 0 }}>{g.label}</span>
+                    </button>
+                    <button
+                      onMouseDown={e => e.preventDefault()}
+                      onClick={() => setExpanded(x => (x === g.label ? null : g.label))}
+                      aria-label={expanded === g.label ? `Collapse ${g.label}` : `Expand ${g.label}`}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px 14px 10px 6px', display: 'flex', color: '#9CA3AF' }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{ transform: expanded === g.label ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
+                        <path d="m9 18 6-6-6-6"/>
+                      </svg>
+                    </button>
+                  </div>
+                  {expanded === g.label && g.children.map(c => (
+                    <button
+                      key={c}
+                      onMouseDown={e => e.preventDefault()}
+                      onClick={() => pick(c)}
+                      style={{ ...rowBase, paddingLeft: 44, fontSize: 14, color: '#3A3A35' }}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ── data ──────────────────────────────────────────────────────────────────────
 
@@ -752,13 +932,13 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'stretch', gap: isMobile ? 8 : 12, textAlign: 'left' }}>
           <div style={{ flex: 1, background: isMobile ? 'transparent' : '#fff', borderRadius: 16, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 10 : 0, alignItems: 'stretch', overflow: 'visible', boxShadow: isMobile ? 'none' : '0 4px 24px rgba(0,0,0,0.15)' }}>
             {/* Field of study */}
-            <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 240px' }}>
+            <div style={{ ...cell, flex: isMobile ? 'none' : '1 1 240px', position: 'relative' }}>
               <label style={cellLabel}>Field of Study</label>
-              <input
-                value={filters.field || ''}
-                onChange={e => setFilters(f => ({ ...f, field: e.target.value }))}
-                placeholder="e.g. Computer Science"
-                style={{ ...cellValue, border: 'none', outline: 'none', fontFamily: 'inherit', background: 'transparent', padding: 0, fontWeight: isMobile ? 400 : undefined }}
+              <FieldOfStudyInput
+                value={filters.field}
+                onChange={v => setFilters(f => ({ ...f, field: v }))}
+                isMobile={isMobile}
+                cellValue={cellValue}
               />
             </div>
             {/* Country */}

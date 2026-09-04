@@ -82,6 +82,7 @@ export const UNI_DATA = [
 ];
 
 export { POPULAR_COUNTRIES, ALL_COUNTRIES } from './data/countries.js'
+export { FIELD_GROUPS, ALL_FIELDS } from './data/fields.js'
 
 export const SAMPLE_CHAT = {
   "Apply dates": [
