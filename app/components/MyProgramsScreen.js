@@ -39,6 +39,7 @@ const iconMap = {
 function ProgramCard({ uni, tuitionLabel, onOpen, onAskAI, onUnsave }) {
   return (
     <div style={{
+      position: 'relative',
       background: '#fff', border: '1px solid #E8E8E8', borderRadius: 16,
       overflow: 'hidden', display: 'flex', flexDirection: 'column',
       transition: 'box-shadow 0.15s, transform 0.15s',
@@ -46,26 +47,21 @@ function ProgramCard({ uni, tuitionLabel, onOpen, onAskAI, onUnsave }) {
       onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)' }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
     >
-      {/* Thumbnail */}
-      <div
-        onClick={onOpen}
-        style={{ height: 160, background: 'linear-gradient(135deg,#EEF2F7,#DDE4EC)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, color: '#B8C1CB' }}
+      {/* Heart — floats over the top-right of the card now that the
+          thumbnail band is gone, keeping unsave one tap away. */}
+      <button
+        onClick={e => { e.stopPropagation(); onUnsave?.() }}
+        style={{ position: 'absolute', top: 12, right: 12, width: 36, height: 36, borderRadius: '50%', background: '#EBF2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1668E3', border: 'none', cursor: 'pointer', zIndex: 1 }}
+        aria-label="Remove from saved"
       >
-        <button
-          onClick={e => { e.stopPropagation(); onUnsave?.() }}
-          style={{ position: 'absolute', top: 12, right: 12, width: 38, height: 38, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.12)', color: '#1668E3', border: 'none', cursor: 'pointer' }}
-          aria-label="Remove from saved"
-        >
-          {iconMap.heart}
-        </button>
-        {iconMap.building}
-      </div>
+        {iconMap.heart}
+      </button>
 
       {/* Body */}
-      <div style={{ padding: '18px 18px 18px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div style={{ padding: '20px 18px 18px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <p
           onClick={onOpen}
-          style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.3, color: '#0D2C54', cursor: 'pointer', margin: 0 }}
+          style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.3, color: '#0D2C54', cursor: 'pointer', margin: 0, paddingRight: 44 }}
         >
           {uni.name}
         </p>
