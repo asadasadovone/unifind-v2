@@ -42,7 +42,7 @@ function ChannelCard({ title, description, action, href, onClick, isMobile }) {
   )
 }
 
-export default function ContactScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onCookies, onContact }) {
+export default function ContactScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onCookies, onContact, onOpenAuth }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
   const [category, setCategory] = useState('general')
@@ -93,7 +93,7 @@ export default function ContactScreen({ user, onBack, onSignOut, onMyPrograms, o
       <SiteNav
         isMobile={isMobile}
         user={user}
-        onOpenAuth={() => {}}
+        onOpenAuth={onOpenAuth}
         onSignOut={onSignOut}
         onHome={onBack}
         onMyPrograms={onMyPrograms}
@@ -225,7 +225,7 @@ export default function ContactScreen({ user, onBack, onSignOut, onMyPrograms, o
         <MobileMenuDrawer
           user={user}
           onClose={() => setMenuOpen(false)}
-          onOpenAuth={() => {}}
+          onOpenAuth={onOpenAuth}
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}

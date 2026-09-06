@@ -98,7 +98,7 @@ function ChatCard({ chat, onOpen, onUnsave }) {
 
 export default function MyChatsScreen({
   user, savedChats = [], onBack, onOpenChat, onUnsaveChat,
-  onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSignOut
+  onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSignOut, onOpenAuth
 }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -108,7 +108,7 @@ export default function MyChatsScreen({
       <SiteNav
         isMobile={isMobile}
         user={user}
-        onOpenAuth={() => {}}
+        onOpenAuth={onOpenAuth}
         onSignOut={onSignOut}
         onHome={onBack}
         onMyPrograms={onMyPrograms}
@@ -182,7 +182,7 @@ export default function MyChatsScreen({
         <MobileMenuDrawer
           user={user}
           onClose={() => setMenuOpen(false)}
-          onOpenAuth={() => {}}
+          onOpenAuth={onOpenAuth}
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}

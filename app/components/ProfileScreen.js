@@ -127,7 +127,7 @@ function GoogleBadge() {
   )
 }
 
-export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy }) {
+export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onOpenAuth }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
   const [tab, setTab] = useState('personal')
@@ -211,7 +211,7 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
       <SiteNav
         isMobile={isMobile}
         user={user}
-        onOpenAuth={() => {}}
+        onOpenAuth={onOpenAuth}
         onSignOut={onSignOut}
         onHome={onBack}
         onMyPrograms={onMyPrograms}
@@ -377,7 +377,7 @@ export default function ProfileScreen({ user, onBack, onSignOut, onMyPrograms, o
         <MobileMenuDrawer
           user={user}
           onClose={() => setMenuOpen(false)}
-          onOpenAuth={() => {}}
+          onOpenAuth={onOpenAuth}
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}

@@ -99,7 +99,7 @@ function ProgramCard({ uni, tuitionLabel, onOpen, onAskAI, onUnsave }) {
 
 export default function MyProgramsScreen({
   user, savedPrograms = [], onBack, onOpenUni, onAskAI, onUnsave,
-  onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSignOut
+  onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onSignOut, onOpenAuth
 }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -109,7 +109,7 @@ export default function MyProgramsScreen({
       <SiteNav
         isMobile={isMobile}
         user={user}
-        onOpenAuth={() => {}}
+        onOpenAuth={onOpenAuth}
         onSignOut={onSignOut}
         onHome={onBack}
         onMyPrograms={onMyPrograms}
@@ -188,7 +188,7 @@ export default function MyProgramsScreen({
         <MobileMenuDrawer
           user={user}
           onClose={() => setMenuOpen(false)}
-          onOpenAuth={() => {}}
+          onOpenAuth={onOpenAuth}
           onSignOut={() => { setMenuOpen(false); onSignOut?.() }}
           onMyPrograms={() => { setMenuOpen(false); onMyPrograms?.() }}
           onMyChats={() => { setMenuOpen(false); onMyChats?.() }}
