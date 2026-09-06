@@ -50,7 +50,7 @@ const SECTIONS = [
   },
 ]
 
-export default function TermsScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onOpenAuth }) {
+export default function TermsScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onOpenAuth, onContact }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -68,6 +68,7 @@ export default function TermsScreen({ user, onBack, onSignOut, onMyPrograms, onM
         onFeedback={onFeedback}
         onTerms={onTerms}
         onPrivacy={onPrivacy}
+        onContact={onContact}
         onOpenMenu={() => setMenuOpen(true)}
       />
 
@@ -119,6 +120,7 @@ export default function TermsScreen({ user, onBack, onSignOut, onMyPrograms, onM
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onContact={() => { setMenuOpen(false); onContact?.() }}
           onHome={() => { setMenuOpen(false); onBack?.() }}
         />
       )}

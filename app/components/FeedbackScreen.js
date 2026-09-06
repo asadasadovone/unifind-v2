@@ -10,7 +10,7 @@ const CATEGORIES = [
   { value: 'general', label: 'General feedback' },
 ]
 
-export default function FeedbackScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onOpenAuth }) {
+export default function FeedbackScreen({ user, onBack, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onOpenAuth, onContact }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
   const [category, setCategory] = useState('')
@@ -69,6 +69,7 @@ export default function FeedbackScreen({ user, onBack, onSignOut, onMyPrograms, 
         onFeedback={onFeedback}
         onTerms={onTerms}
         onPrivacy={onPrivacy}
+        onContact={onContact}
         onOpenMenu={() => setMenuOpen(true)}
       />
 
@@ -168,6 +169,7 @@ export default function FeedbackScreen({ user, onBack, onSignOut, onMyPrograms, 
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onContact={() => { setMenuOpen(false); onContact?.() }}
           onHome={() => { setMenuOpen(false); onBack?.() }}
         />
       )}

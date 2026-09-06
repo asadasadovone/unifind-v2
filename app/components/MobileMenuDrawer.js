@@ -10,7 +10,7 @@ function ChevronIcon({ up }) {
   )
 }
 
-export default function MobileMenuDrawer({ user, onClose, onOpenAuth, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onHome }) {
+export default function MobileMenuDrawer({ user, onClose, onOpenAuth, onSignOut, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onContact, onHome }) {
   const [helpOpen, setHelpOpen] = useState(false)
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
@@ -59,6 +59,7 @@ export default function MobileMenuDrawer({ user, onClose, onOpenAuth, onSignOut,
           {helpOpen && (
             <div style={{ paddingLeft: 8, marginBottom: 4 }}>
               <HelpRow label="Send Feedback" onClick={() => { onClose(); onFeedback?.() }} />
+              <HelpRow label="Contact us" onClick={() => { onClose(); onContact?.() }} />
               <HelpRow label="Terms of Service" onClick={() => { onClose(); onTerms?.() }} />
               <HelpRow label="Privacy Policy" onClick={() => { onClose(); onPrivacy?.() }} />
             </div>

@@ -258,6 +258,7 @@ export default function ChatScreen({
   onFeedback,
   onTerms,
   onPrivacy,
+  onContact,
   onProfile,
   savedIds,
   initialMessages,
@@ -369,6 +370,7 @@ export default function ChatScreen({
 
   const helpItems = [
     { icon: <IcoFeedback />, label: 'Send Feedback', action: onFeedback },
+    { icon: <IcoFeedback />, label: 'Contact us', action: onContact },
     { icon: <IcoDoc />, label: 'Terms of Service', action: onTerms },
     { icon: <IcoShield />, label: 'Privacy Policy', action: onPrivacy },
   ]

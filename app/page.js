@@ -372,6 +372,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           setFilters={setFilters}
           onSearch={handleSearch}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           user={user}
           onSignOut={handleSignOut}
           isPremium={isPremium}
@@ -424,6 +425,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           apiResults={apiResults}
           user={user}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSearch={handleSearch}
           onFindMore={handleFindMore}
           onMyPrograms={() => setScreen('my-programs')}
@@ -435,6 +437,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           savedIds={new Set(savedPrograms.map(p => p.name))}
           onSaveToggle={handleSaveToggle}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
           onUpgrade={() => {
             setIsPremium(true)
@@ -457,6 +460,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onMyChats={() => setScreen('my-chats')}
           onSaveToggle={handleSaveToggle}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
           onFeedback={() => setScreen('feedback')}
           onTerms={() => setScreen('terms')}
@@ -473,8 +477,10 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onBack={() => setScreen('results')}
           user={user}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
           onProfile={() => setScreen('profile')}
@@ -502,6 +508,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onTerms={() => setScreen('terms')}
           onPrivacy={() => setScreen('privacy')}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
         />
       )}
@@ -520,6 +527,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           onTerms={() => setScreen('terms')}
           onPrivacy={() => setScreen('privacy')}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
         />
       )}
@@ -529,6 +537,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           user={user}
           onBack={() => setScreen('search')}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
@@ -544,6 +553,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           user={user}
           onBack={() => setScreen('search')}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
@@ -559,6 +569,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           user={user}
           onBack={() => setScreen('search')}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}
@@ -574,6 +585,7 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
           user={user}
           onBack={() => setScreen('search')}
           onOpenAuth={setAuthMode}
+          onContact={() => setScreen('contact')}
           onSignOut={handleSignOut}
           onMyPrograms={() => setScreen('my-programs')}
           onMyChats={() => setScreen('my-chats')}

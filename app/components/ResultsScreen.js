@@ -252,7 +252,7 @@ function ResultCard({ uni, onOpen, onAskAI, saved, onSave, isMobile }) {
 export default function ResultsScreen({
   filters, setFilters, onOpenUni, onAskAI, onBack, isLoading, isFindingMore, apiResults,
   user, onOpenAuth, onSearch, onFindMore, onMyPrograms, onMyChats, onProfile,
-  onFeedback, onTerms, onPrivacy, savedIds = new Set(), onSaveToggle, onSignOut,
+  onFeedback, onTerms, onPrivacy, onContact, savedIds = new Set(), onSaveToggle, onSignOut,
 }) {
   const isMobile = useIsMobile()
   const [sort, setSort] = useState('Best match')
@@ -453,6 +453,7 @@ export default function ResultsScreen({
         onFeedback={onFeedback}
         onTerms={onTerms}
         onPrivacy={onPrivacy}
+        onContact={onContact}
         onOpenMenu={() => setMenuOpen(true)}
       />
 
@@ -791,6 +792,7 @@ export default function ResultsScreen({
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onContact={() => { setMenuOpen(false); onContact?.() }}
           onHome={() => { setMenuOpen(false); onBack?.() }}
         />
       )}

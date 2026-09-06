@@ -836,7 +836,7 @@ function TuitionCard({ value, onChange }) {
 
 // ── main export ───────────────────────────────────────────────────────────────
 
-export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onAskAI }) {
+export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth, user, onSignOut, isPremium, onUpgrade, onMyPrograms, onMyChats, onProfile, onFeedback, onTerms, onPrivacy, onAskAI, onContact }) {
   const isMobile = useIsMobile()
   const [menuOpen, setMenuOpen] = useState(false)
   const [showTuition, setShowTuition] = useState(false)
@@ -892,6 +892,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
         onFeedback={onFeedback}
         onTerms={onTerms}
         onPrivacy={onPrivacy}
+        onContact={onContact}
         onOpenMenu={() => setMenuOpen(true)}
       />
 
@@ -1103,6 +1104,7 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onContact={() => { setMenuOpen(false); onContact?.() }}
           onHome={() => { setMenuOpen(false) }}
         />
       )}

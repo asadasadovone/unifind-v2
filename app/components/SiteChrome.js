@@ -26,7 +26,7 @@ export function useIsMobile(query = '(max-width: 768px)') {
 
 export function SiteNav({
   isMobile, user, onOpenAuth, onSignOut, onHome, onMyPrograms, onMyChats,
-  onProfile, onFeedback, onTerms, onPrivacy, onOpenMenu,
+  onProfile, onFeedback, onTerms, onPrivacy, onContact, onOpenMenu,
 }) {
   const [showHelp, setShowHelp] = useState(false)
   const helpRef = useRef(null)
@@ -66,6 +66,7 @@ export function SiteNav({
         {showHelp && (
           <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', background: '#fff', border: '1px solid #E8E8E8', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: 200, zIndex: 300, overflow: 'hidden' }}>
             <button onClick={() => { setShowHelp(false); onFeedback?.() }} style={{ display: 'block', width: '100%', padding: '12px 18px', background: 'none', border: 'none', textAlign: 'left', fontSize: 14, color: '#111', cursor: 'pointer', fontFamily: 'inherit' }}>Send feedback</button>
+            <button onClick={() => { setShowHelp(false); onContact?.() }} style={{ display: 'block', width: '100%', padding: '12px 18px', background: 'none', border: 'none', textAlign: 'left', fontSize: 14, color: '#111', cursor: 'pointer', fontFamily: 'inherit' }}>Contact us</button>
             <button onClick={() => { setShowHelp(false); onTerms?.() }} style={{ display: 'block', width: '100%', padding: '12px 18px', background: 'none', border: 'none', textAlign: 'left', fontSize: 14, color: '#111', cursor: 'pointer', fontFamily: 'inherit' }}>Terms of Service</button>
             <button onClick={() => { setShowHelp(false); onPrivacy?.() }} style={{ display: 'block', width: '100%', padding: '12px 18px', background: 'none', border: 'none', textAlign: 'left', fontSize: 14, color: '#111', cursor: 'pointer', fontFamily: 'inherit' }}>Privacy Policy</button>
           </div>

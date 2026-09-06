@@ -115,6 +115,7 @@ export default function CookiesScreen({ user, onBack, onSignOut, onMyPrograms, o
           onFeedback={() => { setMenuOpen(false); onFeedback?.() }}
           onTerms={() => { setMenuOpen(false); onTerms?.() }}
           onPrivacy={() => { setMenuOpen(false); onPrivacy?.() }}
+          onContact={() => { setMenuOpen(false); onContact?.() }}
           onHome={() => { setMenuOpen(false); onBack?.() }}
         />
       )}
