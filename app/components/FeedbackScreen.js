@@ -15,14 +15,44 @@ export default function FeedbackScreen({ user, onBack, onSignOut, onMyPrograms, 
   const [menuOpen, setMenuOpen] = useState(false)
   const [category, setCategory] = useState('')
   const [message, setMessage] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState('idle') // idle | sending | sent | error
+  const [errMsg, setErrMsg] = useState(null)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setSubmitted(true)
-    setCategory('')
-    setMessage('')
-    setTimeout(() => setSubmitted(false), 3000)
+    if (status === 'sending') return
+    setStatus('sending')
+    setErrMsg(null)
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category,
+          message,
+          name: user?.user_metadata?.full_name || '',
+          email: user?.email || '',
+          source: 'feedback',
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.ok) {
+        if (data.error === 'mailer-not-configured') {
+          setErrMsg("We couldn't send your message from here. Please email us at hello@uniask.ai directly.")
+        } else {
+          setErrMsg('Something went wrong. Please try again in a moment.')
+        }
+        setStatus('error')
+        return
+      }
+      setStatus('sent')
+      setCategory('')
+      setMessage('')
+      setTimeout(() => setStatus('idle'), 4000)
+    } catch {
+      setErrMsg('Network error. Please try again.')
+      setStatus('error')
+    }
   }
 
   return (
@@ -97,15 +127,22 @@ export default function FeedbackScreen({ user, onBack, onSignOut, onMyPrograms, 
 
             <button
               type="submit"
+              disabled={status === 'sending' || status === 'sent'}
               style={{
                 marginTop: isMobile ? 22 : 28, alignSelf: isMobile ? 'stretch' : 'flex-start',
-                background: '#1668E3', color: '#fff', border: 'none',
+                background: status === 'sent' ? '#0D2C54' : '#1668E3', color: '#fff', border: 'none',
                 borderRadius: 12, padding: isMobile ? '15px' : '15px 28px',
-                fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+                fontSize: 15, fontWeight: 600, cursor: status === 'sending' ? 'wait' : status === 'sent' ? 'default' : 'pointer',
+                fontFamily: 'inherit', opacity: status === 'sending' ? 0.75 : 1,
               }}
             >
-              {submitted ? '✓ Thank you!' : 'Send feedback'}
+              {status === 'sending' ? 'Sending…'
+                : status === 'sent' ? '✓ Thanks — we got your message'
+                : 'Send feedback'}
             </button>
+            {errMsg && (
+              <p style={{ marginTop: 12, fontSize: 13, color: '#B91C1C' }}>{errMsg}</p>
+            )}
           </form>
         </div>
       </div>

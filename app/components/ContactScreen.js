@@ -49,17 +49,43 @@ export default function ContactScreen({ user, onBack, onSignOut, onMyPrograms, o
   const [name, setName] = useState(user?.user_metadata?.full_name || '')
   const [email, setEmail] = useState(user?.email || '')
   const [message, setMessage] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState('idle') // idle | sending | sent | error
+  const [errMsg, setErrMsg] = useState(null)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    // Best-effort mailto compose so the user always has a way out even
-    // before a real form backend is wired up.
-    const subject = encodeURIComponent(`[UniAsk / ${CATEGORIES.find(c => c.value === category)?.label}] ${name || 'Contact'}`)
-    const body = encodeURIComponent(`${message}\n\n—\n${name || ''}${email ? `\n${email}` : ''}`)
-    window.location.href = `mailto:hello@uniask.ai?subject=${subject}&body=${body}`
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 4000)
+    if (status === 'sending') return
+    setStatus('sending')
+    setErrMsg(null)
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: CATEGORIES.find(c => c.value === category)?.label || category,
+          message,
+          name,
+          email,
+          source: 'contact',
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.ok) {
+        // Server couldn't send — fall back to mailto so the user isn't stuck.
+        const subject = encodeURIComponent(`[UniAsk / ${CATEGORIES.find(c => c.value === category)?.label}] ${name || 'Contact'}`)
+        const body = encodeURIComponent(`${message}\n\n—\n${name || ''}${email ? `\n${email}` : ''}`)
+        window.location.href = `mailto:hello@uniask.ai?subject=${subject}&body=${body}`
+        setErrMsg("We opened your email app as a fallback — please send from there.")
+        setStatus('error')
+        return
+      }
+      setStatus('sent')
+      setMessage('')
+      setTimeout(() => setStatus('idle'), 4000)
+    } catch {
+      setErrMsg('Network error. Please try again.')
+      setStatus('error')
+    }
   }
 
   return (
@@ -170,10 +196,16 @@ export default function ContactScreen({ user, onBack, onSignOut, onMyPrograms, o
 
             <button
               type="submit"
-              style={{ alignSelf: isMobile ? 'stretch' : 'flex-start', background: '#0162E3', color: '#fff', border: 'none', borderRadius: 12, padding: isMobile ? '15px' : '15px 32px', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}
+              disabled={status === 'sending' || status === 'sent'}
+              style={{ alignSelf: isMobile ? 'stretch' : 'flex-start', background: status === 'sent' ? '#0D2C54' : '#0162E3', color: '#fff', border: 'none', borderRadius: 12, padding: isMobile ? '15px' : '15px 32px', fontSize: 15, fontWeight: 500, cursor: status === 'sending' ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: status === 'sending' ? 0.75 : 1 }}
             >
-              {submitted ? '✓ Opening your email…' : 'Send message'}
+              {status === 'sending' ? 'Sending…'
+                : status === 'sent' ? '✓ Thanks — we got your message'
+                : 'Send message'}
             </button>
+            {errMsg && (
+              <p style={{ marginTop: 12, fontSize: 13, color: '#B91C1C' }}>{errMsg}</p>
+            )}
           </form>
         </div>
       </div>
