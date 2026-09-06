@@ -237,6 +237,20 @@ Reply ONLY with a valid JSON array of exactly 10 items, no markdown, no explanat
     showToast('Sync failed: ' + msg.slice(0, 80))
   }
 
+  // My Programs / My Chats / Profile all need an account. Navigating to one
+  // signed out used to blank the page — the render guard was there but no
+  // fallback. Bounce back to search and pop the login modal instead.
+  useEffect(() => {
+    if (user) return
+    if (screen === 'my-programs' || screen === 'my-chats' || screen === 'profile') {
+      const nextAuth = screen === 'my-programs' ? 'save-programs'
+        : screen === 'my-chats' ? 'save-chats'
+        : 'login'
+      setScreen('search')
+      setAuthMode(nextAuth)
+    }
+  }, [screen, user])
+
   // Pull this account's programs and chats from Supabase, merging in anything
   // saved locally, so every device the user signs in on converges on the same
   // data. Runs on sign-in, on tab focus, and when entering a saved-items
