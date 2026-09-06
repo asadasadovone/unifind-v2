@@ -1,5 +1,4 @@
 export const POPULAR_COUNTRIES = [
-  "Any country",
   "European Union",
   "Germany",
   "Netherlands",

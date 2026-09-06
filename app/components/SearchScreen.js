@@ -969,7 +969,12 @@ export default function SearchScreen({ filters, setFilters, onSearch, onOpenAuth
                   style={{ ...cellValue, width: '100%', border: 'none', outline: 'none', fontFamily: 'inherit', background: 'transparent', appearance: 'none', cursor: 'pointer', padding: '0 22px 0 0' }}
                 >
                   <option value="">Any start date</option>
-                  {['Jan 2025','Feb 2025','Mar 2025','Apr 2025','May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'].map(d => <option key={d} value={d}>{d}</option>)}
+                  {/* Universities only have two intakes a year — an autumn one
+                      that lines up with the northern-hemisphere academic year
+                      and a smaller spring one. Listing every month made the
+                      picker useless. Keeping the next two years, past dates
+                      are dropped as applications for them have closed. */}
+                  {['Fall 2026','Spring 2027','Fall 2027','Spring 2028'].map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
                 <svg width={isMobile ? 18 : 14} height={isMobile ? 18 : 14} viewBox="0 0 24 24" fill="none" stroke={isMobile ? "#3a3a35" : "#666"} strokeWidth="2" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><path d="m6 9 6 6 6-6"/></svg>
               </div>
